@@ -1,0 +1,251 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String     @id @default(uuid())
+  fullName    String     @unique
+  email       String     @unique
+  password    String
+  createdDate DateTime   @default(now())
+  roleId      String
+  role        Role       @relation(fields: [roleId], references: [id])
+  carts       Cart[]
+  orders      Order[]
+  delivery    Delivery[]
+}
+
+model Product {
+  id                String         @id @default(uuid())
+  name              String         @unique
+  description       String
+  price             Float
+  priceWithDiscount Float?
+  quantity          Int
+  img               String?
+  createdDate       DateTime       @default(now())
+  categoryId        String
+  category          Category       @relation(fields: [categoryId], references: [id])
+  brandId           String?
+  brand             Brand?         @relation(fields: [brandId], references: [id])
+  colorId           String?
+  color             Color?         @relation(fields: [colorId], references: [id])
+  storageId         String?
+  storage           Storage?       @relation(fields: [storageId], references: [id])
+  connectivityId    String?
+  connectivity      Connectivity?  @relation(fields: [connectivityId], references: [id])
+  simSlotId         String?
+  simSlot           SimSlot?       @relation(fields: [simSlotId], references: [id])
+  batteryHealthId   String?
+  batteryHealth     BatteryHealth? @relation(fields: [batteryHealthId], references: [id])
+  ramId             String?
+  ram               Ram?           @relation(fields: [ramId], references: [id])
+  cpuId             String?
+  cpu               Cpu?           @relation(fields: [cpuId], references: [id])
+  screenSizeId      String?
+  screenSize        ScreenSize?    @relation(fields: [screenSizeId], references: [id])
+  typeId            String?
+  type              Type?          @relation(fields: [typeId], references: [id])
+  carts             Cart[]
+  orders            Order[]
+  promotions        Promotion[]
+  images            Image[]
+}
+
+model Category {
+  id             String          @id @default(uuid())
+  name           String          @unique
+  description    String?
+  img            String?
+  createdDate    DateTime        @default(now())
+  products       Product[]
+  images         Image[]
+  brands         Brand[]
+  colors         Color[]
+  storages       Storage[]
+  connectivities Connectivity[]
+  simSlots       SimSlot[]
+  batteryHealths BatteryHealth[]
+  rams           Ram[]
+  cpus           Cpu[]
+  screenSizes    ScreenSize[]
+  types          Type[]
+  promotions     Promotion[]
+}
+
+model Image {
+  id          String   @id @default(uuid())
+  url         String   @unique
+  createdDate DateTime @default(now())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+}
+
+model Brand {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  createdDate DateTime  @default(now())
+  products    Product[]
+  categoryId  String
+  category    Category  @relation(fields: [categoryId], references: [id])
+}
+
+model Color {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  createdDate DateTime  @default(now())
+  products    Product[]
+  categoryId  String
+  category    Category  @relation(fields: [categoryId], references: [id])
+}
+
+model Storage {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  createdDate DateTime  @default(now())
+  products    Product[]
+  categoryId  String
+  category    Category  @relation(fields: [categoryId], references: [id])
+}
+
+model Connectivity {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  createdDate DateTime  @default(now())
+  products    Product[]
+  categoryId  String
+  category    Category  @relation(fields: [categoryId], references: [id])
+}
+
+model SimSlot {
+  id          String    @id @default(uuid())
+  title       String    @unique
+  createdDate DateTime  @default(now())
+  products    Product[]
+  categoryId  String
+  category    Category  @relation(fields: [categoryId], references: [id])
+}
+
+model BatteryHealth {
+  id          String    @id @default(uuid())
+  title       String    @unique
+  createdDate DateTime  @default(now())
+  products    Product[]
+  categoryId  String
+  category    Category  @relation(fields: [categoryId], references: [id])
+}
+
+model Ram {
+  id          String    @id @default(uuid())
+  title       String    @unique
+  createdDate DateTime  @default(now())
+  products    Product[]
+  categoryId  String
+  category    Category  @relation(fields: [categoryId], references: [id])
+}
+
+model Cpu {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  createdDate DateTime  @default(now())
+  products    Product[]
+  categoryId  String
+  category    Category  @relation(fields: [categoryId], references: [id])
+}
+
+model ScreenSize {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  createdDate DateTime  @default(now())
+  products    Product[]
+  categoryId  String
+  category    Category  @relation(fields: [categoryId], references: [id])
+}
+
+model Type {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  createdDate DateTime  @default(now())
+  products    Product[]
+  categoryId  String
+  category    Category  @relation(fields: [categoryId], references: [id])
+}
+
+model Promotion {
+  id               String    @id @default(uuid())
+  name             String    @unique
+  percentageNumber Float
+  percentageSave   Float
+  startDate        DateTime
+  endDate          DateTime
+  startHours       DateTime?
+  endHours         DateTime?
+  createdDate      DateTime  @default(now())
+  productId        String
+  product          Product   @relation(fields: [productId], references: [id])
+  categoryId       String
+  category         Category  @relation(fields: [categoryId], references: [id])
+}
+
+model Cart {
+  id        String  @id @default(uuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+}
+
+model Order {
+  id           String     @id @default(uuid())
+  createdDate  DateTime   @default(now())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id])
+  productId    String
+  product      Product    @relation(fields: [productId], references: [id])
+  quantity     Int
+  statusId     String
+  status       Status     @relation(fields: [statusId], references: [id])
+  deliveryInfo Delivery[]
+}
+
+model Status {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  createdDate DateTime @default(now())
+  orders      Order[]
+}
+
+model Delivery {
+  id        String @id @default(uuid())
+  firstName String
+  lastName  String
+  street    String
+  city      String
+  country   String
+  phone     String
+  userId    String
+  user      User   @relation(fields: [userId], references: [id])
+  orderId   String
+  order     Order  @relation(fields: [orderId], references: [id])
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  createdDate DateTime @default(now())
+  users       User[]
+}
