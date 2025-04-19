@@ -31,7 +31,9 @@ export default function Navigation() {
                 <div className="container">
                     <div className="h-20 flex justify-between items-center">
                         {/* left nav */}
-                        <LogoWithName />
+                        <Link href="/">
+                            <LogoWithName />
+                        </Link>
                         {/* middle nav */}
                         <div className="w-[500px]">
                             <div className="ml-12">

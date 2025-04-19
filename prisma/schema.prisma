@@ -33,7 +33,7 @@ model Product {
   price             Float
   priceWithDiscount Float?
   quantity          Int
-  img               String?
+  slug              String         @unique
   createdDate       DateTime       @default(now())
   categoryId        String
   category          Category       @relation(fields: [categoryId], references: [id])
@@ -67,7 +67,7 @@ model Category {
   id             String          @id @default(uuid())
   name           String          @unique
   description    String?
-  img            String?
+  slug           String          @unique
   createdDate    DateTime        @default(now())
   products       Product[]
   images         Image[]
@@ -85,13 +85,13 @@ model Category {
 }
 
 model Image {
-  id          String   @id @default(uuid())
-  url         String   @unique
-  createdDate DateTime @default(now())
-  productId   String
-  product     Product  @relation(fields: [productId], references: [id])
-  categoryId  String
-  category    Category @relation(fields: [categoryId], references: [id])
+  id          String    @id @default(uuid())
+  url         String    @unique
+  createdDate DateTime  @default(now())
+  productId   String?
+  product     Product?  @relation(fields: [productId], references: [id])
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
 }
 
 model Brand {

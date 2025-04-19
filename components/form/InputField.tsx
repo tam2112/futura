@@ -13,6 +13,7 @@ type InputFieldProps = {
     icon?: ReactNode;
     iconEyeOn?: ReactNode;
     iconEyeOff?: ReactNode;
+    hideIcon?: boolean;
     error?: FieldError;
     hidden?: boolean;
     onChange?: () => void;
@@ -31,6 +32,7 @@ export default function InputField({
     iconEyeOff,
     error,
     hidden,
+    hideIcon,
     onChange,
     className,
     inputProps,
@@ -48,7 +50,9 @@ export default function InputField({
                         <input
                             type={showPassword ? 'text' : 'password'}
                             {...register(name)}
-                            className={`px-4 pl-[52px] py-2 min-w-[320px] rounded-lg outline-none ${className}`}
+                            className={`px-4 ${
+                                !hideIcon && 'pl-[52px]'
+                            } py-2 min-w-[320px] rounded-lg outline-none ${className}`}
                             onChange={onChange}
                             {...inputProps}
                             defaultValue={defaultValue}
@@ -56,13 +60,17 @@ export default function InputField({
                             min={type === 'date' ? '1950-01-01' : undefined}
                             max={type === 'date' ? '2020-12-31' : undefined}
                         />
-                        <div
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute top-1/2 -translate-y-1/2 left-0"
-                        >
-                            {showPassword ? iconEyeOn : iconEyeOff}
-                        </div>
-                        <span className="absolute top-1/2 -translate-y-1/2 left-10 w-px h-[56%] bg-black"></span>
+                        {!hideIcon && (
+                            <div
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute top-1/2 -translate-y-1/2 left-0"
+                            >
+                                {showPassword ? iconEyeOn : iconEyeOff}
+                            </div>
+                        )}
+                        {!hideIcon && (
+                            <span className="absolute top-1/2 -translate-y-1/2 left-10 w-px h-[56%] bg-black"></span>
+                        )}
                     </div>
                 </div>
             ) : (
@@ -73,13 +81,17 @@ export default function InputField({
                             type={type}
                             {...register(name)}
                             placeholder={`Enter your ${label}`}
-                            className={`px-4 pl-[52px] py-2 min-w-[320px] rounded-lg outline-none ${className}`}
+                            className={`px-4 ${
+                                !hideIcon && 'pl-[52px]'
+                            } py-2 min-w-[320px] rounded-lg outline-none ${className}`}
                             onChange={onChange}
                             defaultValue={defaultValue}
                             {...inputProps}
                         />
-                        {icon}
-                        <span className="absolute top-1/2 -translate-y-1/2 left-10 w-px h-[56%] bg-black"></span>
+                        {!hideIcon && icon}
+                        {!hideIcon && (
+                            <span className="absolute top-1/2 -translate-y-1/2 left-10 w-px h-[56%] bg-black"></span>
+                        )}
                     </div>
                 </div>
             )}

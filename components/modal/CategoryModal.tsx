@@ -11,6 +11,7 @@ import Button from '../Button';
 import { twMerge } from 'tailwind-merge';
 import { useAuth } from '@/context/AuthContext';
 import { PiShoppingBagOpenLight, PiSignOut, PiUser } from 'react-icons/pi';
+import { Link } from '@/navigation';
 
 type CategoryModalType = {
     isOpen: boolean;
@@ -71,7 +72,9 @@ export default function CategoryModal({ isOpen, setIsOpen }: CategoryModalType) 
                     <div className="sticky bg-white z-50 top-0 left-0 right-0">
                         <div className="flex items-center justify-between border-b border-gray-200">
                             <div className="pl-4">
-                                <LogoWithName />
+                                <Link href="/">
+                                    <LogoWithName />
+                                </Link>
                             </div>
                             <div
                                 className="text-black py-5 pl-4 pr-4 border-l border-gray-200 cursor-pointer"

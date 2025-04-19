@@ -1,13 +1,28 @@
+'use client';
+
+import { ITEM_PER_PAGE } from '@/lib/settings';
+import { useRouter } from '@/navigation';
 import { SlArrowLeft, SlArrowRight } from 'react-icons/sl';
 
-const count = 10;
-const ITEM_PER_PAGE = 2;
-const page = 1;
+export default function Pagination({ page, count }: { page: number; count: number }) {
+    const router = useRouter();
 
-export default function Pagination() {
+    const hasPrev = ITEM_PER_PAGE * (page - 1) > 0;
+    const hasNext = ITEM_PER_PAGE * (page - 1) + ITEM_PER_PAGE < count;
+
+    const changePage = (newPage: number) => {
+        const params = new URLSearchParams(window.location.search);
+        params.set('page', newPage.toString());
+        router.push(`${window.location.pathname}?${params}`);
+    };
+
     return (
         <div className="flex items-center justify-center py-8 space-x-4">
-            <button className="py-3 px-4 rounded-md bg-gray-100 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
+            <button
+                onClick={() => changePage(page - 1)}
+                disabled={!hasPrev}
+                className="py-3 px-4 rounded-md bg-gray-100 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            >
                 <SlArrowLeft />
             </button>
             <div className="flex items-center gap-2 text-sm">
@@ -17,14 +32,21 @@ export default function Pagination() {
                     return (
                         <button
                             key={pageIndex}
-                            className={`px-4 py-2 rounded-lg ${page === pageIndex ? 'bg-gradient-light' : ''}`}
+                            className={`px-4 py-2 rounded-lg hover:bg-gradient-light transition-all duration-300 ${
+                                page === pageIndex ? 'bg-gradient-light' : ''
+                            }`}
+                            onClick={() => changePage(pageIndex)}
                         >
                             {pageIndex}
                         </button>
                     );
                 })}
             </div>
-            <button className="py-3 px-4 rounded-md bg-gray-100 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
+            <button
+                onClick={() => changePage(page + 1)}
+                disabled={!hasNext}
+                className="py-3 px-4 rounded-md bg-gray-100 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            >
                 <SlArrowRight />
             </button>
         </div>

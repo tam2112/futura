@@ -29,6 +29,16 @@ const nextConfig = {
 
         return config;
     },
+    images: {
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'res.cloudinary.com',
+                port: '', // Để trống nếu không dùng port cụ thể
+                pathname: '/**', // Cho phép tất cả các đường dẫn dưới domain này
+            },
+        ],
+    },
 };
 
 export default withNextIntl(nextConfig);
