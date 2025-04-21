@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from 'react';
 
-export default function Checkbox({ id }: { id: string }) {
+export default function Checkbox({ id }: { id: string | number }) {
     const [isChecked, setIsChecked] = useState(false);
 
     const handleChange = () => {
         setIsChecked(!isChecked);
 
         // Cập nhật trạng thái của CheckboxHeader
-        const form = document.getElementById('category-table-form') as HTMLFormElement;
+        const form = document.getElementById('category-table-form');
         if (form) {
             const checkboxes = form.querySelectorAll('input[name="selectedIds"]');
             const allChecked = Array.from(checkboxes).every((checkbox) => (checkbox as HTMLInputElement).checked);

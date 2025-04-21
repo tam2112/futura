@@ -11,15 +11,24 @@ import { Tooltip } from 'react-tooltip';
 export default function DeleteSelectedButtonClient() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false); // Trạng thái để mở/đóng modal
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleDelete = async (formData: FormData) => {
+    // Hàm lấy danh sách selectedIds từ checkboxes
+    const getSelectedIds = () => {
+        const container = document.getElementById('category-table-form');
+        if (!container) return [];
+        const checkboxes = container.querySelectorAll('input[name="selectedIds"]:checked');
+        return Array.from(checkboxes).map((checkbox) => (checkbox as HTMLInputElement).value);
+    };
+
+    const handleDelete = async (selectedIds: string[]) => {
         setIsLoading(true);
 
-        // Delay 1.5 giây (1500ms) trước khi thực hiện xóa
+        // Delay 1.5 giây trước khi thực hiện xóa
         await new Promise((resolve) => setTimeout(resolve, 1500));
 
-        const result = await deleteSelectedCategories(formData);
+        // Gọi hàm deleteSelectedCategories với danh sách selectedIds
+        const result = await deleteSelectedCategories(selectedIds);
         setIsLoading(false);
 
         if (result.success) {
@@ -32,8 +41,7 @@ export default function DeleteSelectedButtonClient() {
 
     // Hàm mở modal xác nhận
     const openConfirmModal = () => {
-        const form = document.getElementById('category-table-form') as HTMLFormElement;
-        const selectedIds = new FormData(form).getAll('selectedIds');
+        const selectedIds = getSelectedIds();
         if (selectedIds.length === 0) {
             toast.error('Please select at least one category to delete.');
             return;
@@ -48,22 +56,26 @@ export default function DeleteSelectedButtonClient() {
 
     // Hàm xác nhận xóa
     const confirmDelete = () => {
-        const form = document.getElementById('category-table-form') as HTMLFormElement;
-        handleDelete(new FormData(form));
-        setIsModalOpen(false); // Đóng modal sau khi xác nhận
+        const selectedIds = getSelectedIds();
+        handleDelete(selectedIds);
+        setIsModalOpen(false);
     };
 
     return (
         <>
-            {isLoading && <Loader />}
+            {isLoading && (
+                <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/10">
+                    <Loader />
+                </div>
+            )}
             {/* Nút xóa */}
             <button
                 type="button"
                 className="size-8 flex items-center justify-center rounded-full bg-red-400 text-white disabled:opacity-50"
-                onClick={openConfirmModal} // Mở modal khi nhấn nút
+                onClick={openConfirmModal}
                 disabled={isLoading}
                 data-tooltip-id="delete-tooltip"
-                data-tooltip-content="Xóa"
+                data-tooltip-content="Delete selected categories"
             >
                 <FiTrash2 width={14} height={14} />
             </button>
@@ -73,7 +85,6 @@ export default function DeleteSelectedButtonClient() {
             {isModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                     <div className="bg-white p-6 rounded-md shadow-lg max-w-2xl w-full">
-                        {/* <h2 className="font-heading text-lg text-center font-medium">Confirm</h2> */}
                         <p className="font-heading text-lg text-center font-medium">
                             All data will be lost. Are you sure you want to delete selected categories?
                         </p>
@@ -81,14 +92,14 @@ export default function DeleteSelectedButtonClient() {
                             <button
                                 type="button"
                                 className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
-                                onClick={closeModal} // Đóng modal khi nhấn Hủy
+                                onClick={closeModal}
                             >
                                 Cancel
                             </button>
                             <button
                                 type="button"
                                 className="px-4 py-2 bg-rose-500 text-white rounded-md hover:bg-rose-600"
-                                onClick={confirmDelete} // Thực hiện xóa khi nhấn Xác nhận
+                                onClick={confirmDelete}
                             >
                                 Confirm
                             </button>

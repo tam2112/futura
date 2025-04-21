@@ -19,14 +19,14 @@ export const sidebarOtherLinks = [
 ];
 
 export const technicalLinks = [
-    { name: 'Brand', path: '/admin/brand/list' },
-    { name: 'Color', path: '/admin/color/list' },
-    { name: 'Storage', path: '/admin/storage/list' },
-    { name: 'Connectivity', path: '/admin/connectivity/list' },
-    { name: 'Sim slot', path: '/admin/simSlot/list' },
-    { name: 'Battery health', path: '/admin/batteryHealth/list' },
-    { name: 'RAM', path: '/admin/ram/list' },
-    { name: 'CPU', path: '/admin/cpu/list' },
-    { name: 'Screen size', path: '/admin/screenSize/list' },
-    { name: 'Type', path: '/admin/type/list' },
+    { name: 'Brand', path: '/admin/technical/brand/list' },
+    { name: 'Color', path: '/admin/technical/color/list' },
+    { name: 'Storage', path: '/admin/technical/storage/list' },
+    { name: 'Connectivity', path: '/admin/technical/connectivity/list' },
+    { name: 'Sim slot', path: '/admin/technical/sim-slot/list' },
+    { name: 'Battery health', path: '/admin/technical/battery-health/list' },
+    { name: 'RAM', path: '/admin/technical/ram/list' },
+    { name: 'CPU', path: '/admin/technical/cpu/list' },
+    { name: 'Screen size', path: '/admin/technical/screen-size/list' },
+    { name: 'Type', path: '/admin/technical/type/list' },
 ];

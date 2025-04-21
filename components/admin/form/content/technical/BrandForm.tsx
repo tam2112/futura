@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { createCategory, updateCategory } from '@/lib/actions/category.action';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -11,17 +10,19 @@ import { useForm } from 'react-hook-form';
 import { useFormState } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
-import { categorySchema, CategorySchema } from '@/lib/validation/category.form';
 import InputField from '@/components/form/InputField';
 import FileUploadDropzone from '@/components/FileUploadDropzone';
 import { uploadImagesToCloudinary } from '@/lib/upload';
+import { brandSchema, BrandSchema } from '@/lib/validation/technical/brand.form';
+import { createBrand, updateBrand } from '@/lib/actions/technical/brand.action';
 // import { uploadFileToServer } from '@/lib/upload';
 // import { uploadImages } from '@/lib/actions/image.action';
 
-export default function CategoryForm({
+export default function BrandForm({
     type,
     data,
     setOpen,
+    relatedData,
 }: {
     type: 'create' | 'update';
     data?: any;
@@ -32,8 +33,8 @@ export default function CategoryForm({
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm<CategorySchema>({
-        resolver: zodResolver(categorySchema),
+    } = useForm<BrandSchema>({
+        resolver: zodResolver(brandSchema),
     });
 
     const [files, setFiles] = useState<File[]>([]);
@@ -42,7 +43,7 @@ export default function CategoryForm({
     );
 
     // AFTER REACT 19 IT'LL BE USEACTIONSTATE
-    const [state, formAction] = useFormState(type === 'create' ? createCategory : updateCategory, {
+    const [state, formAction] = useFormState(type === 'create' ? createBrand : updateBrand, {
         success: false,
         error: false,
     });
@@ -76,34 +77,53 @@ export default function CategoryForm({
 
     useEffect(() => {
         if (state.success) {
-            toast(`Category has been ${type === 'create' ? 'created' : 'updated'}`);
+            toast(`Brand has been ${type === 'create' ? 'created' : 'updated'}`);
             setOpen(false);
             router.refresh();
         }
     }, [state, type, router, setOpen]);
 
+    const { categories } = relatedData;
+
     return (
-        <form method="POST" className="flex flex-col gap-8" onSubmit={onSubmit}>
+        <form className="flex flex-col gap-8" onSubmit={onSubmit}>
             <h1 className="text-lg font-heading font-semibold">
-                {type === 'create' ? 'Create a new category' : 'Update the category'}
+                {type === 'create' ? 'Create a new brand' : 'Update the brand'}
             </h1>
             <div className="flex justify-between flex-wrap gap-4">
                 <InputField
-                    label="Category name"
+                    label="Brand name"
                     name="name"
                     defaultValue={data?.name}
                     register={register}
                     error={errors.name}
                     hideIcon
                 />
-                <InputField
-                    label="Description"
-                    name="description"
-                    defaultValue={data?.description}
-                    register={register}
-                    error={errors.description}
-                    hideIcon
-                />
+                <div>
+                    <div className="flex flex-col gap-1">
+                        <label htmlFor="">Category</label>
+                        <div className="relative bg-white border border-black rounded-lg">
+                            <select
+                                className="py-2 px-3 min-w-[320px] rounded-lg outline-none"
+                                {...register('categoryId')}
+                                defaultValue={data?.categories}
+                            >
+                                {categories.map((category: { id: string; name: string; surname: string }) => (
+                                    <option
+                                        key={category.id}
+                                        value={category.id}
+                                        selected={data && category.id === data.categoryId}
+                                    >
+                                        {category.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                    {errors.categoryId?.message && (
+                        <p className="text-xs text-red-400 max-w-[300px]">{errors.categoryId?.message.toString()}</p>
+                    )}
+                </div>
                 {data && (
                     <InputField
                         label="Id"

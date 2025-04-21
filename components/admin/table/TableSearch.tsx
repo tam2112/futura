@@ -19,10 +19,10 @@ export default function TableSearch() {
     return (
         <form
             onSubmit={handleSubmit}
-            className="w-full md:w-auto flex items-center text-xs rounded-full ring-[1.5px] ring-gray-300 px-2"
+            className="w-full md:w-auto flex items-center text-xs rounded-full border-[1px] border-black px-2"
         >
             <CiSearch size={18} />
-            <input type="text" placeholder="Search..." className="w-[200px] p-2 bg-transparent outline-none" />
+            <input type="text" placeholder="Search..." className="w-[200px] py-2 px-2 bg-transparent outline-none" />
         </form>
     );
 }

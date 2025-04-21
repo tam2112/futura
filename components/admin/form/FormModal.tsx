@@ -22,14 +22,16 @@ import { deleteCategory } from '@/lib/actions/category.action';
 import Loader from '@/components/Loader';
 import { twMerge } from 'tailwind-merge';
 import { GrClose } from 'react-icons/gr';
+import { deleteBrand } from '@/lib/actions/technical/brand.action';
 
 const deleteActionMap = {
     category: deleteCategory,
-    product: deleteCategory,
-    order: deleteCategory,
+    // product: deleteCategory,
+    // order: deleteCategory,
     user: deleteUser,
     role: deleteCategory,
-    status: deleteCategory,
+    // status: deleteCategory,
+    brand: deleteBrand,
 };
 
 // const UserForm = dynamic(() => import('./forms/UserForm'), {
@@ -38,12 +40,15 @@ const deleteActionMap = {
 const CategoryForm = dynamic(() => import('./content/CategoryForm'), {
     loading: () => <Loader />,
 });
+const BrandForm = dynamic(() => import('./content/technical/BrandForm'), {
+    loading: () => <Loader />,
+});
 // const ProductForm = dynamic(() => import('./forms/ProductForm'), {
 //     loading: () => <h1>Loading..</h1>,
 // });
-// const RoleForm = dynamic(() => import('./forms/RoleForm'), {
-//     loading: () => <h1>Loading..</h1>,
-// });
+const RoleForm = dynamic(() => import('./content/RoleForm'), {
+    loading: () => <h1>Loading..</h1>,
+});
 // const StatusForm = dynamic(() => import('./forms/StatusForm'), {
 //     loading: () => <h1>Loading..</h1>,
 // });
@@ -62,12 +67,15 @@ const forms: {
     category: (setOpen, type, data, relatedData) => (
         <CategoryForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     ),
+    brand: (setOpen, type, data, relatedData) => (
+        <BrandForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
+    ),
     // product: (setOpen, type, data, relatedData) => (
     //     <ProductForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     // ),
-    // role: (setOpen, type, data, relatedData) => (
-    //     <RoleForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
-    // ),
+    role: (setOpen, type, data, relatedData) => (
+        <RoleForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
+    ),
     // status: (setOpen, type, data, relatedData) => (
     //     <StatusForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     // ),

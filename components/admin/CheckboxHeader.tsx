@@ -8,24 +8,29 @@ export default function CheckboxHeader({ categoryIds }: { categoryIds: string[] 
 
     // Hàm xử lý khi checkbox header thay đổi
     const handleHeaderChange = () => {
-        setIsChecked(!isChecked);
+        const newCheckedState = !isChecked;
+        setIsChecked(newCheckedState);
 
-        // Cập nhật tất cả các checkbox trong form
-        const form = document.getElementById('category-table-form') as HTMLFormElement;
-        if (form) {
-            const checkboxes = form.querySelectorAll('input[name="selectedIds"]');
+        // Cập nhật tất cả các checkbox trong table
+        const container = document.getElementById('category-table-form');
+        if (container) {
+            const checkboxes = container.querySelectorAll('input[name="selectedIds"]');
             checkboxes.forEach((checkbox) => {
-                (checkbox as HTMLInputElement).checked = !isChecked;
+                (checkbox as HTMLInputElement).checked = newCheckedState;
+                // Kích hoạt sự kiện change để cập nhật trạng thái của Checkbox component
+                checkbox.dispatchEvent(new Event('change', { bubbles: true }));
             });
         }
     };
 
-    // Nếu danh sách categoryIds thay đổi, kiểm tra lại trạng thái
+    // Kiểm tra trạng thái của tất cả checkbox khi categoryIds thay đổi
     useEffect(() => {
-        const form = document.getElementById('category-table-form') as HTMLFormElement;
-        if (form) {
-            const checkboxes = form.querySelectorAll('input[name="selectedIds"]');
-            const allChecked = Array.from(checkboxes).every((checkbox) => (checkbox as HTMLInputElement).checked);
+        const container = document.getElementById('category-table-form');
+        if (container) {
+            const checkboxes = container.querySelectorAll('input[name="selectedIds"]');
+            const allChecked =
+                checkboxes.length > 0 &&
+                Array.from(checkboxes).every((checkbox) => (checkbox as HTMLInputElement).checked);
             setIsChecked(allChecked);
         }
     }, [categoryIds]);
@@ -34,7 +39,6 @@ export default function CheckboxHeader({ categoryIds }: { categoryIds: string[] 
         <>
             <label className="neon-checkbox" data-tooltip-id="header-checkbox" data-tooltip-content="Select All">
                 <input type="checkbox" checked={isChecked} onChange={handleHeaderChange} className="w-4 h-4" />
-
                 <div className="neon-checkbox__frame">
                     <div className="neon-checkbox__box">
                         <div className="neon-checkbox__check-container">
