@@ -9,7 +9,7 @@ export default function Checkbox({ id }: { id: string | number }) {
         setIsChecked(!isChecked);
 
         // Cập nhật trạng thái của CheckboxHeader
-        const form = document.getElementById('category-table-form');
+        const form = document.getElementById('table-container');
         if (form) {
             const checkboxes = form.querySelectorAll('input[name="selectedIds"]');
             const allChecked = Array.from(checkboxes).every((checkbox) => (checkbox as HTMLInputElement).checked);

@@ -1,22 +1,35 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Table from '@/components/admin/table/Table';
 import TableSearch from '@/components/admin/table/TableSearch';
 import Pagination from '@/sections/collections/Pagination';
 import Image from 'next/image';
-import { CiFilter, CiSaveDown1 } from 'react-icons/ci';
 import GoToTop from '@/components/GoToTop';
-import { Brand, Category, Prisma } from '@prisma/client';
+import { Brand, Prisma } from '@prisma/client';
 import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
 import Checkbox from '@/components/Checkbox';
 import DeleteSelectedButtonClient from '@/components/admin/DeleteSelectedButtonClient';
 import FormContainer from '@/components/admin/form/FormContainer';
 import CheckboxHeader from '@/components/admin/CheckboxHeader';
+import ExportButton from '@/components/admin/ExportButton';
+import { exportBrands } from '@/lib/actions/technical/brand.action';
+import { deleteSelectedBrands } from '@/components/admin/DeleteSelectedButton';
+import FilterTechnicalDropdown from '@/components/admin/FilterTechnicalDropdown';
 
-type BrandList = Brand & { images: { url: string }[] } & { category: Category };
+type BrandList = Brand & { images: { url: string }[] };
+
+const categorySortOptions = [
+    { value: 'name-asc', label: 'A-Z' },
+    { value: 'name-desc', label: 'Z-A' },
+    { value: 'date-desc', label: 'Latest Release' },
+    { value: 'date-asc', label: 'Oldest Release' },
+];
 
 export default async function BrandListPage({ searchParams }: { searchParams: { [key: string]: string | undefined } }) {
-    const { page, ...queryParams } = searchParams;
+    const { page, sort, ...queryParams } = searchParams;
     const p = page ? parseInt(page) : 1;
+
+    const currentSort = sort || 'date-desc';
 
     const query: Prisma.BrandWhereInput = {};
     if (queryParams) {
@@ -33,6 +46,21 @@ export default async function BrandListPage({ searchParams }: { searchParams: { 
         }
     }
 
+    const sortValues = currentSort.split(',').filter((value) => value);
+    const orderBy: Prisma.BrandOrderByWithRelationInput[] = sortValues.map((sortValue) => {
+        switch (sortValue.trim()) {
+            case 'name-asc':
+                return { name: 'asc' };
+            case 'name-desc':
+                return { name: 'desc' };
+            case 'date-asc':
+                return { createdDate: 'asc' };
+            case 'date-desc':
+            default:
+                return { createdDate: 'desc' };
+        }
+    });
+
     const [data, count] = await prisma.$transaction([
         prisma.brand.findMany({
             where: query,
@@ -43,18 +71,17 @@ export default async function BrandListPage({ searchParams }: { searchParams: { 
                     select: { url: true },
                     take: 1,
                 },
-                category: true,
             },
+            orderBy,
         }),
         prisma.brand.count({ where: query }),
     ]);
 
     // Define columns after data is initialized
     const columns = [
-        { header: <CheckboxHeader categoryIds={data.map((item) => item.id)} />, accessor: 'check' },
+        { header: <CheckboxHeader itemIds={data.map((item) => item.id)} />, accessor: 'check' },
         { header: 'Image', accessor: 'img' },
         { header: 'Name', accessor: 'name', className: 'hidden md:table-cell' },
-        { header: 'Category', accessor: 'category', className: 'hidden md:table-cell' },
     ];
 
     const renderRow = (item: BrandList) => (
@@ -72,7 +99,6 @@ export default async function BrandListPage({ searchParams }: { searchParams: { 
                 />
             </td>
             <td className="hidden md:table-cell py-2">{item.name}</td>
-            <td className="hidden md:table-cell py-2">{item.category.name}</td>
             <td className="py-2">
                 <div className="flex items-center gap-2">
                     {/* <Link href={`/list/categories/${item.id}`}>
@@ -96,20 +122,21 @@ export default async function BrandListPage({ searchParams }: { searchParams: { 
                     <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
                         <TableSearch />
                         <div className="flex items-center gap-4 self-end">
-                            <button className="size-8 flex items-center justify-center rounded-full bg-slate-200">
-                                <CiFilter width={14} height={14} />
-                            </button>
-                            <button className="size-8 flex items-center justify-center rounded-full bg-slate-200">
-                                <CiSaveDown1 width={14} height={14} />
-                            </button>
+                            {/* Filter Dropdown */}
+                            <FilterTechnicalDropdown
+                                currentSort={currentSort}
+                                sortOptions={categorySortOptions}
+                                entityName="Brand"
+                            />
+                            <ExportButton exportAction={exportBrands} entityName="Brand" />
                             <FormContainer table="brand" type="create" />
-                            <DeleteSelectedButtonClient />
+                            <DeleteSelectedButtonClient deleteAction={deleteSelectedBrands} entityName="Brand" />
                         </div>
                     </div>
                 </div>
-                <form id="category-table-form">
+                <div id="table-container">
                     <Table columns={columns} renderRow={renderRow} data={data} />
-                </form>
+                </div>
                 {data.length > 0 && <Pagination page={p} count={count} />}
             </div>
         </>

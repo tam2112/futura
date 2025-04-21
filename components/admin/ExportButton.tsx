@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { exportCategories } from '@/lib/actions/category.action';
 import { useState } from 'react';
 import { CiSaveDown1 } from 'react-icons/ci';
 import { toast } from 'react-toastify';
@@ -8,7 +8,16 @@ import { Tooltip } from 'react-tooltip';
 import * as XLSX from 'xlsx';
 import Loader from '../Loader';
 
-export default function ExportButton() {
+type ExportButtonProps = {
+    exportAction: () => Promise<{
+        success: boolean;
+        data?: any[];
+        error?: string;
+    }>;
+    entityName?: string; // Optional, for toast messages (e.g., "Categories", "Products")
+};
+
+export default function ExportButton({ exportAction, entityName = 'Items' }: ExportButtonProps) {
     const [isLoading, setIsLoading] = useState(false);
 
     const handleExport = async () => {
@@ -16,34 +25,30 @@ export default function ExportButton() {
         setIsLoading(true);
 
         try {
-            const response = await exportCategories();
+            const response = await exportAction();
 
             if (!response.success || !response.data) {
-                throw new Error(response.error || 'Failed to fetch categories');
+                throw new Error(response.error || `Failed to fetch ${entityName.toLowerCase()}`);
             }
 
             // Create worksheet from data
             const worksheet = XLSX.utils.json_to_sheet(response.data);
             const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, 'Categories');
+            XLSX.utils.book_append_sheet(workbook, worksheet, entityName);
 
-            // Set column widths
-            worksheet['!cols'] = [
-                { wch: 20 }, // Name
-                { wch: 40 }, // Description
-                { wch: 60 }, // ImageURLs
-                { wch: 20 }, // CreatedAt
-            ];
+            // Set column widths (dynamic based on data keys)
+            const columns = response.data.length > 0 ? Object.keys(response.data[0]) : [];
+            worksheet['!cols'] = columns.map(() => ({ wch: 20 })); // Default width for all columns
 
             // Add delay of 1.5 seconds
             await new Promise((resolve) => setTimeout(resolve, 1500));
 
             // Trigger download
-            XLSX.writeFile(workbook, 'categories.xlsx');
-            toast('Categories exported successfully!');
+            XLSX.writeFile(workbook, `${entityName.toLowerCase()}.xlsx`);
+            toast(`${entityName} exported successfully!`);
         } catch (error) {
             console.error('Export error:', error);
-            toast.error('Failed to export categories.');
+            toast.error(`Failed to export ${entityName.toLowerCase()}.`);
         } finally {
             setIsLoading(false);
         }

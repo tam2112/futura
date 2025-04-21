@@ -16,9 +16,10 @@ type InputFieldProps = {
     hideIcon?: boolean;
     error?: FieldError;
     hidden?: boolean;
-    onChange?: () => void;
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     className?: string;
     inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
+    formType?: 'create' | 'update';
 };
 
 export default function InputField({
@@ -36,10 +37,22 @@ export default function InputField({
     onChange,
     className,
     inputProps,
+    formType,
 }: InputFieldProps) {
     // show and hide input type password
     const [showPassword, setShowPassword] = useState(false);
     // const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [hexValue, setHexValue] = useState<string | undefined>(
+        formType === 'create' ? '' : typeof defaultValue === 'string' ? defaultValue : undefined,
+    );
+
+    // Handle input change for hex field
+    const handleHexChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (name === 'hex' && formType === 'create') {
+            setHexValue(e.target.value);
+        }
+        onChange?.(e); // Call the original onChange if provided
+    };
 
     return (
         <div className={hidden ? 'hidden' : 'block space-y-1'}>
@@ -82,15 +95,25 @@ export default function InputField({
                             {...register(name)}
                             placeholder={`Enter your ${label}`}
                             className={`px-4 ${
-                                !hideIcon && 'pl-[52px]'
+                                !hideIcon || (name === 'hex' && 'pl-[52px]')
                             } py-2 min-w-[320px] rounded-lg outline-none ${className}`}
-                            onChange={onChange}
+                            onChange={handleHexChange}
                             defaultValue={defaultValue}
                             {...inputProps}
                         />
                         {!hideIcon && icon}
-                        {!hideIcon && (
-                            <span className="absolute top-1/2 -translate-y-1/2 left-10 w-px h-[56%] bg-black"></span>
+                        {!hideIcon ||
+                            (name === 'hex' && (
+                                <span className="absolute top-1/2 -translate-y-1/2 left-10 w-px h-[56%] bg-black"></span>
+                            ))}
+                        {name === 'hex' && (
+                            <div
+                                className="absolute top-1/2 -translate-y-1/2 left-2.5 w-[20px] h-[20px] rounded-lg"
+                                style={{
+                                    backgroundColor:
+                                        hexValue || (typeof defaultValue === 'string' ? defaultValue : undefined),
+                                }}
+                            ></div>
                         )}
                     </div>
                 </div>

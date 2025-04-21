@@ -22,7 +22,6 @@ export default function BrandForm({
     type,
     data,
     setOpen,
-    relatedData,
 }: {
     type: 'create' | 'update';
     data?: any;
@@ -83,8 +82,6 @@ export default function BrandForm({
         }
     }, [state, type, router, setOpen]);
 
-    const { categories } = relatedData;
-
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
             <h1 className="text-lg font-heading font-semibold">
@@ -99,31 +96,6 @@ export default function BrandForm({
                     error={errors.name}
                     hideIcon
                 />
-                <div>
-                    <div className="flex flex-col gap-1">
-                        <label htmlFor="">Category</label>
-                        <div className="relative bg-white border border-black rounded-lg">
-                            <select
-                                className="py-2 px-3 min-w-[320px] rounded-lg outline-none"
-                                {...register('categoryId')}
-                                defaultValue={data?.categories}
-                            >
-                                {categories.map((category: { id: string; name: string; surname: string }) => (
-                                    <option
-                                        key={category.id}
-                                        value={category.id}
-                                        selected={data && category.id === data.categoryId}
-                                    >
-                                        {category.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-                    {errors.categoryId?.message && (
-                        <p className="text-xs text-red-400 max-w-[300px]">{errors.categoryId?.message.toString()}</p>
-                    )}
-                </div>
                 {data && (
                     <InputField
                         label="Id"

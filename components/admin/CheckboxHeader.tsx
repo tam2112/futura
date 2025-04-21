@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Tooltip } from 'react-tooltip';
 
-export default function CheckboxHeader({ categoryIds }: { categoryIds: string[] }) {
+export default function CheckboxHeader({ itemIds }: { itemIds: string[] }) {
     const [isChecked, setIsChecked] = useState(false);
 
     // Hàm xử lý khi checkbox header thay đổi
@@ -12,7 +12,7 @@ export default function CheckboxHeader({ categoryIds }: { categoryIds: string[] 
         setIsChecked(newCheckedState);
 
         // Cập nhật tất cả các checkbox trong table
-        const container = document.getElementById('category-table-form');
+        const container = document.getElementById('table-container');
         if (container) {
             const checkboxes = container.querySelectorAll('input[name="selectedIds"]');
             checkboxes.forEach((checkbox) => {
@@ -25,7 +25,7 @@ export default function CheckboxHeader({ categoryIds }: { categoryIds: string[] 
 
     // Kiểm tra trạng thái của tất cả checkbox khi categoryIds thay đổi
     useEffect(() => {
-        const container = document.getElementById('category-table-form');
+        const container = document.getElementById('table-container');
         if (container) {
             const checkboxes = container.querySelectorAll('input[name="selectedIds"]');
             const allChecked =
@@ -33,7 +33,7 @@ export default function CheckboxHeader({ categoryIds }: { categoryIds: string[] 
                 Array.from(checkboxes).every((checkbox) => (checkbox as HTMLInputElement).checked);
             setIsChecked(allChecked);
         }
-    }, [categoryIds]);
+    }, [itemIds]);
 
     return (
         <>

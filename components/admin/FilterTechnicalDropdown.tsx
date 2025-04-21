@@ -18,7 +18,11 @@ type FilterDropdownProps = {
     entityName?: string;
 };
 
-export default function FilterDropdown({ currentSort, sortOptions, entityName = 'Items' }: FilterDropdownProps) {
+export default function FilterTechnicalDropdown({
+    currentSort,
+    sortOptions,
+    entityName = 'Items',
+}: FilterDropdownProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [isLoading, setIsLoading] = useState(false);
@@ -44,7 +48,7 @@ export default function FilterDropdown({ currentSort, sortOptions, entityName = 
             params.set('sort', sortValue);
             params.set('page', '1'); // Reset to page 1 on sort change
             const formattedEntityName = entityName.toLowerCase().replace(/\s+/g, '-');
-            router.push(`/admin/${formattedEntityName}/list?${params.toString()}`);
+            router.push(`/admin/technical/${formattedEntityName}/list?${params.toString()}`);
             toast(`${entityName} sorted successfully!`);
         } catch (error) {
             console.error('Sort error:', error);

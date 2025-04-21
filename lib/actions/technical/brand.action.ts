@@ -2,6 +2,7 @@
 
 import prisma from '@/lib/prisma';
 import { BrandSchema } from '@/lib/validation/technical/brand.form';
+import { revalidatePath } from 'next/cache';
 
 type CurrentState = { success: boolean; error: boolean };
 
@@ -36,7 +37,6 @@ export const createBrand = async (currentState: CurrentState, data: BrandSchema 
         const newBrand = await prisma.brand.create({
             data: {
                 name: data.name,
-                categoryId: data.categoryId,
             },
         });
 
@@ -65,7 +65,6 @@ export const updateBrand = async (currentState: CurrentState, data: BrandSchema 
             where: { id: data.id },
             data: {
                 name: data.name,
-                categoryId: data.categoryId,
             },
         });
 
@@ -97,6 +96,10 @@ export const deleteBrand = async (currentState: CurrentState, data: FormData) =>
     const id = data.get('id') as string;
 
     try {
+        if (!id) {
+            throw new Error('Brand ID is required');
+        }
+
         await prisma.brand.delete({
             where: {
                 id: id,
@@ -119,9 +122,34 @@ export const deleteBrands = async (currentState: CurrentState, ids: string[]) =>
             },
         });
 
+        revalidatePath('/admin/brand/list');
         return { success: true, error: false };
     } catch (error) {
         console.log(error);
         return { success: false, error: true };
     }
 };
+
+export async function exportBrands() {
+    try {
+        const brands = await prisma.brand.findMany({
+            include: {
+                images: {
+                    select: { url: true },
+                },
+            },
+        });
+
+        // Format data for Excel
+        const formattedData = brands.map((brand) => ({
+            Name: brand.name,
+            ImageURLs: brand.images.map((img) => img.url).join(', ') || '',
+            CreatedAt: brand.createdDate.toISOString(),
+        }));
+
+        return { success: true, data: formattedData };
+    } catch (error) {
+        console.error('Export categories error:', error);
+        return { success: false, error: 'Failed to export categories' };
+    }
+}

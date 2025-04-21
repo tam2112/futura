@@ -37,12 +37,6 @@ export default async function FormContainer({ table, type, data, id }: FormConta
                 });
                 relatedData = { categories: productCategories };
                 break;
-            case 'brand':
-                const brandCategories = await prisma.category.findMany({
-                    select: { id: true, name: true },
-                });
-                relatedData = { categories: brandCategories };
-                break;
             case 'user':
                 const userRoles = await prisma.role.findMany({
                     select: { id: true, name: true },

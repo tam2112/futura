@@ -59,7 +59,8 @@ export default function Sidebar() {
                                 onClick={toggleTechnical}
                                 className={twMerge(
                                     'cursor-pointer flex gap-3 items-center bg-white py-2 px-4 hover:bg-gradient-light hover:text-white hover:font-semibold rounded-lg transition-all duration-300',
-                                    isTechnicalOpen && 'bg-gradient-light text-white font-semibold',
+                                    (isTechnicalOpen || technicalLinks.some((link) => pathname === link.path)) &&
+                                        'bg-gradient-light text-white font-semibold',
                                 )}
                             >
                                 <MdOutlineSpeakerNotes width={18} height={18} />
@@ -84,19 +85,28 @@ export default function Sidebar() {
                                         <li key={index}>
                                             <Link
                                                 href={path}
-                                                className="text-black block py-1.5 group/tech-item relative isolate cursor-pointer"
+                                                className={twMerge(
+                                                    'text-black block py-1.5 group/tech-item relative isolate cursor-pointer',
+                                                    pathname === path && 'bg-gradient-lighter pl-4',
+                                                )}
                                             >
                                                 <div className="relative isolate">
-                                                    <span className="text-sm group-hover/tech-item:pl-4 transition-all duration-500">
+                                                    <span
+                                                        className={twMerge(
+                                                            'text-sm group-hover/tech-item:pl-4 transition-all duration-500',
+                                                            pathname === path && 'group-hover/tech-item:pl-0',
+                                                        )}
+                                                    >
                                                         {name}
                                                     </span>
                                                 </div>
-                                                <div
-                                                    className={twMerge(
-                                                        'absolute w-full h-0 bg-gradient-lighter group-hover/tech-item:h-full transition-all duration-500 bottom-0 -z-10',
-                                                        pathname === path && 'bg-gradient-lighter',
-                                                    )}
-                                                ></div>
+                                                {pathname !== path && (
+                                                    <div
+                                                        className={twMerge(
+                                                            'absolute w-full h-0 bg-gradient-lighter group-hover/tech-item:h-full transition-all duration-500 bottom-0 -z-10',
+                                                        )}
+                                                    ></div>
+                                                )}
                                             </Link>
                                         </li>
                                     ))}

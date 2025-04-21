@@ -13,8 +13,17 @@ import FormContainer from '@/components/admin/form/FormContainer';
 import CheckboxHeader from '@/components/admin/CheckboxHeader';
 import FilterDropdown from '@/components/admin/FilterDropdown';
 import ExportButton from '@/components/admin/ExportButton';
+import { exportCategories } from '@/lib/actions/category.action';
+import { deleteSelectedCategories } from '@/components/admin/DeleteSelectedButton';
 
 type CategoryList = Category & { images: { url: string }[] };
+
+const categorySortOptions = [
+    { value: 'name-asc', label: 'A-Z' },
+    { value: 'name-desc', label: 'Z-A' },
+    { value: 'date-desc', label: 'Latest Release' },
+    { value: 'date-asc', label: 'Oldest Release' },
+];
 
 export default async function CategoryListPage({
     searchParams,
@@ -41,22 +50,20 @@ export default async function CategoryListPage({
         }
     }
 
-    let orderBy: Prisma.CategoryOrderByWithRelationInput = {};
-    switch (currentSort) {
-        case 'name-asc':
-            orderBy = { name: 'asc' };
-            break;
-        case 'name-desc':
-            orderBy = { name: 'desc' };
-            break;
-        case 'date-asc':
-            orderBy = { createdDate: 'asc' };
-            break;
-        case 'date-desc':
-        default:
-            orderBy = { createdDate: 'desc' };
-            break;
-    }
+    const sortValues = currentSort.split(',').filter((value) => value);
+    const orderBy: Prisma.CategoryOrderByWithRelationInput[] = sortValues.map((sortValue) => {
+        switch (sortValue.trim()) {
+            case 'name-asc':
+                return { name: 'asc' };
+            case 'name-desc':
+                return { name: 'desc' };
+            case 'date-asc':
+                return { createdDate: 'asc' };
+            case 'date-desc':
+            default:
+                return { createdDate: 'desc' };
+        }
+    });
 
     const [data, count] = await prisma.$transaction([
         prisma.category.findMany({
@@ -76,7 +83,7 @@ export default async function CategoryListPage({
 
     // Define columns after data is initialized
     const columns = [
-        { header: <CheckboxHeader categoryIds={data.map((item) => item.id)} />, accessor: 'check' },
+        { header: <CheckboxHeader itemIds={data.map((item) => item.id)} />, accessor: 'check' },
         { header: 'Image', accessor: 'img' },
         { header: 'Name', accessor: 'name', className: 'hidden md:table-cell' },
         { header: 'Description', accessor: 'description', className: 'hidden md:table-cell' },
@@ -122,14 +129,18 @@ export default async function CategoryListPage({
                         <TableSearch />
                         <div className="flex items-center gap-4 self-end">
                             {/* Filter Dropdown */}
-                            <FilterDropdown currentSort={currentSort} />
-                            <ExportButton />
+                            <FilterDropdown
+                                currentSort={currentSort}
+                                sortOptions={categorySortOptions}
+                                entityName="Category"
+                            />
+                            <ExportButton exportAction={exportCategories} entityName="Category" />
                             <FormContainer table="category" type="create" />
-                            <DeleteSelectedButtonClient />
+                            <DeleteSelectedButtonClient deleteAction={deleteSelectedCategories} entityName="Category" />
                         </div>
                     </div>
                 </div>
-                <div id="category-table-form">
+                <div id="table-container">
                     <Table columns={columns} renderRow={renderRow} data={data} />
                 </div>
                 {data.length > 0 && <Pagination page={p} count={count} />}

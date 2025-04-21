@@ -64,24 +64,14 @@ model Product {
 }
 
 model Category {
-  id             String          @id @default(uuid())
-  name           String          @unique
-  description    String?
-  slug           String          @unique
-  createdDate    DateTime        @default(now())
-  products       Product[]
-  images         Image[]
-  brands         Brand[]
-  colors         Color[]
-  storages       Storage[]
-  connectivities Connectivity[]
-  simSlots       SimSlot[]
-  batteryHealths BatteryHealth[]
-  rams           Ram[]
-  cpus           Cpu[]
-  screenSizes    ScreenSize[]
-  types          Type[]
-  promotions     Promotion[]
+  id          String      @id @default(uuid())
+  name        String      @unique
+  description String?
+  slug        String      @unique
+  createdDate DateTime    @default(now())
+  products    Product[]
+  images      Image[]
+  promotions  Promotion[]
 }
 
 model Image {
@@ -102,17 +92,14 @@ model Brand {
   createdDate DateTime  @default(now())
   images      Image[]
   products    Product[]
-  categoryId  String
-  category    Category  @relation(fields: [categoryId], references: [id])
 }
 
 model Color {
   id          String    @id @default(uuid())
   name        String    @unique
+  hex         String
   createdDate DateTime  @default(now())
   products    Product[]
-  categoryId  String
-  category    Category  @relation(fields: [categoryId], references: [id])
 }
 
 model Storage {
@@ -120,8 +107,6 @@ model Storage {
   name        String    @unique
   createdDate DateTime  @default(now())
   products    Product[]
-  categoryId  String
-  category    Category  @relation(fields: [categoryId], references: [id])
 }
 
 model Connectivity {
@@ -129,8 +114,6 @@ model Connectivity {
   name        String    @unique
   createdDate DateTime  @default(now())
   products    Product[]
-  categoryId  String
-  category    Category  @relation(fields: [categoryId], references: [id])
 }
 
 model SimSlot {
@@ -138,8 +121,6 @@ model SimSlot {
   title       String    @unique
   createdDate DateTime  @default(now())
   products    Product[]
-  categoryId  String
-  category    Category  @relation(fields: [categoryId], references: [id])
 }
 
 model BatteryHealth {
@@ -147,8 +128,6 @@ model BatteryHealth {
   title       String    @unique
   createdDate DateTime  @default(now())
   products    Product[]
-  categoryId  String
-  category    Category  @relation(fields: [categoryId], references: [id])
 }
 
 model Ram {
@@ -156,8 +135,6 @@ model Ram {
   title       String    @unique
   createdDate DateTime  @default(now())
   products    Product[]
-  categoryId  String
-  category    Category  @relation(fields: [categoryId], references: [id])
 }
 
 model Cpu {
@@ -165,8 +142,6 @@ model Cpu {
   name        String    @unique
   createdDate DateTime  @default(now())
   products    Product[]
-  categoryId  String
-  category    Category  @relation(fields: [categoryId], references: [id])
 }
 
 model ScreenSize {
@@ -174,8 +149,6 @@ model ScreenSize {
   name        String    @unique
   createdDate DateTime  @default(now())
   products    Product[]
-  categoryId  String
-  category    Category  @relation(fields: [categoryId], references: [id])
 }
 
 model Type {
@@ -183,8 +156,6 @@ model Type {
   name        String    @unique
   createdDate DateTime  @default(now())
   products    Product[]
-  categoryId  String
-  category    Category  @relation(fields: [categoryId], references: [id])
 }
 
 model Promotion {

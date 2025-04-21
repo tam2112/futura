@@ -4,18 +4,24 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FiTrash2 } from 'react-icons/fi';
 import { toast } from 'react-toastify';
-import { deleteSelectedCategories } from './DeleteSelectedButton';
 import Loader from '../Loader';
 import { Tooltip } from 'react-tooltip';
 
-export default function DeleteSelectedButtonClient() {
+type DeleteActionResult = { success: boolean; count?: number; error?: string };
+
+interface DeleteSelectedButtonClientProps {
+    deleteAction: (selectedIds: string[]) => Promise<DeleteActionResult>;
+    entityName: string;
+}
+
+export default function DeleteSelectedButtonClient({ deleteAction, entityName }: DeleteSelectedButtonClientProps) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     // Hàm lấy danh sách selectedIds từ checkboxes
     const getSelectedIds = () => {
-        const container = document.getElementById('category-table-form');
+        const container = document.getElementById('table-container');
         if (!container) return [];
         const checkboxes = container.querySelectorAll('input[name="selectedIds"]:checked');
         return Array.from(checkboxes).map((checkbox) => (checkbox as HTMLInputElement).value);
@@ -27,15 +33,19 @@ export default function DeleteSelectedButtonClient() {
         // Delay 1.5 giây trước khi thực hiện xóa
         await new Promise((resolve) => setTimeout(resolve, 1500));
 
-        // Gọi hàm deleteSelectedCategories với danh sách selectedIds
-        const result = await deleteSelectedCategories(selectedIds);
+        // Gọi hàm deleteAction với danh sách selectedIds
+        const result = await deleteAction(selectedIds);
         setIsLoading(false);
 
-        if (result.success) {
-            toast(result.count === 1 ? 'Category has been deleted' : `${result.count} categories have been deleted`);
+        if (result.success && result.count !== undefined) {
+            toast(
+                result.count === 1
+                    ? `${entityName} has been deleted`
+                    : `${result.count} ${entityName.toLowerCase()}s have been deleted`,
+            );
             router.refresh();
         } else {
-            toast.error(result.error || 'Failed to delete categories');
+            toast.error(result.error || `Failed to delete ${entityName.toLowerCase()}s`);
         }
     };
 
@@ -43,7 +53,7 @@ export default function DeleteSelectedButtonClient() {
     const openConfirmModal = () => {
         const selectedIds = getSelectedIds();
         if (selectedIds.length === 0) {
-            toast.error('Please select at least one category to delete.');
+            toast.error(`Please select at least one ${entityName.toLowerCase()} to delete.`);
             return;
         }
         setIsModalOpen(true);
@@ -75,7 +85,7 @@ export default function DeleteSelectedButtonClient() {
                 onClick={openConfirmModal}
                 disabled={isLoading}
                 data-tooltip-id="delete-tooltip"
-                data-tooltip-content="Delete selected categories"
+                data-tooltip-content={`Delete selected ${entityName.toLowerCase()}s`}
             >
                 <FiTrash2 width={14} height={14} />
             </button>
@@ -86,7 +96,7 @@ export default function DeleteSelectedButtonClient() {
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                     <div className="bg-white p-6 rounded-md shadow-lg max-w-2xl w-full">
                         <p className="font-heading text-lg text-center font-medium">
-                            All data will be lost. Are you sure you want to delete selected categories?
+                            All data will be lost. Are you sure you want to delete selected {entityName.toLowerCase()}s?
                         </p>
                         <div className="flex justify-center mt-8 gap-4">
                             <button

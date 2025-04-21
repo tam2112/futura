@@ -12,46 +12,83 @@ import { FormContainerProps } from './FormContainer';
 import { BsPlusLg } from 'react-icons/bs';
 import { CiEdit } from 'react-icons/ci';
 import { PiTrash } from 'react-icons/pi';
+import { GrClose } from 'react-icons/gr';
 import { toast } from 'react-toastify';
-// import { deleteProduct } from '@/lib/actions/product.action';
-// import { deleteRole } from '@/lib/actions/role.action';
-// import { deleteStatus } from '@/lib/actions/status.action';
-import { deleteUser } from '@/lib/actions/user.action';
-import { deleteCategory } from '@/lib/actions/category.action';
 
 import Loader from '@/components/Loader';
 import { twMerge } from 'tailwind-merge';
-import { GrClose } from 'react-icons/gr';
+
+import { deleteUser } from '@/lib/actions/user.action';
+import { deleteCategory } from '@/lib/actions/category.action';
 import { deleteBrand } from '@/lib/actions/technical/brand.action';
+import { deleteColor } from '@/lib/actions/technical/color.action';
+import { deleteStorage } from '@/lib/actions/technical/storage.action';
+import { deleteConnectivity } from '@/lib/actions/technical/connectivity.action';
+import { deleteSimSlot } from '@/lib/actions/technical/sim-slot.action';
+import { deleteBatteryHealth } from '@/lib/actions/technical/battery-health.action';
+import { deleteRam } from '@/lib/actions/technical/ram.action';
+import { deleteCpu } from '@/lib/actions/technical/cpu.action';
+import { deleteScreenSize } from '@/lib/actions/technical/screen-size.action';
+import { deleteType } from '@/lib/actions/technical/type.action';
 
 const deleteActionMap = {
+    // main actions
     category: deleteCategory,
-    // product: deleteCategory,
-    // order: deleteCategory,
     user: deleteUser,
     role: deleteCategory,
-    // status: deleteCategory,
+
+    // technical actions
     brand: deleteBrand,
+    color: deleteColor,
+    storage: deleteStorage,
+    connectivity: deleteConnectivity,
+    simSlot: deleteSimSlot,
+    batteryHealth: deleteBatteryHealth,
+    ram: deleteRam,
+    cpu: deleteCpu,
+    screenSize: deleteScreenSize,
+    type: deleteType,
 };
 
-// const UserForm = dynamic(() => import('./forms/UserForm'), {
-//     loading: () => <h1>Loading..</h1>,
-// });
+// main forms
 const CategoryForm = dynamic(() => import('./content/CategoryForm'), {
     loading: () => <Loader />,
 });
-const BrandForm = dynamic(() => import('./content/technical/BrandForm'), {
-    loading: () => <Loader />,
-});
-// const ProductForm = dynamic(() => import('./forms/ProductForm'), {
-//     loading: () => <h1>Loading..</h1>,
-// });
 const RoleForm = dynamic(() => import('./content/RoleForm'), {
     loading: () => <h1>Loading..</h1>,
 });
-// const StatusForm = dynamic(() => import('./forms/StatusForm'), {
-//     loading: () => <h1>Loading..</h1>,
-// });
+
+// technical forms
+const BrandForm = dynamic(() => import('./content/technical/BrandForm'), {
+    loading: () => <Loader />,
+});
+const ColorForm = dynamic(() => import('./content/technical/ColorForm'), {
+    loading: () => <Loader />,
+});
+const StorageForm = dynamic(() => import('./content/technical/StorageForm'), {
+    loading: () => <Loader />,
+});
+const ConnectivityForm = dynamic(() => import('./content/technical/ConnectivityForm'), {
+    loading: () => <Loader />,
+});
+const SimSlotForm = dynamic(() => import('./content/technical/SimSlotForm'), {
+    loading: () => <Loader />,
+});
+const BatteryHealthForm = dynamic(() => import('./content/technical/BatteryHealthForm'), {
+    loading: () => <Loader />,
+});
+const RamForm = dynamic(() => import('./content/technical/RamForm'), {
+    loading: () => <Loader />,
+});
+const CpuForm = dynamic(() => import('./content/technical/CpuForm'), {
+    loading: () => <Loader />,
+});
+const ScreenSizeForm = dynamic(() => import('./content/technical/ScreenSizeForm'), {
+    loading: () => <Loader />,
+});
+const TypeForm = dynamic(() => import('./content/technical/TypeForm'), {
+    loading: () => <Loader />,
+});
 
 const forms: {
     [key: string]: (
@@ -61,24 +98,45 @@ const forms: {
         relatedData?: any,
     ) => JSX.Element;
 } = {
-    // user: (setOpen, type, data, relatedData) => (
-    //     <UserForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
-    // ),
+    // main
     category: (setOpen, type, data, relatedData) => (
         <CategoryForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     ),
-    brand: (setOpen, type, data, relatedData) => (
-        <BrandForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
-    ),
-    // product: (setOpen, type, data, relatedData) => (
-    //     <ProductForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
-    // ),
     role: (setOpen, type, data, relatedData) => (
         <RoleForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     ),
-    // status: (setOpen, type, data, relatedData) => (
-    //     <StatusForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
-    // ),
+
+    // technical
+    brand: (setOpen, type, data, relatedData) => (
+        <BrandForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
+    ),
+    color: (setOpen, type, data, relatedData) => (
+        <ColorForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
+    ),
+    storage: (setOpen, type, data, relatedData) => (
+        <StorageForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
+    ),
+    connectivity: (setOpen, type, data, relatedData) => (
+        <ConnectivityForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
+    ),
+    simSlot: (setOpen, type, data, relatedData) => (
+        <SimSlotForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
+    ),
+    batteryHealth: (setOpen, type, data, relatedData) => (
+        <BatteryHealthForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
+    ),
+    ram: (setOpen, type, data, relatedData) => (
+        <RamForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
+    ),
+    cpu: (setOpen, type, data, relatedData) => (
+        <CpuForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
+    ),
+    screenSize: (setOpen, type, data, relatedData) => (
+        <ScreenSizeForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
+    ),
+    type: (setOpen, type, data, relatedData) => (
+        <TypeForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
+    ),
 };
 
 export default function FormModal({ table, type, data, id, relatedData }: FormContainerProps & { relatedData?: any }) {
