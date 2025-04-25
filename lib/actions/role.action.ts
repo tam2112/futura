@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import prisma from '../prisma';
@@ -24,9 +25,17 @@ export const createRole = async (currentState: CurrentState, data: RoleSchema) =
 
         // revalidatePath('/list/roles');
         return { success: true, error: false };
-    } catch (error) {
+    } catch (error: any) {
         console.log(error);
-        return { success: false, error: true };
+        // Kiểm tra lỗi unique constraint từ Prisma
+        if (error.code === 'P2002') {
+            return {
+                success: false,
+                error: true,
+                message: 'Role name already exists',
+            };
+        }
+        return { success: false, error: true, message: 'Failed to create role' };
     }
 };
 
@@ -43,9 +52,17 @@ export const updateRole = async (currentState: CurrentState, data: RoleSchema) =
 
         // revalidatePath('/list/categories');
         return { success: true, error: false };
-    } catch (error) {
+    } catch (error: any) {
         console.log(error);
-        return { success: false, error: true };
+        // Kiểm tra lỗi unique constraint từ Prisma
+        if (error.code === 'P2002') {
+            return {
+                success: false,
+                error: true,
+                message: 'Role name already exists',
+            };
+        }
+        return { success: false, error: true, message: 'Failed to update role' };
     }
 };
 

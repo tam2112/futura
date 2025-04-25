@@ -90,13 +90,17 @@ export default async function BrandListPage({ searchParams }: { searchParams: { 
                 <Checkbox id={item.id} />
             </td>
             <td className="hidden md:table-cell py-2">
-                <Image
-                    src={item.images.length > 0 ? item.images[0].url : '/device-test-02.png'}
-                    alt=""
-                    width={40}
-                    height={40}
-                    className="md:hidden xl:block size-10 object-cover"
-                />
+                {item.images.length > 0 ? (
+                    <Image
+                        src={item.images[0].url}
+                        alt=""
+                        width={40}
+                        height={40}
+                        className="md:hidden xl:block size-10 object-cover"
+                    />
+                ) : (
+                    <span>-</span>
+                )}
             </td>
             <td className="hidden md:table-cell py-2">{item.name}</td>
             <td className="py-2">

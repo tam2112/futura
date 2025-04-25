@@ -31,8 +31,8 @@ model Product {
   name              String         @unique
   description       String
   price             Float
-  priceWithDiscount Float?
   quantity          Int
+  priceWithDiscount Float?
   slug              String         @unique
   createdDate       DateTime       @default(now())
   categoryId        String

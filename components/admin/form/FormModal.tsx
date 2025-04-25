@@ -11,7 +11,7 @@ import { useFormState } from 'react-dom';
 import { FormContainerProps } from './FormContainer';
 import { BsPlusLg } from 'react-icons/bs';
 import { CiEdit } from 'react-icons/ci';
-import { PiTrash } from 'react-icons/pi';
+import { PiEyeBold, PiTrash } from 'react-icons/pi';
 import { GrClose } from 'react-icons/gr';
 import { toast } from 'react-toastify';
 
@@ -30,10 +30,13 @@ import { deleteRam } from '@/lib/actions/technical/ram.action';
 import { deleteCpu } from '@/lib/actions/technical/cpu.action';
 import { deleteScreenSize } from '@/lib/actions/technical/screen-size.action';
 import { deleteType } from '@/lib/actions/technical/type.action';
+import { deleteProduct } from '@/lib/actions/product.action';
+import ProductDetailsForm from './content/ProductDetailsForm';
 
 const deleteActionMap = {
     // main actions
     category: deleteCategory,
+    product: deleteProduct,
     user: deleteUser,
     role: deleteCategory,
 
@@ -52,48 +55,103 @@ const deleteActionMap = {
 
 // main forms
 const CategoryForm = dynamic(() => import('./content/CategoryForm'), {
-    loading: () => <Loader />,
+    loading: () => (
+        <div className="flex justify-center items-center">
+            <Loader />
+        </div>
+    ),
+});
+const ProductForm = dynamic(() => import('./content/ProductForm'), {
+    loading: () => (
+        <div className="flex justify-center items-center">
+            <Loader />
+        </div>
+    ),
 });
 const RoleForm = dynamic(() => import('./content/RoleForm'), {
-    loading: () => <h1>Loading..</h1>,
+    loading: () => (
+        <div className="flex justify-center items-center">
+            <Loader />
+        </div>
+    ),
 });
 
 // technical forms
 const BrandForm = dynamic(() => import('./content/technical/BrandForm'), {
-    loading: () => <Loader />,
+    loading: () => (
+        <div className="flex justify-center items-center">
+            <Loader />
+        </div>
+    ),
 });
 const ColorForm = dynamic(() => import('./content/technical/ColorForm'), {
-    loading: () => <Loader />,
+    loading: () => (
+        <div className="flex justify-center items-center">
+            <Loader />
+        </div>
+    ),
 });
 const StorageForm = dynamic(() => import('./content/technical/StorageForm'), {
-    loading: () => <Loader />,
+    loading: () => (
+        <div className="flex justify-center items-center">
+            <Loader />
+        </div>
+    ),
 });
 const ConnectivityForm = dynamic(() => import('./content/technical/ConnectivityForm'), {
-    loading: () => <Loader />,
+    loading: () => (
+        <div className="flex justify-center items-center">
+            <Loader />
+        </div>
+    ),
 });
 const SimSlotForm = dynamic(() => import('./content/technical/SimSlotForm'), {
-    loading: () => <Loader />,
+    loading: () => (
+        <div className="flex justify-center items-center">
+            <Loader />
+        </div>
+    ),
 });
 const BatteryHealthForm = dynamic(() => import('./content/technical/BatteryHealthForm'), {
-    loading: () => <Loader />,
+    loading: () => (
+        <div className="flex justify-center items-center">
+            <Loader />
+        </div>
+    ),
 });
 const RamForm = dynamic(() => import('./content/technical/RamForm'), {
-    loading: () => <Loader />,
+    loading: () => (
+        <div className="flex justify-center items-center">
+            <Loader />
+        </div>
+    ),
 });
 const CpuForm = dynamic(() => import('./content/technical/CpuForm'), {
-    loading: () => <Loader />,
+    loading: () => (
+        <div className="flex justify-center items-center">
+            <Loader />
+        </div>
+    ),
 });
 const ScreenSizeForm = dynamic(() => import('./content/technical/ScreenSizeForm'), {
-    loading: () => <Loader />,
+    loading: () => (
+        <div className="flex justify-center items-center">
+            <Loader />
+        </div>
+    ),
 });
 const TypeForm = dynamic(() => import('./content/technical/TypeForm'), {
-    loading: () => <Loader />,
+    loading: () => (
+        <div className="flex justify-center items-center">
+            <Loader />
+        </div>
+    ),
 });
 
 const forms: {
     [key: string]: (
         setOpen: Dispatch<SetStateAction<boolean>>,
-        type: 'create' | 'update',
+        type: 'create' | 'update' | 'details',
         data?: any,
         relatedData?: any,
     ) => JSX.Element;
@@ -102,6 +160,12 @@ const forms: {
     category: (setOpen, type, data, relatedData) => (
         <CategoryForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     ),
+    product: (setOpen, type, data, relatedData) => {
+        if (type === 'details') {
+            return <ProductDetailsForm data={data} setOpen={setOpen} relatedData={relatedData} />;
+        }
+        return <ProductForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />;
+    },
     role: (setOpen, type, data, relatedData) => (
         <RoleForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     ),
@@ -167,7 +231,7 @@ export default function FormModal({ table, type, data, id, relatedData }: FormCo
                     Delete
                 </button>
             </form>
-        ) : type === 'create' || type === 'update' ? (
+        ) : type === 'create' || type === 'update' || type === 'details' ? (
             // <CategoryForm type="create" data={data} setOpen={setOpen} />
             forms[table](setOpen, type, data, relatedData)
         ) : (
@@ -192,12 +256,19 @@ export default function FormModal({ table, type, data, id, relatedData }: FormCo
                 >
                     <CiEdit width={16} height={16} className="text-white" />
                 </button>
-            ) : (
+            ) : type === 'delete' ? (
                 <button
                     onClick={() => setOpen(true)}
                     className="size-7 flex items-center justify-center rounded-full bg-rose-400"
                 >
                     <PiTrash width={16} height={16} className="text-white" />
+                </button>
+            ) : (
+                <button
+                    onClick={() => setOpen(true)}
+                    className="size-7 flex items-center justify-center rounded-full bg-violet-400"
+                >
+                    <PiEyeBold width={16} height={16} className="text-white left-half-px" />
                 </button>
             )}
             {open && (
@@ -216,7 +287,7 @@ export default function FormModal({ table, type, data, id, relatedData }: FormCo
                         !open && 'invisible',
                     )}
                 >
-                    <div className="min-w-[325px] px-8 py-6">
+                    <div className="min-w-[600px] px-8 py-6">
                         <Form />
                         <div className="absolute top-4 right-4 cursor-pointer" onClick={() => setOpen(false)}>
                             <GrClose size={14} />

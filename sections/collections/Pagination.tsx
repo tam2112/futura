@@ -1,11 +1,12 @@
 'use client';
 
 import { ITEM_PER_PAGE } from '@/lib/settings';
-import { useRouter } from '@/navigation';
+import { usePathname, useRouter } from '@/navigation';
 import { SlArrowLeft, SlArrowRight } from 'react-icons/sl';
 
 export default function Pagination({ page, count }: { page: number; count: number }) {
     const router = useRouter();
+    const pathname = usePathname();
 
     const hasPrev = ITEM_PER_PAGE * (page - 1) > 0;
     const hasNext = ITEM_PER_PAGE * (page - 1) + ITEM_PER_PAGE < count;
@@ -13,7 +14,7 @@ export default function Pagination({ page, count }: { page: number; count: numbe
     const changePage = (newPage: number) => {
         const params = new URLSearchParams(window.location.search);
         params.set('page', newPage.toString());
-        router.push(`${window.location.pathname}?${params}`);
+        router.push(`${pathname}?${params.toString()}`);
     };
 
     return (

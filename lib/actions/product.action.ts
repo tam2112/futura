@@ -1,0 +1,251 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+'use server';
+
+import { revalidatePath } from 'next/cache';
+import prisma from '../prisma';
+import { generateSlug } from '../utils';
+import { ProductSchema } from '../validation/product.form';
+
+type CurrentState = { success: boolean; error: boolean };
+
+export const getProducts = async () => {
+    try {
+        const products = await prisma.product.findMany({});
+        return products;
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+// export const getCategoryById = async (categoryId: string) => {
+//     try {
+//         const category = await prisma.category.findUnique({
+//             where: { id: categoryId },
+//             include: { images: true },
+//         });
+//         if (!category) {
+//             throw new Error('Category not found');
+//         }
+//         return category;
+//     } catch (error) {
+//         console.error(error);
+//         throw error;
+//     }
+// };
+
+export const createProduct = async (currentState: CurrentState, data: ProductSchema & { imageUrls?: string[] }) => {
+    try {
+        const slug = generateSlug(data.name);
+
+        const newProduct = await prisma.product.create({
+            data: {
+                name: data.name,
+                slug,
+                description: data.description,
+                price: Number(data.price),
+                quantity: Number(data.quantity),
+                categoryId: data.categoryId,
+                brandId: data.brandId || null,
+                colorId: data.colorId || null,
+                storageId: data.storageId || null,
+                connectivityId: data.connectivityId || null,
+                simSlotId: data.simSlotId || null,
+                batteryHealthId: data.batteryHealthId || null,
+                ramId: data.ramId || null,
+                cpuId: data.cpuId || null,
+                screenSizeId: data.screenSizeId || null,
+                typeId: data.typeId || null,
+            },
+        });
+
+        if (data.imageUrls && data.imageUrls.length > 0) {
+            await prisma.image.createMany({
+                data: data.imageUrls.map((url) => ({
+                    url,
+                    productId: newProduct.id,
+                    createdDate: new Date(),
+                })),
+            });
+        }
+
+        return { success: true, error: false };
+    } catch (error: any) {
+        console.log(error);
+        // Kiểm tra lỗi unique constraint từ Prisma
+        if (error.code === 'P2002') {
+            return {
+                success: false,
+                error: true,
+                message: 'Product name already exists',
+            };
+        }
+        return { success: false, error: true, message: 'Failed to create product' };
+    }
+};
+
+export const updateProduct = async (currentState: CurrentState, data: ProductSchema & { imageUrls?: string[] }) => {
+    try {
+        if (!data.id) {
+            throw new Error('Product ID is required for update');
+        }
+
+        const newSlug = generateSlug(data.name);
+
+        const updatedProduct = await prisma.product.update({
+            where: { id: data.id },
+            data: {
+                name: data.name,
+                description: data.description || '',
+                price: Number(data.price),
+                quantity: Number(data.quantity),
+                slug: newSlug,
+                categoryId: data.categoryId || '',
+                brandId: data.brandId || null,
+                colorId: data.colorId || null,
+                storageId: data.storageId || null,
+                connectivityId: data.connectivityId || null,
+                simSlotId: data.simSlotId || null,
+                batteryHealthId: data.batteryHealthId || null,
+                ramId: data.ramId || null,
+                cpuId: data.cpuId || null,
+                screenSizeId: data.screenSizeId || null,
+                typeId: data.typeId || null,
+            },
+        });
+
+        await prisma.image.deleteMany({
+            where: { productId: updatedProduct.id },
+        });
+
+        if (data.imageUrls && data.imageUrls.length > 0) {
+            await prisma.image.createMany({
+                data: data.imageUrls.map((url) => ({
+                    url,
+                    productId: updatedProduct.id,
+                    createdDate: new Date(),
+                })),
+            });
+        }
+
+        return { success: true, error: false };
+    } catch (error: any) {
+        console.log(error);
+        // Kiểm tra lỗi unique constraint từ Prisma
+        if (error.code === 'P2002') {
+            return {
+                success: false,
+                error: true,
+                message: 'Product name already exists',
+            };
+        }
+        return { success: false, error: true, message: 'Failed to update product' };
+    }
+};
+
+export const deleteProduct = async (currentState: CurrentState, data: FormData) => {
+    const id = data.get('id') as string;
+
+    try {
+        if (!id) {
+            throw new Error('Product ID is required');
+        }
+
+        await prisma.product.delete({
+            where: {
+                id: id,
+            },
+        });
+
+        return { success: true, error: false };
+    } catch (error) {
+        console.error('Delete product error:', error);
+        return { success: false, error: true };
+    }
+};
+
+export const deleteProducts = async (currentState: CurrentState, ids: string[]) => {
+    try {
+        await prisma.product.deleteMany({
+            where: {
+                id: { in: ids },
+            },
+        });
+
+        revalidatePath('/admin/product/list');
+        return { success: true, error: false };
+    } catch (error) {
+        console.error('Delete products error:', error);
+        return { success: false, error: true };
+    }
+};
+
+export async function exportProducts() {
+    try {
+        const products = await prisma.product.findMany({
+            include: {
+                images: {
+                    select: { url: true },
+                },
+                category: {
+                    select: { name: true },
+                },
+                brand: {
+                    select: { name: true },
+                },
+                color: {
+                    select: { name: true, hex: true },
+                },
+                storage: {
+                    select: { name: true },
+                },
+                connectivity: {
+                    select: { name: true },
+                },
+                simSlot: {
+                    select: { title: true },
+                },
+                batteryHealth: {
+                    select: { title: true },
+                },
+                ram: {
+                    select: { title: true },
+                },
+                cpu: {
+                    select: { name: true },
+                },
+                screenSize: {
+                    select: { name: true },
+                },
+                type: {
+                    select: { name: true },
+                },
+            },
+        });
+
+        // Format data for Excel
+        const formattedData = products.map((product) => ({
+            Name: product.name,
+            Description: product.description || '',
+            Price: product.price,
+            Quantity: product.quantity,
+            Category: product.category?.name || '',
+            Brand: product.brand?.name || '',
+            Color: product.color ? `${product.color.name} - ${product.color.hex}` : '',
+            Storage: product.storage?.name || '',
+            Connectivity: product.connectivity?.name || '',
+            SimSlot: product.simSlot?.title || '',
+            BatteryHealth: product.batteryHealth?.title || '',
+            RAM: product.ram?.title || '',
+            CPU: product.cpu?.name || '',
+            ScreenSize: product.screenSize?.name || '',
+            Type: product.type?.name || '',
+            ImageURLs: product.images.map((img) => img.url).join(', ') || '',
+            CreatedAt: product.createdDate.toISOString(),
+        }));
+
+        return { success: true, data: formattedData };
+    } catch (error) {
+        console.error('Export products error:', error);
+        return { success: false, error: 'Failed to export products' };
+    }
+}

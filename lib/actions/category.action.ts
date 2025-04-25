@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import { revalidatePath } from 'next/cache';
@@ -55,9 +56,17 @@ export const createCategory = async (currentState: CurrentState, data: CategoryS
         }
 
         return { success: true, error: false };
-    } catch (error) {
-        console.error('Create category error:', error);
-        return { success: false, error: true };
+    } catch (error: any) {
+        console.log(error);
+        // Kiểm tra lỗi unique constraint từ Prisma
+        if (error.code === 'P2002') {
+            return {
+                success: false,
+                error: true,
+                message: 'Category name already exists',
+            };
+        }
+        return { success: false, error: true, message: 'Failed to create category' };
     }
 };
 
@@ -93,9 +102,17 @@ export const updateCategory = async (currentState: CurrentState, data: CategoryS
         }
 
         return { success: true, error: false };
-    } catch (error) {
-        console.error('Update category error:', error);
-        return { success: false, error: true };
+    } catch (error: any) {
+        console.log(error);
+        // Kiểm tra lỗi unique constraint từ Prisma
+        if (error.code === 'P2002') {
+            return {
+                success: false,
+                error: true,
+                message: 'Category name already exists',
+            };
+        }
+        return { success: false, error: true, message: 'Failed to update category' };
     }
 };
 

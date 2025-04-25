@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import prisma from '@/lib/prisma';
@@ -52,9 +53,17 @@ export const createBrand = async (currentState: CurrentState, data: BrandSchema 
         }
 
         return { success: true, error: false };
-    } catch (error) {
+    } catch (error: any) {
         console.log(error);
-        return { success: false, error: true };
+        // Kiểm tra lỗi unique constraint từ Prisma
+        if (error.code === 'P2002') {
+            return {
+                success: false,
+                error: true,
+                message: 'Brand name already exists',
+            };
+        }
+        return { success: false, error: true, message: 'Failed to create brand' };
     }
 };
 
@@ -86,9 +95,17 @@ export const updateBrand = async (currentState: CurrentState, data: BrandSchema 
         }
 
         return { success: true, error: false };
-    } catch (error) {
+    } catch (error: any) {
         console.log(error);
-        return { success: false, error: true };
+        // Kiểm tra lỗi unique constraint từ Prisma
+        if (error.code === 'P2002') {
+            return {
+                success: false,
+                error: true,
+                message: 'Brand name already exists',
+            };
+        }
+        return { success: false, error: true, message: 'Failed to update brand' };
     }
 };
 

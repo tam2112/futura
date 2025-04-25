@@ -19,7 +19,7 @@ export default function CpuForm({
     data,
     setOpen,
 }: {
-    type: 'create' | 'update';
+    type: 'create' | 'update' | 'details';
     data?: any;
     setOpen: Dispatch<SetStateAction<boolean>>;
     relatedData?: any;
@@ -47,9 +47,11 @@ export default function CpuForm({
 
     useEffect(() => {
         if (state.success) {
-            toast(`Cpu has been ${type === 'create' ? 'created' : 'updated'}`);
+            toast(`CPU has been ${type === 'create' ? 'created' : 'updated'}`);
             setOpen(false);
             router.refresh();
+        } else {
+            toast.error(state.message);
         }
     }, [state, type, router, setOpen]);
 

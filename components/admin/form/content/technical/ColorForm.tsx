@@ -21,7 +21,7 @@ export default function ColorForm({
     data,
     setOpen,
 }: {
-    type: 'create' | 'update';
+    type: 'create' | 'update' | 'details';
     data?: any;
     setOpen: Dispatch<SetStateAction<boolean>>;
     relatedData?: any;
@@ -52,6 +52,8 @@ export default function ColorForm({
             toast(`Color has been ${type === 'create' ? 'created' : 'updated'}`);
             setOpen(false);
             router.refresh();
+        } else {
+            toast.error(state.message);
         }
     }, [state, type, router, setOpen]);
 

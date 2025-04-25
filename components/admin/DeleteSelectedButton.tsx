@@ -19,6 +19,23 @@ export async function deleteSelectedCategories(selectedIds: string[]) {
     }
 }
 
+export async function deleteSelectedProducts(selectedIds: string[]) {
+    try {
+        const count = await prisma.product.deleteMany({
+            where: {
+                id: {
+                    in: selectedIds,
+                },
+            },
+        });
+
+        return { success: true, count: count.count };
+    } catch (error) {
+        console.error('Error deleting products:', error);
+        return { success: false, error: 'Failed to delete products' };
+    }
+}
+
 export async function deleteSelectedBrands(selectedIds: string[]) {
     try {
         const count = await prisma.brand.deleteMany({

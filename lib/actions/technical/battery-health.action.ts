@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import prisma from '@/lib/prisma';
@@ -40,9 +41,17 @@ export const createBatteryHealth = async (currentState: CurrentState, data: Batt
         });
 
         return { success: true, error: false };
-    } catch (error) {
+    } catch (error: any) {
         console.log(error);
-        return { success: false, error: true };
+        // Kiểm tra lỗi unique constraint từ Prisma
+        if (error.code === 'P2002') {
+            return {
+                success: false,
+                error: true,
+                message: 'Title already exists',
+            };
+        }
+        return { success: false, error: true, message: 'Failed to create battery health' };
     }
 };
 
@@ -57,9 +66,17 @@ export const updateBatteryHealth = async (currentState: CurrentState, data: Batt
         });
 
         return { success: true, error: false };
-    } catch (error) {
+    } catch (error: any) {
         console.log(error);
-        return { success: false, error: true };
+        // Kiểm tra lỗi unique constraint từ Prisma
+        if (error.code === 'P2002') {
+            return {
+                success: false,
+                error: true,
+                message: 'Title already exists',
+            };
+        }
+        return { success: false, error: true, message: 'Failed to update battery health' };
     }
 };
 

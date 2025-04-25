@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import prisma from '@/lib/prisma';
@@ -32,34 +33,46 @@ export const getCpuById = async (cpuId: string) => {
 
 export const createCpu = async (currentState: CurrentState, data: CpuSchema) => {
     try {
-        // Tạo Cpu mới
         await prisma.cpu.create({
             data: {
                 name: data.name,
             },
         });
-
         return { success: true, error: false };
-    } catch (error) {
+    } catch (error: any) {
         console.log(error);
-        return { success: false, error: true };
+        // Kiểm tra lỗi unique constraint từ Prisma
+        if (error.code === 'P2002') {
+            return {
+                success: false,
+                error: true,
+                message: 'CPU name already exists',
+            };
+        }
+        return { success: false, error: true, message: 'Failed to create CPU' };
     }
 };
 
 export const updateCpu = async (currentState: CurrentState, data: CpuSchema) => {
     try {
-        // Cập nhật Cpu
         await prisma.cpu.update({
             where: { id: data.id },
             data: {
                 name: data.name,
             },
         });
-
         return { success: true, error: false };
-    } catch (error) {
+    } catch (error: any) {
         console.log(error);
-        return { success: false, error: true };
+        // Kiểm tra lỗi unique constraint từ Prisma
+        if (error.code === 'P2002') {
+            return {
+                success: false,
+                error: true,
+                message: 'CPU name already exists',
+            };
+        }
+        return { success: false, error: true, message: 'Failed to update CPU' };
     }
 };
 
