@@ -7,13 +7,22 @@ type SelectFieldProps = {
     label: string;
     name: string;
     options: { value: string; label: string }[];
-    defaultValue?: string;
+    defaultValue?: string | string[];
     control: any;
     error?: { message?: string };
     className?: string;
+    isMulti?: boolean;
 };
 
-export default function SelectField({ label, name, options, control, error, className }: SelectFieldProps) {
+export default function SelectField({
+    label,
+    name,
+    options,
+    control,
+    error,
+    className,
+    isMulti = false,
+}: SelectFieldProps) {
     const { field } = useController({
         name,
         control,
@@ -26,12 +35,23 @@ export default function SelectField({ label, name, options, control, error, clas
                 <Select
                     id={name}
                     options={options}
-                    value={options.find((option) => option.value === field.value) || null}
-                    onChange={(option) => field.onChange(option ? option.value : '')}
+                    value={
+                        isMulti
+                            ? options.filter((option) => field.value?.includes(option.value))
+                            : options.find((option) => option.value === field.value) || null
+                    }
+                    onChange={(selected) => {
+                        if (isMulti) {
+                            field.onChange(Array.isArray(selected) ? selected.map((option) => option.value) : []);
+                        } else {
+                            field.onChange(selected ? selected.value : '');
+                        }
+                    }}
                     onBlur={field.onBlur}
                     classNamePrefix="react-select"
                     placeholder={`Select ${label}`}
                     isClearable
+                    isMulti={isMulti}
                     styles={{
                         control: (base) => ({
                             ...base,

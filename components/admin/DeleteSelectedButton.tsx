@@ -36,6 +36,23 @@ export async function deleteSelectedProducts(selectedIds: string[]) {
     }
 }
 
+export async function deleteSelectedPromotions(selectedIds: string[]) {
+    try {
+        const count = await prisma.promotion.deleteMany({
+            where: {
+                id: {
+                    in: selectedIds,
+                },
+            },
+        });
+
+        return { success: true, count: count.count };
+    } catch (error) {
+        console.error('Error deleting promotions:', error);
+        return { success: false, error: 'Failed to delete promotions' };
+    }
+}
+
 export async function deleteSelectedBrands(selectedIds: string[]) {
     try {
         const count = await prisma.brand.deleteMany({
@@ -203,5 +220,22 @@ export async function deleteSelectedTypes(selectedIds: string[]) {
     } catch (error) {
         console.error('Error deleting types:', error);
         return { success: false, error: 'Failed to delete types' };
+    }
+}
+
+export async function deleteSelectedStatuses(selectedIds: string[]) {
+    try {
+        const count = await prisma.status.deleteMany({
+            where: {
+                id: {
+                    in: selectedIds,
+                },
+            },
+        });
+
+        return { success: true, count: count.count };
+    } catch (error) {
+        console.error('Error deleting statuses:', error);
+        return { success: false, error: 'Failed to delete statuses' };
     }
 }

@@ -34,6 +34,7 @@ model Product {
   quantity          Int
   priceWithDiscount Float?
   slug              String         @unique
+  isActive          Boolean        @default(true)
   createdDate       DateTime       @default(now())
   categoryId        String
   category          Category       @relation(fields: [categoryId], references: [id])
@@ -57,9 +58,11 @@ model Product {
   screenSize        ScreenSize?    @relation(fields: [screenSizeId], references: [id])
   typeId            String?
   type              Type?          @relation(fields: [typeId], references: [id])
+  statusId          String
+  status            Status         @relation(fields: [statusId], references: [id])
   carts             Cart[]
   orders            Order[]
-  promotions        Promotion[]
+  promotions        Promotion[]    @relation("ProductPromotions")
   images            Image[]
 }
 
@@ -71,7 +74,7 @@ model Category {
   createdDate DateTime    @default(now())
   products    Product[]
   images      Image[]
-  promotions  Promotion[]
+  promotions  Promotion[] @relation("CategoryPromotions")
 }
 
 model Image {
@@ -159,19 +162,26 @@ model Type {
 }
 
 model Promotion {
-  id               String    @id @default(uuid())
-  name             String    @unique
+  id               String     @id @default(uuid())
+  name             String     @unique
   percentageNumber Float
   percentageSave   Float
-  startDate        DateTime
-  endDate          DateTime
-  startHours       DateTime?
-  endHours         DateTime?
-  createdDate      DateTime  @default(now())
-  productId        String
-  product          Product   @relation(fields: [productId], references: [id])
-  categoryId       String
-  category         Category  @relation(fields: [categoryId], references: [id])
+  durationType     String     @default("date") // "date", "hours", or "seconds"
+  startDate        DateTime?
+  endDate          DateTime?
+  startHours       Int?
+  endHours         Int?
+  startMinutes     Int?
+  endMinutes       Int?
+  startSeconds     Int?
+  endSeconds       Int?
+  remainingTime    Int?
+  isActive         Boolean    @default(true)
+  createdDate      DateTime   @default(now())
+  statusId         String
+  status           Status     @relation(fields: [statusId], references: [id])
+  products         Product[]  @relation("ProductPromotions")
+  categories       Category[] @relation("CategoryPromotions")
 }
 
 model Cart {
@@ -197,10 +207,12 @@ model Order {
 }
 
 model Status {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  createdDate DateTime @default(now())
+  id          String      @id @default(uuid())
+  name        String      @unique
+  createdDate DateTime    @default(now())
   orders      Order[]
+  promotions  Promotion[]
+  products    Product[]
 }
 
 model Delivery {

@@ -5,7 +5,7 @@ export const productSchema = z.object({
     name: z.string().min(1, { message: 'Product name is required' }),
     description: z.string().min(1, { message: 'Description is required' }),
     price: z.coerce.number().min(1, { message: 'Price is required' }),
-    quantity: z.coerce.number().min(1, { message: 'Quantity is required' }),
+    quantity: z.coerce.number().min(0, { message: 'Quantity is required' }),
     priceWithDiscount: z.number().optional(),
     slug: z.string().optional(),
     categoryId: z.coerce.string().min(1, { message: 'Category is required' }),

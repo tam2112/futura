@@ -32,6 +32,8 @@ import { deleteScreenSize } from '@/lib/actions/technical/screen-size.action';
 import { deleteType } from '@/lib/actions/technical/type.action';
 import { deleteProduct } from '@/lib/actions/product.action';
 import ProductDetailsForm from './content/ProductDetailsForm';
+import { deletePromotion } from '@/lib/actions/promotion.action';
+import { deleteStatus } from '@/lib/actions/status.action';
 
 const deleteActionMap = {
     // main actions
@@ -39,6 +41,8 @@ const deleteActionMap = {
     product: deleteProduct,
     user: deleteUser,
     role: deleteCategory,
+    promotion: deletePromotion,
+    status: deleteStatus,
 
     // technical actions
     brand: deleteBrand,
@@ -62,6 +66,20 @@ const CategoryForm = dynamic(() => import('./content/CategoryForm'), {
     ),
 });
 const ProductForm = dynamic(() => import('./content/ProductForm'), {
+    loading: () => (
+        <div className="flex justify-center items-center">
+            <Loader />
+        </div>
+    ),
+});
+const PromotionForm = dynamic(() => import('./content/PromotionForm'), {
+    loading: () => (
+        <div className="flex justify-center items-center">
+            <Loader />
+        </div>
+    ),
+});
+const StatusForm = dynamic(() => import('./content/StatusForm'), {
     loading: () => (
         <div className="flex justify-center items-center">
             <Loader />
@@ -168,6 +186,12 @@ const forms: {
     },
     role: (setOpen, type, data, relatedData) => (
         <RoleForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
+    ),
+    promotion: (setOpen, type, data, relatedData) => (
+        <PromotionForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
+    ),
+    status: (setOpen, type, data, relatedData) => (
+        <StatusForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     ),
 
     // technical

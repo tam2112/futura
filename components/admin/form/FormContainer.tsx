@@ -20,7 +20,8 @@ export type FormContainerProps = {
         | 'type'
         | 'order'
         | 'role'
-        | 'status';
+        | 'status'
+        | 'promotion';
     type: 'create' | 'update' | 'delete' | 'details';
     data?: any;
     id?: number | string;
@@ -77,6 +78,18 @@ export default async function FormContainer({ table, type, data, id }: FormConta
                     cpus: productCpus,
                     screenSizes: productScreenSizes,
                     types: productTypes,
+                };
+                break;
+            case 'promotion':
+                const promotionProducts = await prisma.product.findMany({
+                    select: { id: true, name: true },
+                });
+                const promotionCategories = await prisma.category.findMany({
+                    select: { id: true, name: true },
+                });
+                relatedData = {
+                    products: promotionProducts,
+                    categories: promotionCategories,
                 };
                 break;
             case 'user':

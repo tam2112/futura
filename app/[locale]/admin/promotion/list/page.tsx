@@ -2,9 +2,8 @@
 import Table from '@/components/admin/table/Table';
 import TableSearch from '@/components/admin/table/TableSearch';
 import Pagination from '@/sections/collections/Pagination';
-import Image from 'next/image';
 import GoToTop from '@/components/GoToTop';
-import { Product, Prisma, Category, Status } from '@prisma/client';
+import { Promotion, Prisma, Status } from '@prisma/client';
 import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
 import Checkbox from '@/components/Checkbox';
@@ -13,20 +12,39 @@ import FormContainer from '@/components/admin/form/FormContainer';
 import CheckboxHeader from '@/components/admin/CheckboxHeader';
 import FilterDropdown from '@/components/admin/FilterDropdown';
 import ExportButton from '@/components/admin/ExportButton';
-import { exportProducts } from '@/lib/actions/product.action';
-import { deleteSelectedProducts } from '@/components/admin/DeleteSelectedButton';
-import { twMerge } from 'tailwind-merge';
+import { exportPromotions } from '@/lib/actions/promotion.action';
+import { deleteSelectedPromotions } from '@/components/admin/DeleteSelectedButton';
+// import '@/lib/server';
 
-type ProductList = Product & { images: { url: string }[] } & { category: Category } & { status: Status };
+type PromotionList = Promotion & {
+    categories: { name: string }[];
+    products: { name: string }[];
+    status: Status;
+    remainingTime: number;
+    durationType: string;
+    endDate?: Date | null;
+    endHours?: number | null;
+    endMinutes?: number | null;
+    endSeconds?: number | null;
+};
 
-const productSortOptions = [
+const promotionSortOptions = [
     { value: 'name-asc', label: 'A-Z' },
     { value: 'name-desc', label: 'Z-A' },
     { value: 'date-desc', label: 'Latest Release' },
     { value: 'date-asc', label: 'Oldest Release' },
 ];
 
-export default async function ProductListPage({
+const formatRemainingTime = (seconds: number): string => {
+    if (seconds <= 0) return 'Expired';
+    const days = Math.floor(seconds / (3600 * 24));
+    const hours = Math.floor((seconds % (3600 * 24)) / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${days}d ${hours}h ${minutes}m ${secs}s`;
+};
+
+export default async function PromotionListPage({
     searchParams,
 }: {
     searchParams: { [key: string]: string | undefined };
@@ -36,7 +54,7 @@ export default async function ProductListPage({
 
     const currentSort = sort || 'date-desc';
 
-    const query: Prisma.ProductWhereInput = {};
+    const query: Prisma.PromotionWhereInput = {};
     if (queryParams) {
         for (const [key, value] of Object.entries(queryParams)) {
             if (value !== undefined) {
@@ -52,7 +70,7 @@ export default async function ProductListPage({
     }
 
     const sortValues = currentSort.split(',').filter((value) => value);
-    const orderBy: Prisma.ProductOrderByWithRelationInput[] = sortValues.map((sortValue) => {
+    const orderBy: Prisma.PromotionOrderByWithRelationInput[] = sortValues.map((sortValue) => {
         switch (sortValue.trim()) {
             case 'name-asc':
                 return { name: 'asc' };
@@ -67,15 +85,15 @@ export default async function ProductListPage({
     });
 
     const [data, count] = await prisma.$transaction([
-        prisma.product.findMany({
+        prisma.promotion.findMany({
             where: query,
             take: ITEM_PER_PAGE,
             skip: ITEM_PER_PAGE * (p - 1),
             include: {
-                images: {
-                    select: { url: true },
+                products: {
+                    select: { id: true, name: true },
                 },
-                category: {
+                categories: {
                     select: { id: true, name: true },
                 },
                 status: {
@@ -84,55 +102,35 @@ export default async function ProductListPage({
             },
             orderBy,
         }),
-        prisma.product.count({ where: query }),
+        prisma.promotion.count({ where: query }),
     ]);
 
     // Define columns after data is initialized
     const columns = [
         { header: <CheckboxHeader itemIds={data.map((item) => item.id)} />, accessor: 'check' },
-        { header: 'Image', accessor: 'img' },
         { header: 'Name', accessor: 'name', className: 'hidden md:table-cell' },
-        { header: 'Description', accessor: 'description', className: 'hidden md:table-cell' },
-        { header: 'Category', accessor: 'category', className: 'hidden md:table-cell' },
         { header: 'Status', accessor: 'status', className: 'hidden md:table-cell' },
+        { header: 'Remaining Time', accessor: 'remainingTime', className: 'hidden md:table-cell' },
     ];
 
-    const renderRow = (item: ProductList) => (
+    const renderRow = (item: PromotionList) => (
         <tr key={item.id} className="border-b border-slate-100 text-sm hover:bg-gradient-more-lighter">
             <td>
                 <Checkbox id={item.id} />
             </td>
-            <td className="hidden md:table-cell py-2">
-                <Image
-                    src={item.images.length > 0 ? item.images[0].url : '/device-test-02.png'}
-                    alt=""
-                    width={40}
-                    height={40}
-                    className="md:hidden xl:block size-10 object-cover"
-                />
-            </td>
             <td className="hidden md:table-cell py-2 max-w-[80px]">
                 <span className="line-clamp-2">{item.name}</span>
             </td>
-            <td className="hidden md:table-cell max-w-[100px] py-2">
-                <span className="line-clamp-2">{item.description || '-'}</span>
-            </td>
-            <td className="hidden md:table-cell py-2">{item.category.name}</td>
             <td className="hidden md:table-cell py-2">
-                <span
-                    className={twMerge(
-                        'p-1 px-2 rounded-lg',
-                        item.status.name === 'In stock' ? 'bg-teal-400 text-white' : 'bg-rose-400 text-white',
-                    )}
-                >
-                    {item.status.name}
-                </span>
+                <span>{item.status.name}</span>
+            </td>
+            <td className="hidden md:table-cell py-2">
+                <span>{formatRemainingTime(item.remainingTime)}</span>
             </td>
             <td className="py-2">
                 <div className="flex items-center gap-2">
-                    <FormContainer table="product" type="details" data={item} />
-                    <FormContainer table="product" type="update" data={item} />
-                    <FormContainer table="product" type="delete" id={item.id} />
+                    <FormContainer table="promotion" type="update" data={item} />
+                    <FormContainer table="promotion" type="delete" id={item.id} />
                 </div>
             </td>
         </tr>
@@ -141,21 +139,28 @@ export default async function ProductListPage({
     return (
         <>
             <GoToTop />
+            {/* Auto-refresh page every 5 seconds */}
+            {/* <head>
+                <meta httpEquiv="refresh" content="5" />
+            </head> */}
             <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
                 <div className="flex items-center justify-between">
-                    <h1 className="hidden md:block text-lg font-semibold">All Products</h1>
+                    <h1 className="hidden md:block text-lg font-semibold">All Promotions</h1>
                     <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
                         <TableSearch />
                         <div className="flex items-center gap-4 self-end">
                             {/* Filter Dropdown */}
                             <FilterDropdown
                                 currentSort={currentSort}
-                                sortOptions={productSortOptions}
-                                entityName="Product"
+                                sortOptions={promotionSortOptions}
+                                entityName="Promotion"
                             />
-                            <ExportButton exportAction={exportProducts} entityName="Product" />
-                            <FormContainer table="product" type="create" />
-                            <DeleteSelectedButtonClient deleteAction={deleteSelectedProducts} entityName="Product" />
+                            <ExportButton exportAction={exportPromotions} entityName="Promotion" />
+                            <FormContainer table="promotion" type="create" />
+                            <DeleteSelectedButtonClient
+                                deleteAction={deleteSelectedPromotions}
+                                entityName="Promotion"
+                            />
                         </div>
                     </div>
                 </div>

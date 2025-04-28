@@ -14,3 +14,11 @@ export const generateSlug = (name: string): string => {
         .replace(/^-+/, '') // Loại bỏ gạch ngang ở đầu
         .replace(/-+$/, ''); // Loại bỏ gạch ngang ở cuối
 };
+
+export function formatDate(date: Date): string {
+    return new Date(date).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+    });
+}

@@ -37,6 +37,24 @@ export const createProduct = async (currentState: CurrentState, data: ProductSch
     try {
         const slug = generateSlug(data.name);
 
+        // Determine status based on quantity
+        const statusName = Number(data.quantity) > 0 ? 'In stock' : 'Out of stock';
+        const isActive = Number(data.quantity) > 0;
+
+        // Find or create the status
+        let status = await prisma.status.findFirst({
+            where: { name: statusName },
+        });
+
+        if (!status) {
+            status = await prisma.status.create({
+                data: {
+                    name: statusName,
+                    createdDate: new Date(),
+                },
+            });
+        }
+
         const newProduct = await prisma.product.create({
             data: {
                 name: data.name,
@@ -44,6 +62,8 @@ export const createProduct = async (currentState: CurrentState, data: ProductSch
                 description: data.description,
                 price: Number(data.price),
                 quantity: Number(data.quantity),
+                isActive,
+                statusId: status.id,
                 categoryId: data.categoryId,
                 brandId: data.brandId || null,
                 colorId: data.colorId || null,
@@ -91,6 +111,24 @@ export const updateProduct = async (currentState: CurrentState, data: ProductSch
 
         const newSlug = generateSlug(data.name);
 
+        // Determine status based on quantity
+        const statusName = Number(data.quantity) > 0 ? 'In stock' : 'Out of stock';
+        const isActive = Number(data.quantity) > 0;
+
+        // Find or create the status
+        let status = await prisma.status.findFirst({
+            where: { name: statusName },
+        });
+
+        if (!status) {
+            status = await prisma.status.create({
+                data: {
+                    name: statusName,
+                    createdDate: new Date(),
+                },
+            });
+        }
+
         const updatedProduct = await prisma.product.update({
             where: { id: data.id },
             data: {
@@ -99,6 +137,8 @@ export const updateProduct = async (currentState: CurrentState, data: ProductSch
                 price: Number(data.price),
                 quantity: Number(data.quantity),
                 slug: newSlug,
+                isActive,
+                statusId: status.id,
                 categoryId: data.categoryId || '',
                 brandId: data.brandId || null,
                 colorId: data.colorId || null,
@@ -219,6 +259,9 @@ export async function exportProducts() {
                 type: {
                     select: { name: true },
                 },
+                status: {
+                    select: { name: true },
+                },
             },
         });
 
@@ -239,6 +282,7 @@ export async function exportProducts() {
             CPU: product.cpu?.name || '',
             ScreenSize: product.screenSize?.name || '',
             Type: product.type?.name || '',
+            Status: product.status?.name || '',
             ImageURLs: product.images.map((img) => img.url).join(', ') || '',
             CreatedAt: product.createdDate.toISOString(),
         }));
