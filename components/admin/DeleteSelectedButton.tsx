@@ -53,6 +53,40 @@ export async function deleteSelectedPromotions(selectedIds: string[]) {
     }
 }
 
+export async function deleteSelectedUsers(selectedIds: string[]) {
+    try {
+        const count = await prisma.user.deleteMany({
+            where: {
+                id: {
+                    in: selectedIds,
+                },
+            },
+        });
+
+        return { success: true, count: count.count };
+    } catch (error) {
+        console.error('Error deleting users:', error);
+        return { success: false, error: 'Failed to delete users' };
+    }
+}
+
+export async function deleteSelectedRoles(selectedIds: string[]) {
+    try {
+        const count = await prisma.role.deleteMany({
+            where: {
+                id: {
+                    in: selectedIds,
+                },
+            },
+        });
+
+        return { success: true, count: count.count };
+    } catch (error) {
+        console.error('Error deleting roles:', error);
+        return { success: false, error: 'Failed to delete roles' };
+    }
+}
+
 export async function deleteSelectedBrands(selectedIds: string[]) {
     try {
         const count = await prisma.brand.deleteMany({

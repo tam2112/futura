@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import prisma from '../prisma';
 import { RoleSchema } from '../validation/role.form';
 
@@ -83,3 +84,36 @@ export const deleteRole = async (currentState: CurrentState, data: FormData) => 
         return { success: false, error: true };
     }
 };
+
+export const deleteRoles = async (currentState: CurrentState, ids: string[]) => {
+    try {
+        await prisma.role.deleteMany({
+            where: {
+                id: { in: ids },
+            },
+        });
+
+        revalidatePath('/admin/role/list');
+        return { success: true, error: false };
+    } catch (error) {
+        console.log(error);
+        return { success: false, error: true };
+    }
+};
+
+export async function exportRoles() {
+    try {
+        const roles = await prisma.role.findMany({});
+
+        // Format data for Excel
+        const formattedData = roles.map((role) => ({
+            Name: role.name,
+            CreatedAt: role.createdDate.toISOString(),
+        }));
+
+        return { success: true, data: formattedData };
+    } catch (error) {
+        console.error('Export roles error:', error);
+        return { success: false, error: 'Failed to export roles' };
+    }
+}

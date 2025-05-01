@@ -13,9 +13,11 @@ import { Link, useRouter } from '@/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useState } from 'react';
 import CartModal from '@/components/modal/CartModal';
+import Cookies from 'js-cookie';
 
 export default function Navigation() {
     const { isLoggedIn, logout } = useAuth();
+    const fullName = Cookies.get('fullName') || 'Robert';
     const router = useRouter();
     const [isOpenCart, setIsOpenCart] = useState(false);
 
@@ -69,8 +71,8 @@ export default function Navigation() {
                                                     <div>
                                                         <Image src={avatarImage} alt="" className="size-8" />
                                                     </div>
-                                                    <span className="inline-flex gap-1 items-center">
-                                                        Robert <GoChevronDown size={20} />
+                                                    <span className="inline-flex gap-1 capitalize items-center">
+                                                        {fullName} <GoChevronDown size={20} />
                                                     </span>
                                                 </div>
                                                 <div className="absolute z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 left-0 top-[49px] w-full shadow-sm">

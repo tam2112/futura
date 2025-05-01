@@ -2,5 +2,10 @@
     "Homepage": {
         "title": "Chào mừng tới trang chủ",
         "content": "Đây là nội dung của trang chủ"
+    },
+    "Forbidden": {
+        "title": "403 Cấm Truy Cập",
+        "message": "Bạn không có quyền truy cập vào trang này.",
+        "backToHome": "Quay lại Trang Chủ"
     }
 }

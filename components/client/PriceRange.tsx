@@ -1,30 +1,25 @@
 'use client';
 import { useState } from 'react';
 import { DualRangeSlider } from '../slider';
+import { debounce } from 'lodash';
 
 interface PriceRangeProps {
     onPriceRangeChange: (values: number[]) => void;
+    maxPrice: number;
 }
 
-export default function PriceRange({ onPriceRangeChange }: PriceRangeProps) {
-    const [values, setValues] = useState([0, 2010]);
+export default function PriceRange({ onPriceRangeChange, maxPrice }: PriceRangeProps) {
+    const [values, setValues] = useState([0, maxPrice]);
+    const debouncedSetPriceRange = debounce(setValues, 300);
 
     const handleValueChange = (newValues: number[]) => {
-        setValues(newValues);
+        debouncedSetPriceRange(newValues);
         onPriceRangeChange(newValues);
     };
 
     return (
         <>
-            <DualRangeSlider
-                // label={() => <>$</>}
-                // lableContenPos={'left'}
-                value={values}
-                onValueChange={handleValueChange}
-                min={0}
-                max={2010}
-                step={0.1}
-            />
+            <DualRangeSlider value={values} onValueChange={handleValueChange} min={0} max={maxPrice} step={0.1} />
         </>
     );
 }

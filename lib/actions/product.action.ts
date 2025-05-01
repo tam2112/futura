@@ -17,6 +17,274 @@ export const getProducts = async () => {
     }
 };
 
+export const getProductsByCategorySlug = async (slug: string) => {
+    try {
+        const products = await prisma.product.findMany({
+            where: {
+                category: {
+                    slug,
+                },
+            },
+            include: {
+                images: {
+                    select: { url: true },
+                },
+                category: {
+                    select: { name: true, slug: true },
+                },
+                brand: {
+                    select: { name: true, id: true },
+                },
+                color: {
+                    select: { name: true, hex: true, id: true },
+                },
+                storage: {
+                    select: { name: true, id: true },
+                },
+                connectivity: {
+                    select: { name: true, id: true },
+                },
+                simSlot: {
+                    select: { title: true, id: true },
+                },
+                batteryHealth: {
+                    select: { title: true, id: true },
+                },
+                ram: {
+                    select: { title: true, id: true },
+                },
+                cpu: {
+                    select: { name: true, id: true },
+                },
+                screenSize: {
+                    select: { name: true, id: true },
+                },
+                type: {
+                    select: { name: true, id: true },
+                },
+                status: {
+                    select: { name: true },
+                },
+                promotions: { select: { percentageNumber: true } },
+            },
+        });
+        return products;
+    } catch (error) {
+        console.error('Error fetching products by category slug:', error);
+        return [];
+    }
+};
+
+export const getProductBySlug = async (slug: string) => {
+    try {
+        const product = await prisma.product.findUnique({
+            where: { slug },
+            include: {
+                images: { select: { url: true } },
+                category: { select: { name: true, slug: true } },
+                brand: { select: { name: true, id: true } },
+                color: { select: { name: true, hex: true, id: true } },
+                storage: { select: { name: true, id: true } },
+                connectivity: { select: { name: true, id: true } },
+                simSlot: { select: { title: true, id: true } },
+                batteryHealth: { select: { title: true, id: true } },
+                ram: { select: { title: true, id: true } },
+                cpu: { select: { name: true, id: true } },
+                screenSize: { select: { name: true, id: true } },
+                type: { select: { name: true, id: true } },
+                status: { select: { name: true } },
+                promotions: { select: { percentageNumber: true } },
+            },
+        });
+        if (!product) {
+            throw new Error('Product not found');
+        }
+        return product;
+    } catch (error) {
+        console.error('Error fetching product by slug:', error);
+        return null;
+    }
+};
+
+export const getRelatedProducts = async (categorySlug: string, excludeProductId: string, limit: number = 8) => {
+    try {
+        const products = await prisma.product.findMany({
+            where: {
+                category: { slug: categorySlug },
+                id: { not: excludeProductId },
+            },
+            include: {
+                images: { select: { url: true } },
+                category: { select: { name: true, slug: true } },
+                brand: { select: { name: true, id: true } },
+                color: { select: { name: true, hex: true, id: true } },
+                storage: { select: { name: true, id: true } },
+                connectivity: { select: { name: true, id: true } },
+                simSlot: { select: { title: true, id: true } },
+                batteryHealth: { select: { title: true, id: true } },
+                ram: { select: { title: true, id: true } },
+                cpu: { select: { name: true, id: true } },
+                screenSize: { select: { name: true, id: true } },
+                type: { select: { name: true, id: true } },
+                status: { select: { name: true } },
+            },
+            take: limit,
+        });
+        return products;
+    } catch (error) {
+        console.error('Error fetching related products:', error);
+        return [];
+    }
+};
+
+// Fetch 10 newest products (New Arrivals)
+export const getNewArrivals = async (limit: number = 10) => {
+    try {
+        const products = await prisma.product.findMany({
+            where: {
+                isActive: true,
+            },
+            orderBy: {
+                createdDate: 'desc',
+            },
+            include: {
+                images: { select: { url: true } },
+                category: { select: { name: true, slug: true } },
+                brand: { select: { name: true, id: true } },
+            },
+            take: limit,
+        });
+        return products;
+    } catch (error) {
+        console.error('Error fetching new arrivals:', error);
+        return [];
+    }
+};
+
+// Fetch 8 random Apple smartphones (Popular iPhones)
+export const getPopularIPhones = async (limit: number = 8) => {
+    try {
+        const products = await prisma.product.findMany({
+            where: {
+                isActive: true,
+                category: { slug: 'smartphones' },
+                brand: { name: 'Apple' },
+            },
+            orderBy: {
+                createdDate: 'desc', // Optional: You can remove this if you want truly random
+            },
+            include: {
+                images: { select: { url: true } },
+                category: { select: { name: true, slug: true } },
+                brand: { select: { name: true, id: true } },
+            },
+            take: limit,
+        });
+        // Shuffle products for randomness
+        return products.sort(() => Math.random() - 0.5);
+    } catch (error) {
+        console.error('Error fetching popular iPhones:', error);
+        return [];
+    }
+};
+
+// Fetch 8 random laptops (Popular Laptops)
+export const getPopularLaptops = async (limit: number = 8) => {
+    try {
+        const products = await prisma.product.findMany({
+            where: {
+                isActive: true,
+                category: { slug: 'laptops' },
+            },
+            orderBy: {
+                createdDate: 'desc', // Optional: You can remove this if you want truly random
+            },
+            include: {
+                images: { select: { url: true } },
+                category: { select: { name: true, slug: true } },
+                brand: { select: { name: true, id: true } },
+            },
+            take: limit,
+        });
+        // Shuffle products for randomness
+        return products.sort(() => Math.random() - 0.5);
+    } catch (error) {
+        console.error('Error fetching popular laptops:', error);
+        return [];
+    }
+};
+
+// Fetch 8 random tablets (Trending iPads)
+export const getTrendingIPads = async (limit: number = 8) => {
+    try {
+        const products = await prisma.product.findMany({
+            where: {
+                isActive: true,
+                category: { slug: 'tablets' },
+            },
+            orderBy: {
+                createdDate: 'desc', // Optional: You can remove this if you want truly random
+            },
+            include: {
+                images: { select: { url: true } },
+                category: { select: { name: true, slug: true } },
+                brand: { select: { name: true, id: true } },
+            },
+            take: limit,
+        });
+        // Shuffle products for randomness
+        return products.sort(() => Math.random() - 0.5);
+    } catch (error) {
+        console.error('Error fetching trending iPads:', error);
+        return [];
+    }
+};
+
+export const getDealProducts = async (limit?: number) => {
+    try {
+        const products = await prisma.product.findMany({
+            where: {
+                priceWithDiscount: { not: null },
+                isActive: true,
+            },
+            include: {
+                images: { select: { url: true } },
+                category: { select: { name: true, slug: true, id: true } },
+                brand: { select: { name: true, id: true } },
+                promotions: { select: { percentageNumber: true } },
+            },
+            orderBy: [{ priceWithDiscount: 'asc' }, { createdDate: 'desc' }],
+            take: limit,
+        });
+        return products;
+    } catch (error) {
+        console.error('Error fetching deal products:', error);
+        return [];
+    }
+};
+
+export const getRandomProductsByBrand = async (brandName: string, limit: number = 4) => {
+    try {
+        const products = await prisma.product.findMany({
+            where: {
+                isActive: true,
+                brand: { name: brandName },
+            },
+            include: {
+                images: { select: { url: true } },
+                category: { select: { name: true, slug: true } },
+                brand: { select: { name: true, id: true } },
+            },
+            take: limit * 2, // Fetch more to ensure enough for randomization
+        });
+        // Shuffle and limit to the requested number
+        return products.sort(() => Math.random() - 0.5).slice(0, limit);
+    } catch (error) {
+        console.error(`Error fetching random products for brand ${brandName}:`, error);
+        return [];
+    }
+};
+
 // export const getCategoryById = async (categoryId: string) => {
 //     try {
 //         const category = await prisma.category.findUnique({

@@ -112,10 +112,10 @@ export default async function ProductListPage({
                 />
             </td>
             <td className="hidden md:table-cell py-2 max-w-[80px]">
-                <span className="line-clamp-2">{item.name}</span>
+                <span className="line-clamp-2 pr-2">{item.name}</span>
             </td>
             <td className="hidden md:table-cell max-w-[100px] py-2">
-                <span className="line-clamp-2">{item.description || '-'}</span>
+                <span className="line-clamp-2 pr-2">{item.description || '-'}</span>
             </td>
             <td className="hidden md:table-cell py-2">{item.category.name}</td>
             <td className="hidden md:table-cell py-2">

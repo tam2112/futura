@@ -8,6 +8,7 @@ import bcrypt from 'bcrypt';
 import { loginSchema, LoginSchema, UserSchema, signUpSchema, SignUpSchema } from '../validation/user.form';
 import prisma from '../prisma';
 import { generateToken } from '../auth';
+import { revalidatePath } from 'next/cache';
 
 type CurrentState = { success: boolean; error: boolean };
 
@@ -129,11 +130,15 @@ export const signInUser = async (currentState: CurrentState, data: LoginSchema) 
         // Generate token with role information
         const token = generateToken(user.id, user.role.name);
         const userId = user.id;
+        const fullName = user.fullName;
+        const email = user.email;
 
         return {
             success: true,
             error: false,
             userId,
+            fullName,
+            email,
             token,
             user,
             role: user.role.name, // Include role in response
@@ -170,9 +175,17 @@ export const createUser = async (currentState: CurrentState, data: UserSchema) =
 
         // revalidatePath('/list/categories');
         return { success: true, error: false };
-    } catch (error) {
+    } catch (error: any) {
         console.log(error);
-        return { success: false, error: true };
+        // Kiểm tra lỗi unique constraint từ Prisma
+        if (error.code === 'P2002') {
+            return {
+                success: false,
+                error: true,
+                message: 'User full name/email already exists',
+            };
+        }
+        return { success: false, error: true, message: 'Failed to create user' };
     }
 };
 
@@ -192,9 +205,17 @@ export const updateUser = async (currentState: CurrentState, data: UserSchema) =
 
         // revalidatePath('/list/categories');
         return { success: true, error: false };
-    } catch (error) {
+    } catch (error: any) {
         console.log(error);
-        return { success: false, error: true };
+        // Kiểm tra lỗi unique constraint từ Prisma
+        if (error.code === 'P2002') {
+            return {
+                success: false,
+                error: true,
+                message: 'User full name/email already exists',
+            };
+        }
+        return { success: false, error: true, message: 'Failed to update user' };
     }
 };
 
@@ -215,3 +236,42 @@ export const deleteUser = async (currentState: CurrentState, data: FormData) => 
         return { success: false, error: true };
     }
 };
+
+export const deleteUsers = async (currentState: CurrentState, ids: string[]) => {
+    try {
+        await prisma.color.deleteMany({
+            where: {
+                id: { in: ids },
+            },
+        });
+
+        revalidatePath('/admin/user/list');
+        return { success: true, error: false };
+    } catch (error) {
+        console.log(error);
+        return { success: false, error: true };
+    }
+};
+
+export async function exportUsers() {
+    try {
+        const users = await prisma.user.findMany({
+            include: {
+                role: true,
+            },
+        });
+
+        // Format data for Excel
+        const formattedData = users.map((user) => ({
+            'Full name': user.fullName,
+            Email: user.email,
+            Role: user.role.name,
+            'Create at': user.createdDate.toISOString(),
+        }));
+
+        return { success: true, data: formattedData };
+    } catch (error) {
+        console.error('Export users error:', error);
+        return { success: false, error: 'Failed to export users' };
+    }
+}

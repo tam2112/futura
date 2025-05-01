@@ -1,3 +1,4 @@
+import GoToTop from '@/components/GoToTop';
 import FeatureHighlights from '@/sections/client/FeatureHighlights';
 import Hero from '@/sections/client/Hero';
 import OfficialStores from '@/sections/client/OfficialStores';
@@ -9,6 +10,7 @@ import TopDeals from '@/sections/client/TopDeals';
 export default function Home() {
     return (
         <>
+            <GoToTop />
             <Hero />
             <PopularCategories />
             <PopularDevices />

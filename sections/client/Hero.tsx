@@ -1,11 +1,18 @@
-// import { Link } from '@/navigation';
-// import { useTranslations } from 'next-intl';
+'use client';
+
 import Button from '@/components/Button';
 import ModelSlider from '@/components/model/ModelSlider';
 import underlineImage from '@/public/underline.svg?url';
+import { animateScroll as scroll } from 'react-scroll';
 
 export default function Hero() {
-    // const t = useTranslations('Homepage');
+    // Hàm xử lý scroll
+    const handleScroll = () => {
+        scroll.scrollMore(600, {
+            smooth: true, // Hiệu ứng cuộn mượt mà
+            duration: 700, // Thời gian cuộn (ms)
+        });
+    };
 
     return (
         <div className="h-screen">
@@ -39,7 +46,7 @@ export default function Hero() {
                                 redefine the way you shop online.
                             </p>
                             <p className="mt-8">
-                                <Button>Explore Now</Button>
+                                <Button onClick={handleScroll}>Explore Now</Button>
                             </p>
                             <div className="flex items-center gap-4 pt-8 divide-x-2">
                                 <div>

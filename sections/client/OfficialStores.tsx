@@ -1,29 +1,78 @@
 'use client';
 
-import { acerDevicesData, brand, dellDevicesData, lenovoDevicesData, sonyDevicesData } from '@/temp/officialStoreData';
 import Image from 'next/image';
-import { RiArrowRightSLine } from 'react-icons/ri';
-
-import checkImg from '@/public/official-store/check.svg?url';
 import sonyImg from '@/public/official-store/sony.png';
-import { useState } from 'react';
+import lenovoImg from '@/public/official-store/lenovo.webp';
+import acerImg from '@/public/official-store/acer.webp';
+import dellImg from '@/public/official-store/dell.webp';
+import { useState, useEffect } from 'react';
 import DevicesBrand from '@/components/DevicesBrand';
+import { useProductStore } from '@/store/productStore';
+
+const brands = [
+    { id: 1, title: 'Sony' },
+    { id: 2, title: 'Dell' },
+    { id: 3, title: 'Lenovo' },
+    { id: 4, title: 'Acer' },
+];
 
 export default function OfficialStores() {
     const [activeTab, setActiveTab] = useState<string>('Sony');
+    const {
+        sonyProducts,
+        dellProducts,
+        lenovoProducts,
+        acerProducts,
+        fetchSonyProducts,
+        fetchDellProducts,
+        fetchLenovoProducts,
+        fetchAcerProducts,
+    } = useProductStore();
+
+    // Fetch all brand products on mount
+    useEffect(() => {
+        fetchSonyProducts();
+        fetchDellProducts();
+        fetchLenovoProducts();
+        fetchAcerProducts();
+    }, [fetchSonyProducts, fetchDellProducts, fetchLenovoProducts, fetchAcerProducts]);
 
     const getDeviceData = () => {
         switch (activeTab) {
             case 'Sony':
-                return sonyDevicesData;
+                return sonyProducts.map((product) => ({
+                    id: product.id,
+                    title: product.name,
+                    price: product.price,
+                    img: product.images[0]?.url || '/placeholder.png',
+                    href: `/collections/details/${product.slug}`,
+                }));
             case 'Dell':
-                return dellDevicesData;
+                return dellProducts.map((product) => ({
+                    id: product.id,
+                    title: product.name,
+                    price: product.price,
+                    img: product.images[0]?.url || '/placeholder.png',
+                    href: `/collections/details/${product.slug}`,
+                }));
             case 'Lenovo':
-                return lenovoDevicesData;
+                return lenovoProducts.map((product) => ({
+                    id: product.id,
+                    title: product.name,
+                    price: product.price,
+                    img: product.images[0]?.url || '/placeholder.png',
+                    href: `/collections/details/${product.slug}`,
+                }));
             case 'Acer':
-                return acerDevicesData;
+                return acerProducts.map((product) => ({
+                    id: product.id,
+                    title: product.name,
+                    price: product.price,
+                    img: product.images[0]?.url || '/placeholder.png',
+                    href: `/collections/details/${product.slug}`,
+                }));
             default:
-                return sonyDevicesData;
+                return [];
         }
     };
 
@@ -33,10 +82,10 @@ export default function OfficialStores() {
                 <div className="flex items-center justify-between">
                     <h2 className="flex items-center text-lg font-bold font-heading md:text-xl">Official Stores</h2>
                 </div>
-                {/* heading */}
+                {/* Heading */}
                 <div className="mt-3 flex items-center justify-between">
                     <div className="hide-scrollbar flex w-fit items-center gap-2 overflow-hidden overflow-x-scroll font-extrabold">
-                        {brand.map(({ id, title }) => (
+                        {brands.map(({ id, title }) => (
                             <button
                                 key={id}
                                 className={`h-8 whitespace-nowrap rounded-full px-5 text-xs transition duration-150 ease-in-out ${
@@ -48,27 +97,50 @@ export default function OfficialStores() {
                             </button>
                         ))}
                     </div>
-                    <div className="flex items-center hover:underline lg:flex">
-                        <div className="-mt-0.5 mr-1.5 h-4 w-4">
-                            <Image src={checkImg} alt="check" width={27} height={26} className="size-full" />
-                        </div>
-                        <p className="text-sm font-extrabold">Visit Sony store</p>
-                        <div className="ml-3 w-3">
-                            <RiArrowRightSLine size={20} />
-                        </div>
-                    </div>
                 </div>
-                {/* content */}
+                {/* Content */}
                 <div className="mt-5 grid w-full grid-cols-1 gap-2 lg:grid-cols-2">
-                    <div className="h-[300px] w-full lg:order-1 lg:min-h-[550px]">
-                        <Image
-                            src={sonyImg}
-                            alt="sony"
-                            width={1260}
-                            height={110}
-                            className="h-full w-full rounded-md object-cover"
-                        />
-                    </div>
+                    {activeTab === 'Sony' ? (
+                        <div className="h-[300px] w-full lg:order-1 lg:min-h-[550px]">
+                            <Image
+                                src={sonyImg}
+                                alt="sony"
+                                width={1260}
+                                height={110}
+                                className="h-full w-full rounded-md object-cover"
+                            />
+                        </div>
+                    ) : activeTab === 'Lenovo' ? (
+                        <div className="h-[300px] w-full lg:order-1 lg:min-h-[550px]">
+                            <Image
+                                src={lenovoImg}
+                                alt="lenovo"
+                                width={1260}
+                                height={110}
+                                className="h-full w-full rounded-md object-cover"
+                            />
+                        </div>
+                    ) : activeTab === 'Acer' ? (
+                        <div className="h-[300px] w-full lg:order-1 lg:min-h-[550px]">
+                            <Image
+                                src={acerImg}
+                                alt="acer"
+                                width={1260}
+                                height={110}
+                                className="h-full w-full rounded-md object-cover"
+                            />
+                        </div>
+                    ) : (
+                        <div className="h-[300px] w-full lg:order-1 lg:min-h-[550px]">
+                            <Image
+                                src={dellImg}
+                                alt="dell"
+                                width={1260}
+                                height={110}
+                                className="h-full w-full rounded-md object-cover"
+                            />
+                        </div>
+                    )}
                     <DevicesBrand data={getDeviceData()} />
                 </div>
             </div>

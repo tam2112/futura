@@ -55,6 +55,9 @@ export default function SignInForm() {
             if (response.userId) {
                 Cookies.set('userId', response.userId);
             }
+            if (response.fullName) {
+                Cookies.set('fullName', response.fullName);
+            }
             setIsLoggedIn(true);
             toast('Sign in successful');
 

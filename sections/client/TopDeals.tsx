@@ -8,6 +8,7 @@ import saveUpImg from '@/public/top-deals/save-up.svg?url';
 import dealAddedDailyImg from '@/public/top-deals/deal-added-daily.svg?url';
 import TopDealsSlider from '@/components/slider/TopDealsSlider';
 import underlineImage from '@/public/underline.svg?url';
+import { Link } from '@/navigation';
 
 export default function TopDeals() {
     return (
@@ -88,9 +89,11 @@ export default function TopDeals() {
                             </div>
                             <h3 className="text-base md:text-lg">Today Deals</h3>
                             <span className="text-2xl font-extrabold">23 : 35 : 51</span>
-                            <button className="mt-5 h-8 rounded-md !bg-white px-3 text-xs font-extrabold text-gray-700">
-                                Shop all Deals
-                            </button>
+                            <Link href={'/collections/top-deals'}>
+                                <button className="mt-5 h-8 rounded-md !bg-white px-3 text-xs font-extrabold text-gray-700">
+                                    Shop all Deals
+                                </button>
+                            </Link>
                             <div className="mt-3 h-9">
                                 <Image
                                     src={dealAddedDailyImg}

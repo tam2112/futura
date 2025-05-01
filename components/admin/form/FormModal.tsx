@@ -86,6 +86,13 @@ const StatusForm = dynamic(() => import('./content/StatusForm'), {
         </div>
     ),
 });
+const UserForm = dynamic(() => import('./content/UserForm'), {
+    loading: () => (
+        <div className="flex justify-center items-center">
+            <Loader />
+        </div>
+    ),
+});
 const RoleForm = dynamic(() => import('./content/RoleForm'), {
     loading: () => (
         <div className="flex justify-center items-center">
@@ -184,6 +191,9 @@ const forms: {
         }
         return <ProductForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />;
     },
+    user: (setOpen, type, data, relatedData) => (
+        <UserForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
+    ),
     role: (setOpen, type, data, relatedData) => (
         <RoleForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     ),

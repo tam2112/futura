@@ -6,12 +6,12 @@ import LogoWithName from '../client/LogoWithName';
 import { HiOutlineChevronDown, HiOutlineChevronUp, HiOutlineXMark } from 'react-icons/hi2';
 import hotDealsImg from '@/public/hot-deals.png';
 import Image from 'next/image';
-import { allCategoriesData, trendingProductData } from '@/temp/categoryData';
 import Button from '../Button';
 import { twMerge } from 'tailwind-merge';
 import { useAuth } from '@/context/AuthContext';
 import { PiShoppingBagOpenLight, PiSignOut, PiUser } from 'react-icons/pi';
 import { Link } from '@/navigation';
+import { useCategoryStore } from '@/store/categoryStore';
 
 type CategoryModalType = {
     isOpen: boolean;
@@ -22,8 +22,19 @@ export default function CategoryModal({ isOpen, setIsOpen }: CategoryModalType) 
     const [navScope, navAnimate] = useAnimate();
     const [showOverlay, setShowOverlay] = useState(false);
     const [showAllCategories, setShowAllCategories] = useState(false);
+    const { trendingCategories, categories, fetchTrendingCategories, fetchCategories } = useCategoryStore();
 
     const { isLoggedIn } = useAuth();
+
+    useEffect(() => {
+        // Gọi fetchCategories khi component mount
+        fetchTrendingCategories();
+    }, [fetchTrendingCategories]);
+
+    useEffect(() => {
+        // Gọi fetchCategories khi component mount
+        fetchCategories();
+    }, [fetchCategories]);
 
     useEffect(() => {
         if (isOpen) {
@@ -101,9 +112,11 @@ export default function CategoryModal({ isOpen, setIsOpen }: CategoryModalType) 
                                     className="h-full w-auto rounded-tl-xl object-cover object-right"
                                 />
                             </div>
-                            <div className="shrink-0 px-4 py-2 bg-red-400 text-white font-semibold rounded-full font-body text-xs">
-                                Browse Deals
-                            </div>
+                            <Link href={'/collections/top-deals'} onClick={() => setIsOpen(false)}>
+                                <div className="shrink-0 px-4 py-2 bg-red-400 text-white font-semibold rounded-full font-body text-xs">
+                                    Browse Deals
+                                </div>
+                            </Link>
                         </div>
                     </div>
                     <nav className="mt-4 px-4 flex flex-col space-y-4 divide-y divide-gray-200">
@@ -111,14 +124,14 @@ export default function CategoryModal({ isOpen, setIsOpen }: CategoryModalType) 
                         <div>
                             <h3 className="font-semibold font-heading mb-1">Trending</h3>
                             <ul>
-                                {trendingProductData.map(({ id, name }) => (
+                                {trendingCategories.map(({ id, name }) => (
                                     <li
                                         key={id}
                                         className="text-black py-1.5 group/nav-item relative isolate cursor-pointer"
                                         onClick={(e) => e.stopPropagation()}
                                     >
                                         <div className="relative isolate">
-                                            <span className="text-sm group-hover/nav-item:pl-4 transition-all duration-500">
+                                            <span className="text-sm group-hover/nav-item:pl-4 transition-all duration-500 capitalize">
                                                 {name}
                                             </span>
                                         </div>
@@ -131,22 +144,20 @@ export default function CategoryModal({ isOpen, setIsOpen }: CategoryModalType) 
                         <div>
                             <h3 className="font-semibold font-heading mt-4 mb-1">All Categories</h3>
                             <ul>
-                                {allCategoriesData
-                                    .slice(0, showAllCategories ? allCategoriesData.length : 5)
-                                    .map(({ id, name }) => (
-                                        <li
-                                            key={id}
-                                            className="text-black py-1.5 group/nav-item relative isolate cursor-pointer"
-                                            onClick={(e) => e.stopPropagation()}
-                                        >
-                                            <div className="relative isolate">
-                                                <span className="text-sm group-hover/nav-item:pl-4 transition-all duration-500">
-                                                    {name}
-                                                </span>
-                                            </div>
-                                            <div className="absolute w-full h-0 bg-gray-100 group-hover/nav-item:h-full transition-all duration-500 bottom-0 -z-10"></div>
-                                        </li>
-                                    ))}
+                                {categories.slice(0, showAllCategories ? categories.length : 5).map(({ id, name }) => (
+                                    <li
+                                        key={id}
+                                        className="text-black py-1.5 group/nav-item relative isolate cursor-pointer"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        <div className="relative isolate">
+                                            <span className="text-sm group-hover/nav-item:pl-4 transition-all duration-500 capitalize">
+                                                {name}
+                                            </span>
+                                        </div>
+                                        <div className="absolute w-full h-0 bg-gray-100 group-hover/nav-item:h-full transition-all duration-500 bottom-0 -z-10"></div>
+                                    </li>
+                                ))}
                                 <li
                                     className="text-black py-1.5 group/nav-item relative isolate cursor-pointer"
                                     onClick={(e) => {

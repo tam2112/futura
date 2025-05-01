@@ -11,13 +11,15 @@ import { useFormState } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import InputField from '@/components/form/InputField';
-import { roleSchema, RoleSchema } from '@/lib/validation/role.form';
-import { createRole, updateRole } from '@/lib/actions/role.action';
+import { userSchema, UserSchema } from '@/lib/validation/user.form';
+import { createUser, updateUser } from '@/lib/actions/user.action';
+import SelectField from '@/components/form/SelectField';
 
-export default function RoleForm({
+export default function ColorForm({
     type,
     data,
     setOpen,
+    relatedData,
 }: {
     type: 'create' | 'update' | 'details';
     data?: any;
@@ -28,12 +30,13 @@ export default function RoleForm({
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm<RoleSchema>({
-        resolver: zodResolver(roleSchema),
+        control,
+    } = useForm<UserSchema>({
+        resolver: zodResolver(userSchema),
     });
 
     // AFTER REACT 19 IT'LL BE USEACTIONSTATE
-    const [state, formAction] = useFormState(type === 'create' ? createRole : updateRole, {
+    const [state, formAction] = useFormState(type === 'create' ? createUser : updateUser, {
         success: false,
         error: false,
     });
@@ -47,7 +50,7 @@ export default function RoleForm({
 
     useEffect(() => {
         if (state.success) {
-            toast(`Role has been ${type === 'create' ? 'created' : 'updated'}`);
+            toast(`User has been ${type === 'create' ? 'created' : 'updated'}`);
             setOpen(false);
             router.refresh();
         } else {
@@ -55,20 +58,46 @@ export default function RoleForm({
         }
     }, [state, type, router, setOpen]);
 
+    const { roles } = relatedData;
+
+    const roleOptions = roles.map((role: { id: string; name: string }) => ({
+        value: role.id,
+        label: role.name,
+    }));
+
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
             <h1 className="text-lg font-heading font-semibold">
-                {type === 'create' ? 'Create a new role' : 'Update the role'}
+                {type === 'create' ? 'Create a new user' : 'Update the user'}
             </h1>
             <div className="flex justify-between flex-wrap gap-4">
                 <InputField
-                    label="Role name"
-                    name="name"
-                    defaultValue={data?.name}
+                    label="Full name"
+                    name="fullName"
+                    defaultValue={data?.fullName}
                     register={register}
-                    error={errors.name}
+                    error={errors.fullName}
                     hideIcon
                 />
+                <InputField
+                    label="Email"
+                    name="email"
+                    type="email"
+                    defaultValue={data?.email}
+                    register={register}
+                    error={errors.email}
+                    hideIcon
+                />
+                <InputField
+                    label="Password"
+                    name="password"
+                    type="password"
+                    defaultValue={data?.password}
+                    register={register}
+                    error={errors.password}
+                    hideIcon
+                />
+                <SelectField label="Role" name="roleId" options={roleOptions} control={control} error={errors.roleId} />
                 {data && (
                     <InputField
                         label="Id"

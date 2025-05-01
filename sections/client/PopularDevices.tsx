@@ -1,39 +1,81 @@
+// PopularDevices.tsx
 'use client';
 
-import Button from '@/components/Button';
 import DeviceSlider from '@/components/slider/DeviceSlider';
-import {
-    newArrivalsData,
-    popularDeviceTypesData,
-    popularIPhonesData,
-    popularOtherPhonesData,
-    trendingIPadsData,
-} from '@/temp/deviceData';
-import { useState } from 'react';
-import { RiArrowRightSLine } from 'react-icons/ri';
+import { useProductStore } from '@/store/productStore';
+import { useEffect, useState } from 'react';
+
+const popularDeviceTypes = [
+    { id: 1, name: 'New Arrivals' },
+    { id: 2, name: 'Popular iPhones' },
+    { id: 3, name: 'Popular Laptops' },
+    { id: 4, name: 'Trending iPads' },
+];
 
 export default function PopularDevices() {
     const [activeTab, setActiveTab] = useState<string>('New Arrivals');
+    const {
+        newArrivals,
+        popularIPhones,
+        popularLaptops,
+        trendingIPads,
+        fetchNewArrivals,
+        fetchPopularIPhones,
+        fetchPopularLaptops,
+        fetchTrendingIPads,
+    } = useProductStore();
+
+    // Fetch all product data on component mount
+    useEffect(() => {
+        fetchNewArrivals();
+        fetchPopularIPhones();
+        fetchPopularLaptops();
+        fetchTrendingIPads();
+    }, [fetchNewArrivals, fetchPopularIPhones, fetchPopularLaptops, fetchTrendingIPads]);
 
     const getDeviceData = () => {
         switch (activeTab) {
             case 'New Arrivals':
-                return newArrivalsData;
+                return newArrivals.map((product) => ({
+                    id: product.id,
+                    title: product.name,
+                    price: product.price,
+                    img: product.images[0]?.url || '/placeholder.png', // Fallback image
+                    href: `/collections/details/${product.slug}`,
+                }));
             case 'Popular iPhones':
-                return popularIPhonesData;
-            case 'Popular Other Phones':
-                return popularOtherPhonesData;
+                return popularIPhones.map((product) => ({
+                    id: product.id,
+                    title: product.name,
+                    price: product.price,
+                    img: product.images[0]?.url || '/placeholder.png',
+                    href: `/collections/details/${product.slug}`,
+                }));
+            case 'Popular Laptops':
+                return popularLaptops.map((product) => ({
+                    id: product.id,
+                    title: product.name,
+                    price: product.price,
+                    img: product.images[0]?.url || '/placeholder.png',
+                    href: `/collections/details/${product.slug}`,
+                }));
             case 'Trending iPads':
-                return trendingIPadsData;
+                return trendingIPads.map((product) => ({
+                    id: product.id,
+                    title: product.name,
+                    price: product.price,
+                    img: product.images[0]?.url || '/placeholder.png',
+                    href: `/collections/details/${product.slug}`,
+                }));
             default:
-                return newArrivalsData;
+                return [];
         }
     };
 
     return (
         <div className="bg-light-gray py-8">
             <div className="container">
-                {/* heading */}
+                {/* Heading */}
                 <div className="hide-scrollbar flex w-full flex-col items-start justify-start gap-4 text-gray-700 md:justify-between">
                     <div className="flex w-full justify-between">
                         <h2 className="flex shrink-0 items-center text-lg font-bold font-heading md:text-xl">
@@ -42,7 +84,7 @@ export default function PopularDevices() {
                     </div>
                     <div className="flex w-full flex-row justify-between">
                         <div className="hide-scrollbar flex w-fit items-center gap-2 overflow-x-scroll font-extrabold">
-                            {popularDeviceTypesData.map(({ id, name }) => (
+                            {popularDeviceTypes.map(({ id, name }) => (
                                 <button
                                     key={id}
                                     type="button"
@@ -55,19 +97,9 @@ export default function PopularDevices() {
                                 </button>
                             ))}
                         </div>
-                        <div className="hidden items-center gap-2 lg:flex">
-                            <div className="relative">
-                                <Button variant="text" className="text-sm font-extrabold after:left-0">
-                                    See all {activeTab}
-                                </Button>
-                            </div>
-                            <div className="w-3 lg:block">
-                                <RiArrowRightSLine size={20} />
-                            </div>
-                        </div>
                     </div>
                 </div>
-                {/* content */}
+                {/* Content */}
                 <div className="relative mt-3 sm:mt-4 md:mt-5">
                     <div>
                         <DeviceSlider key={activeTab} data={getDeviceData()} />

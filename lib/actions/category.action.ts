@@ -10,10 +10,38 @@ type CurrentState = { success: boolean; error: boolean };
 
 export const getCategories = async () => {
     try {
-        const categories = await prisma.category.findMany({});
+        const categories = await prisma.category.findMany({
+            include: {
+                images: {
+                    select: { url: true },
+                },
+            },
+        });
         return categories;
     } catch (error) {
         console.error(error);
+    }
+};
+
+export const getRandomCategories = async (limit: number = 5) => {
+    try {
+        // Lấy tất cả categories
+        const categories = await prisma.category.findMany({
+            include: {
+                images: {
+                    select: { url: true },
+                },
+            },
+        });
+
+        // Xáo trộn danh sách categories và lấy `limit` phần tử đầu tiên
+        const shuffledCategories = categories.sort(() => Math.random() - 0.5);
+        const randomCategories = shuffledCategories.slice(0, limit);
+
+        return randomCategories;
+    } catch (error) {
+        console.error('Error fetching random categories:', error);
+        return [];
     }
 };
 
