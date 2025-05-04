@@ -124,18 +124,19 @@ export default function CategoryModal({ isOpen, setIsOpen }: CategoryModalType) 
                         <div>
                             <h3 className="font-semibold font-heading mb-1">Trending</h3>
                             <ul>
-                                {trendingCategories.map(({ id, name }) => (
-                                    <li
-                                        key={id}
-                                        className="text-black py-1.5 group/nav-item relative isolate cursor-pointer"
-                                        onClick={(e) => e.stopPropagation()}
-                                    >
-                                        <div className="relative isolate">
-                                            <span className="text-sm group-hover/nav-item:pl-4 transition-all duration-500 capitalize">
-                                                {name}
-                                            </span>
-                                        </div>
-                                        <div className="absolute w-full h-0 bg-gray-100 group-hover/nav-item:h-full transition-all duration-500 bottom-0 -z-10"></div>
+                                {trendingCategories.map(({ id, name, slug }) => (
+                                    <li key={id} onClick={(e) => e.stopPropagation()}>
+                                        <Link
+                                            href={`/collections/list/${slug}`}
+                                            className="text-black py-1.5 group/nav-item relative isolate cursor-pointer block"
+                                        >
+                                            <div className="relative isolate">
+                                                <span className="text-sm group-hover/nav-item:pl-4 transition-all duration-500 capitalize">
+                                                    {name}
+                                                </span>
+                                            </div>
+                                            <div className="absolute w-full h-0 bg-gray-100 group-hover/nav-item:h-full transition-all duration-500 bottom-0 -z-10"></div>
+                                        </Link>
                                     </li>
                                 ))}
                             </ul>
@@ -144,20 +145,23 @@ export default function CategoryModal({ isOpen, setIsOpen }: CategoryModalType) 
                         <div>
                             <h3 className="font-semibold font-heading mt-4 mb-1">All Categories</h3>
                             <ul>
-                                {categories.slice(0, showAllCategories ? categories.length : 5).map(({ id, name }) => (
-                                    <li
-                                        key={id}
-                                        className="text-black py-1.5 group/nav-item relative isolate cursor-pointer"
-                                        onClick={(e) => e.stopPropagation()}
-                                    >
-                                        <div className="relative isolate">
-                                            <span className="text-sm group-hover/nav-item:pl-4 transition-all duration-500 capitalize">
-                                                {name}
-                                            </span>
-                                        </div>
-                                        <div className="absolute w-full h-0 bg-gray-100 group-hover/nav-item:h-full transition-all duration-500 bottom-0 -z-10"></div>
-                                    </li>
-                                ))}
+                                {categories
+                                    .slice(0, showAllCategories ? categories.length : 5)
+                                    .map(({ id, name, slug }) => (
+                                        <li key={id} onClick={(e) => e.stopPropagation()}>
+                                            <Link
+                                                href={`collections/list/${slug}`}
+                                                className="text-black py-1.5 group/nav-item relative isolate cursor-pointer block"
+                                            >
+                                                <div className="relative isolate">
+                                                    <span className="text-sm group-hover/nav-item:pl-4 transition-all duration-500 capitalize">
+                                                        {name}
+                                                    </span>
+                                                </div>
+                                                <div className="absolute w-full h-0 bg-gray-100 group-hover/nav-item:h-full transition-all duration-500 bottom-0 -z-10"></div>
+                                            </Link>
+                                        </li>
+                                    ))}
                                 <li
                                     className="text-black py-1.5 group/nav-item relative isolate cursor-pointer"
                                     onClick={(e) => {
@@ -201,18 +205,22 @@ export default function CategoryModal({ isOpen, setIsOpen }: CategoryModalType) 
                                         <div className="absolute w-full h-0 bg-gray-100 group-hover/nav-item:h-full transition-all duration-500 bottom-0 -z-10"></div>
                                     </li>
                                     <li
-                                        className="text-black py-2 group/nav-item relative isolate cursor-pointer"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                         }}
                                     >
-                                        <div className="relative isolate">
-                                            <span className="text-sm group-hover/nav-item:pl-4 transition-all duration-500 flex items-center gap-1">
-                                                <PiShoppingBagOpenLight size={14} />
-                                                <span className="ml-2">My Orders</span>
-                                            </span>
-                                        </div>
-                                        <div className="absolute w-full h-0 bg-gray-100 group-hover/nav-item:h-full transition-all duration-500 bottom-0 -z-10"></div>
+                                        <Link
+                                            href={'/my-orders'}
+                                            className="text-black py-2 group/nav-item relative isolate cursor-pointer block"
+                                        >
+                                            <div className="relative isolate">
+                                                <span className="text-sm group-hover/nav-item:pl-4 transition-all duration-500 flex items-center gap-1">
+                                                    <PiShoppingBagOpenLight size={14} />
+                                                    <span className="ml-2">My Orders</span>
+                                                </span>
+                                            </div>
+                                            <div className="absolute w-full h-0 bg-gray-100 group-hover/nav-item:h-full transition-all duration-500 bottom-0 -z-10"></div>
+                                        </Link>
                                     </li>
                                     <li
                                         className="text-black py-2 group/nav-item relative isolate cursor-pointer"

@@ -42,7 +42,7 @@ export default function DeviceSlider({ data }: DeviceSliderProps) {
                     <SwiperSlide key={id}>
                         <Link
                             href={href}
-                            className="flex h-full w-full flex-col items-center justify-center rounded-xl border bg-white"
+                            className="flex h-full w-full flex-col items-center justify-center rounded-xl border bg-white group/device-popular transition-all duration-300"
                         >
                             <div className="block w-full px-2 py-4 xs:px-3 sm:py-5">
                                 <div className="relative pb-[75%]">
@@ -54,7 +54,7 @@ export default function DeviceSlider({ data }: DeviceSliderProps) {
                                                 width={200}
                                                 height={200}
                                                 sizes="100vw"
-                                                className="object-contain"
+                                                className="object-contain group-hover/device-popular:scale-95 transition-all duration-300"
                                                 style={{
                                                     position: 'absolute',
                                                     height: '100%',

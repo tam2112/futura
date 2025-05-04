@@ -10,7 +10,13 @@ type CurrentState = { success: boolean; error: boolean };
 
 export const getProducts = async () => {
     try {
-        const products = await prisma.product.findMany({});
+        const products = await prisma.product.findMany({
+            include: {
+                images: {
+                    select: { url: true },
+                },
+            },
+        });
         return products;
     } catch (error) {
         console.error(error);

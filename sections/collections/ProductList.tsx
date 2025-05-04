@@ -377,7 +377,7 @@ export default function ProductList({ initialProducts, showCategoriesFilter = fa
                                 {products.map(({ id, name, images, price, priceWithDiscount, slug, promotions }) => (
                                     <div
                                         key={id}
-                                        className="mr-[-1px] mb-[-1px] flex flex-col border border-gray-100 bg-white px-2 pt-5 pb-3 xs:px-4 xs:pt-7 xs:pb-3"
+                                        className="mr-[-1px] mb-[-1px] flex flex-col border border-gray-100 bg-white px-2 pt-5 pb-3 xs:px-4 xs:pt-7 xs:pb-3 group/collections-device"
                                     >
                                         <Link href={`/collections/details/${slug}`}>
                                             <div className="flex h-full flex-col gap-3">
@@ -388,7 +388,7 @@ export default function ProductList({ initialProducts, showCategoriesFilter = fa
                                                             alt={`${name}-${id}`}
                                                             width={280}
                                                             height={120}
-                                                            className="h-[18vw] object-contain xs:h-[13vw] sm:h-[10vw] lg:h-[7vw] xl:h-[95px]"
+                                                            className="h-[18vw] object-contain xs:h-[13vw] sm:h-[10vw] lg:h-[7vw] xl:h-[95px] group-hover/collections-device:scale-95 transition-all duration-300"
                                                         />
                                                     </div>
                                                 </div>

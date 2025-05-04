@@ -62,7 +62,7 @@ export default function ProductDetailsForm({
                     <div className="flex flex-col gap-3">
                         <div className="flex items-center text-base justify-between">
                             <h2 className="font-medium">Product name</h2>
-                            <p>{data?.name || '-'}</p>
+                            <p className="max-w-[420px] line-clamp-2 text-right">{data?.name || '-'}</p>
                         </div>
                         <div className="flex items-center text-base justify-between">
                             <h2 className="font-medium">Price</h2>

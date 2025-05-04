@@ -1,14 +1,25 @@
+'use client';
+
 import Image from 'next/image';
-import { CiBellOn, CiSearch } from 'react-icons/ci';
+import { CiBellOn, CiViewBoard } from 'react-icons/ci';
+import { Tooltip } from 'react-tooltip';
+import Cookies from 'js-cookie';
 
 export default function Header() {
+    const fullName = Cookies.get('fullName') || 'Robert';
+    const role = Cookies.get('role') || 'Admin';
+
     return (
-        <div className="ml-[270px] pt-[15px] mr-[30px] pb-[15px] flex justify-between items-center">
-            {/* search input */}
-            <div className="relative border border-slate-400 rounded-full max-w-[240px]">
-                <CiSearch className="absolute top-1/2 -translate-y-1/2 left-1" />
-                <input type="text" placeholder="Search..." className="bg-transparent outline-none pl-7 py-1 text-sm" />
+        <div className="ml-[280px] pt-[20px] mr-[30px] pb-[15px] flex justify-between items-center">
+            {/* On/Off sidebar */}
+            <div
+                className="relative bg-white p-1.5 rounded-full cursor-pointer"
+                data-tooltip-id="view-tooltip"
+                data-tooltip-content="On/Off sidebar"
+            >
+                <CiViewBoard size={20} />
             </div>
+            <Tooltip id="view-tooltip" />
             {/* interactive */}
             <div className="flex items-center gap-5">
                 <div className="relative bg-white p-1.5 rounded-full">
@@ -18,8 +29,8 @@ export default function Header() {
                     </div>
                 </div>
                 <div>
-                    <h4 className="text-sm font-semibold">Robert</h4>
-                    <p className="text-[10px] text-right text-gray-400 leading-none">Admin</p>
+                    <h4 className="text-sm font-semibold capitalize">{fullName}</h4>
+                    <p className="text-[10px] text-right text-gray-400 leading-none capitalize">{role}</p>
                 </div>
                 <div>
                     <Image src="/default-avatar.png" alt="" width={24} height={24} className="rounded-full" />

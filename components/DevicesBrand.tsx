@@ -18,7 +18,7 @@ export default function DevicesBrand({ data }: DevicesBrandProps) {
         <div className="hidden lg:grid lg:grid-cols-2 lg:grid-rows-2 lg:gap-2">
             {data.map(({ id, title, price, img, href }) => (
                 <Link href={href} key={id}>
-                    <div className="relative flex h-full w-full flex-col justify-start rounded-md border border-gray-200 bg-white px-3 py-2 lg:py-0">
+                    <div className="relative flex h-full w-full flex-col justify-start rounded-md border border-gray-200 bg-white px-3 py-2 lg:py-0 group/official-store">
                         <div className="mt-3 flex items-center justify-between">
                             <div className="flex items-center gap-1.5 rounded-md bg-[#F5FFFF] px-1 py-1.5 text-xs text-[#497B7D]">
                                 <div className="h-3.5 w-3.5">
@@ -35,7 +35,7 @@ export default function DevicesBrand({ data }: DevicesBrandProps) {
                                         alt={title}
                                         width={100}
                                         height={100}
-                                        className="h-full w-full object-contain"
+                                        className="h-full w-full object-contain group-hover/official-store:scale-105 transition-all duration-300"
                                     />
                                 </div>
                             </div>

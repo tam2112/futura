@@ -88,7 +88,7 @@ export default function PopularDevices() {
                                 <button
                                     key={id}
                                     type="button"
-                                    className={`h-8 whitespace-nowrap rounded-full px-5 text-xs transition duration-150 ease-in-out ${
+                                    className={`h-8 whitespace-nowrap rounded-full px-5 text-xs transition duration-150 ease-in-out hover:bg-gradient-light ${
                                         activeTab === name ? 'bg-gradient-light' : 'bg-white'
                                     }`}
                                     onClick={() => setActiveTab(name)}

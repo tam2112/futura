@@ -31,7 +31,6 @@ import { deleteCpu } from '@/lib/actions/technical/cpu.action';
 import { deleteScreenSize } from '@/lib/actions/technical/screen-size.action';
 import { deleteType } from '@/lib/actions/technical/type.action';
 import { deleteProduct } from '@/lib/actions/product.action';
-import ProductDetailsForm from './content/ProductDetailsForm';
 import { deletePromotion } from '@/lib/actions/promotion.action';
 import { deleteStatus } from '@/lib/actions/status.action';
 
@@ -66,6 +65,27 @@ const CategoryForm = dynamic(() => import('./content/CategoryForm'), {
     ),
 });
 const ProductForm = dynamic(() => import('./content/ProductForm'), {
+    loading: () => (
+        <div className="flex justify-center items-center">
+            <Loader />
+        </div>
+    ),
+});
+const ProductDetailsForm = dynamic(() => import('./content/ProductDetailsForm'), {
+    loading: () => (
+        <div className="flex justify-center items-center">
+            <Loader />
+        </div>
+    ),
+});
+const OrderDetailsForm = dynamic(() => import('./content/OrderDetailsForm'), {
+    loading: () => (
+        <div className="flex justify-center items-center">
+            <Loader />
+        </div>
+    ),
+});
+const OrderUpdateForm = dynamic(() => import('./content/OrderUpdateForm'), {
     loading: () => (
         <div className="flex justify-center items-center">
             <Loader />
@@ -203,6 +223,15 @@ const forms: {
     status: (setOpen, type, data, relatedData) => (
         <StatusForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     ),
+    order: (setOpen, type, data, relatedData) => {
+        if (type === 'details') {
+            return <OrderDetailsForm data={data} setOpen={setOpen} relatedData={relatedData} />;
+        }
+        if (type === 'update') {
+            return <OrderUpdateForm data={data} setOpen={setOpen} relatedData={relatedData} />;
+        }
+        return <div>Form not available</div>;
+    },
 
     // technical
     brand: (setOpen, type, data, relatedData) => (

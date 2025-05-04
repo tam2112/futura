@@ -5,6 +5,8 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { HiOutlineXMark } from 'react-icons/hi2';
 import { twMerge } from 'tailwind-merge';
 import CartItem from '../cart/CartItem';
+import { useStore } from '@/context/StoreContext';
+import CheckoutModal from './CheckoutModal';
 
 type CartModalType = {
     isOpenCart: boolean;
@@ -14,9 +16,12 @@ type CartModalType = {
 export default function CartModal({ isOpenCart, setIsOpenCart }: CartModalType) {
     const [cartScope, cartAnimate] = useAnimate();
     const [showOverlay, setShowOverlay] = useState(false);
+    const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+    const { cart, cartTotal, itemAmount, updateCart } = useStore();
 
     useEffect(() => {
         if (isOpenCart) {
+            updateCart();
             setShowOverlay(true);
             cartAnimate(
                 cartScope.current,
@@ -35,7 +40,7 @@ export default function CartModal({ isOpenCart, setIsOpenCart }: CartModalType) 
                 setShowOverlay(false);
             }, 500); // Thời gian delay phải khớp với thời gian transition
         }
-    }, [isOpenCart, cartAnimate, cartScope]);
+    }, [isOpenCart, cartAnimate, cartScope, updateCart]);
 
     return (
         <>
@@ -63,7 +68,7 @@ export default function CartModal({ isOpenCart, setIsOpenCart }: CartModalType) 
                     <div className="sticky bg-white z-50 top-0 left-0 right-0">
                         <div className="flex items-center justify-between border-b border-gray-200">
                             <div className="pl-4">
-                                <h2>Shopping Bag (3)</h2>
+                                <h2 className="font-heading text-lg">Shopping Bag ({itemAmount})</h2>
                             </div>
                             <div
                                 className="text-black py-5 pl-4 pr-4 border-l border-gray-200 cursor-pointer"
@@ -76,24 +81,35 @@ export default function CartModal({ isOpenCart, setIsOpenCart }: CartModalType) 
                     <div className="flex flex-col justify-between h-[90%]">
                         {/* cart item */}
                         <div className="mt-4 px-4 flex flex-col space-y-4 divide-y divide-gray-200 max-h-[525px] overflow-y-auto hide-scrollbar">
-                            <CartItem />
-                            <CartItem />
-                            <CartItem />
-                            <CartItem />
-                            <CartItem />
-                            <CartItem />
-                            <CartItem />
+                            {cart.length > 0 ? (
+                                cart.map((item) => (
+                                    <CartItem
+                                        key={item.id}
+                                        productId={item.product.id}
+                                        image={item.product.image}
+                                        name={item.product.name}
+                                        price={item.product.priceWithDiscount ?? item.product.price}
+                                        quantity={item.quantity}
+                                    />
+                                ))
+                            ) : (
+                                <div className="text-center py-4">Your cart is empty</div>
+                            )}
                         </div>
                         {/* checkout */}
                         <div className="px-6 py-3 lg:py-6 mt-auto">
                             {/* total price */}
                             <div className="flex items-center justify-between mb-6 text-lg font-semibold">
                                 <div>Total:</div>
-                                <div>$959.66</div>
+                                <div>${cartTotal.toFixed(2)}</div>
                             </div>
                             {/* btn */}
                             <div className="flex flex-col gap-y-3">
-                                <button className="py-2 bg-gradient font-semibold text-white flex justify-center rounded-md">
+                                <button
+                                    onClick={() => setIsCheckoutOpen(true)}
+                                    className="py-2 bg-gradient font-semibold text-white flex justify-center rounded-md disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+                                    disabled={cart.length === 0}
+                                >
                                     Checkout
                                 </button>
                             </div>
@@ -101,6 +117,9 @@ export default function CartModal({ isOpenCart, setIsOpenCart }: CartModalType) 
                     </div>
                 </div>
             </div>
+
+            {/* Checkout Modal */}
+            <CheckoutModal isOpen={isCheckoutOpen} setIsOpen={setIsCheckoutOpen} cartTotal={cartTotal} />
         </>
     );
 }

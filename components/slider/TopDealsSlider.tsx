@@ -38,7 +38,7 @@ export default function TopDealsSlider() {
                 {dealProducts.map(({ id, name, price, priceWithDiscount, images, promotions, slug }, index) => (
                     <SwiperSlide key={id}>
                         <Link href={`/collections/details/${slug}`}>
-                            <div className="flex h-full w-full cursor-pointer flex-col rounded-xl bg-white p-4">
+                            <div className="flex h-full w-full cursor-pointer flex-col rounded-xl bg-white p-4 group/top-deal">
                                 {/* Order */}
                                 <div className="absolute -right-3 -top-3 flex h-9 w-9 items-center justify-center rounded-full border-4 border-gray-200 bg-gradient-light text-xs text-cover-deals">
                                     #<span className="ml-[1px] font-heading font-bold">{index + 1}</span>
@@ -52,7 +52,7 @@ export default function TopDealsSlider() {
                                                 alt={name}
                                                 width={100}
                                                 height={100}
-                                                className="h-full w-full object-contain"
+                                                className="h-full w-full object-contain group-hover/top-deal:scale-105 transition-all duration-300"
                                             />
                                         </div>
                                     </div>

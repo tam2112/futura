@@ -6,6 +6,8 @@ import { getMessages } from 'next-intl/server';
 import { AuthProvider } from '@/context/AuthContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { CartProvider } from '@/context/CartContext';
+import { StoreContextProvider } from '@/context/StoreContext';
 
 const sora = Sora({
     subsets: ['latin'],
@@ -32,14 +34,20 @@ export default async function RootLayout({
 
     return (
         <NextIntlClientProvider messages={messages}>
-            <AuthProvider>
-                <html lang="en">
-                    <body className={`${sora.variable} ${spaceGroteskFont.variable} font-body antialiased scrollbar`}>
-                        {children}
-                        <ToastContainer position="top-right" theme="light" />
-                    </body>
-                </html>
-            </AuthProvider>
+            <StoreContextProvider>
+                <AuthProvider>
+                    <CartProvider>
+                        <html lang="en">
+                            <body
+                                className={`${sora.variable} ${spaceGroteskFont.variable} font-body antialiased scrollbar`}
+                            >
+                                {children}
+                                <ToastContainer position="top-right" theme="light" />
+                            </body>
+                        </html>
+                    </CartProvider>
+                </AuthProvider>
+            </StoreContextProvider>
         </NextIntlClientProvider>
     );
 }

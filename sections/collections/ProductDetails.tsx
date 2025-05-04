@@ -13,6 +13,8 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { useRef, useState } from 'react';
 import DeviceSliderBtn from '@/components/slider/DeviceSliderBtn';
+import { useStore } from '@/context/StoreContext';
+import { twMerge } from 'tailwind-merge';
 
 type Product = {
     id: string;
@@ -34,6 +36,7 @@ type Product = {
     screenSize?: { id: string; name: string };
     type?: { id: string; name: string };
     category: { name: string; slug: string };
+    status?: { id: string; name: string };
     promotions?: { percentageNumber: number }[];
 };
 
@@ -45,6 +48,7 @@ type ProductDetailsProps = {
 export default function ProductDetails({ product, relatedProducts }: ProductDetailsProps) {
     const [selectedImage, setSelectedImage] = useState(product.images[0]?.url || '/placeholder.png');
     const swiperRef = useRef<SwiperType | null>(null);
+    const { handleAddToCart } = useStore();
 
     // Tạo breadcrumb động từ category
     const breadcrumbs = [
@@ -117,8 +121,15 @@ export default function ProductDetails({ product, relatedProducts }: ProductDeta
                                             </Link>
                                         </div>
                                         <div className="text-sm lg:hidden">
-                                            <span className="mr-2 text-xs">1,654 Sold</span>
-                                            <span className="text-xs font-bold text-gray-700">Selling Fast!</span>
+                                            <span className="mr-2 text-xs">Already {product.quantity}</span>
+                                            <span
+                                                className={twMerge(
+                                                    'text-xs p-2 rounded-lg',
+                                                    product.status?.name === 'In stock' ? 'bg-teal-400' : 'bg-rose-400',
+                                                )}
+                                            >
+                                                {product.status?.name}
+                                            </span>
                                         </div>
                                     </div>
                                     {/* Desktop Info */}
@@ -129,8 +140,15 @@ export default function ProductDetails({ product, relatedProducts }: ProductDeta
                                         </div>
                                     </div>
                                     <div className="hidden text-sm lg:block">
-                                        <span className="mr-2 text-xs">1,654 Sold</span>
-                                        <span className="text-xs font-bold text-gray-700">Selling Fast!</span>
+                                        <span className="mr-2 text-xs">Already {product.quantity}</span>
+                                        <span
+                                            className={twMerge(
+                                                'text-xs p-2 rounded-lg text-white',
+                                                product.status?.name === 'In stock' ? 'bg-teal-400' : 'bg-rose-400',
+                                            )}
+                                        >
+                                            {product.status?.name}
+                                        </span>
                                     </div>
                                 </div>
                                 {/* Image Body */}
@@ -220,7 +238,10 @@ export default function ProductDetails({ product, relatedProducts }: ProductDeta
                                     </div>
                                     <div className="hidden w-full items-center gap-3 lg:flex">
                                         <div className="grid flex-1 grid-cols-1 gap-1.5 py-0.5">
-                                            <button className="sm:text-base font-bold p-0 h-11 sm:h-auto text-sm xs:text-base sm:p-3 my-1 rounded-md duration-200 ease-in-out hover:opacity-90 disabled:opacity-70 bg-gradient-light hover:shadow-lg">
+                                            <button
+                                                onClick={() => handleAddToCart(product.id)}
+                                                className="sm:text-base font-bold p-0 h-11 sm:h-auto text-sm xs:text-base sm:p-3 my-1 rounded-md duration-200 ease-in-out hover:opacity-90 disabled:opacity-70 bg-gradient-light hover:shadow-lg"
+                                            >
                                                 Add to Cart
                                             </button>
                                         </div>
