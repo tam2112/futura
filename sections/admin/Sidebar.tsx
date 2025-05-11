@@ -5,12 +5,46 @@ import { Link, usePathname, useRouter } from '@/navigation';
 import { MdOutlineSpeakerNotes } from 'react-icons/md';
 import LogoWithName from '@/components/client/LogoWithName';
 import { GoChevronDown, GoChevronUp } from 'react-icons/go';
-import { sidebarMenuLinks, sidebarOtherLinks, technicalLinks } from '@/constants/sidebarLink';
 import { CiLogout } from 'react-icons/ci';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
+import { CiBoxes, CiDiscount1, CiHome, CiPenpot, CiUnlock, CiUser, CiWavePulse1 } from 'react-icons/ci';
+import { GiSmartphone } from 'react-icons/gi';
+import { PiGearThin, PiUserCircleThin } from 'react-icons/pi';
+import { useTranslations } from 'next-intl';
 
 export default function Sidebar() {
+    const t = useTranslations('Sidebar');
+
+    const sidebarMenuLinks = [
+        { name: t('home'), icon: <CiHome width={18} height={18} />, path: '/admin' },
+        { name: t('user'), icon: <CiUser width={18} height={18} />, path: '/admin/user/list' },
+        { name: t('category'), icon: <CiPenpot width={18} height={18} />, path: '/admin/category/list' },
+        { name: t('product'), icon: <GiSmartphone width={18} height={18} />, path: '/admin/product/list' },
+        { name: t('promotion'), icon: <CiDiscount1 width={18} height={18} />, path: '/admin/promotion/list' },
+        { name: t('order'), icon: <CiBoxes width={18} height={18} />, path: '/admin/order/list' },
+        { name: t('status'), icon: <CiWavePulse1 width={18} height={18} />, path: '/admin/status/list' },
+        { name: t('role'), icon: <CiUnlock width={18} height={18} />, path: '/admin/role/list' },
+    ];
+
+    const technicalLinks = [
+        { name: t('brand'), path: '/admin/technical/brand/list' },
+        { name: t('color'), path: '/admin/technical/color/list' },
+        { name: t('storage'), path: '/admin/technical/storage/list' },
+        { name: t('connectivity'), path: '/admin/technical/connectivity/list' },
+        { name: t('simSlot'), path: '/admin/technical/sim-slot/list' },
+        { name: t('batteryHealth'), path: '/admin/technical/battery-health/list' },
+        { name: t('ram'), path: '/admin/technical/ram/list' },
+        { name: t('cpu'), path: '/admin/technical/cpu/list' },
+        { name: t('screenSize'), path: '/admin/technical/screen-size/list' },
+        { name: t('type'), path: '/admin/technical/type/list' },
+    ];
+
+    const sidebarOtherLinks = [
+        { name: t('profile'), icon: <PiUserCircleThin width={18} height={18} />, path: '/admin/profile' },
+        { name: t('settings'), icon: <PiGearThin width={18} height={18} />, path: '/admin/settings' },
+    ];
+
     const { logout } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
@@ -37,7 +71,7 @@ export default function Sidebar() {
             <div className="flex flex-col gap-10">
                 {/* menu */}
                 <div className="flex flex-col gap-3">
-                    <h2 className="font-heading font-semibold px-3">Menu</h2>
+                    <h2 className="font-heading font-semibold px-3">{t('menu')}</h2>
                     {/* list */}
                     <div className="space-y-1">
                         {sidebarMenuLinks.map((item, index) => (
@@ -65,7 +99,7 @@ export default function Sidebar() {
                             >
                                 <MdOutlineSpeakerNotes width={18} height={18} />
                                 <span className="flex items-center w-full">
-                                    Technical{' '}
+                                    {t('technical')}{' '}
                                     {isTechnicalOpen ? (
                                         <GoChevronUp size={18} className="ml-auto" />
                                     ) : (
@@ -117,7 +151,7 @@ export default function Sidebar() {
                 </div>
                 {/* others */}
                 <div className="flex flex-col gap-3">
-                    <h2 className="font-heading font-semibold px-1">Others</h2>
+                    <h2 className="font-heading font-semibold px-1">{t('others')}</h2>
                     <div className="space-y-1">
                         {sidebarOtherLinks.map((item, index) => (
                             <Link
@@ -134,7 +168,7 @@ export default function Sidebar() {
                             className="cursor-pointer flex gap-3 items-center bg-white py-2 px-4 hover:bg-gradient-light hover:text-white hover:font-semibold rounded-lg transition-all duration-300"
                         >
                             <CiLogout width={18} height={18} />
-                            Logout
+                            {t('logout')}
                         </div>
                     </div>
                 </div>

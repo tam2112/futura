@@ -15,6 +15,7 @@ import { categorySchema, CategorySchema } from '@/lib/validation/category.form';
 import InputField from '@/components/form/InputField';
 import FileUploadDropzone from '@/components/FileUploadDropzone';
 import { uploadImagesToCloudinary } from '@/lib/upload';
+import { useLocale, useTranslations } from 'next-intl';
 // import { uploadFileToServer } from '@/lib/upload';
 // import { uploadImages } from '@/lib/actions/image.action';
 
@@ -28,12 +29,16 @@ export default function CategoryForm({
     setOpen: Dispatch<SetStateAction<boolean>>;
     relatedData?: any;
 }) {
+    const t = useTranslations('CategoryForm');
+    const locale = useLocale() as 'en' | 'vi';
+    const createCategorySchema = categorySchema(locale);
+
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm<CategorySchema>({
-        resolver: zodResolver(categorySchema),
+        resolver: zodResolver(createCategorySchema),
     });
 
     const [files, setFiles] = useState<File[]>([]);
@@ -59,7 +64,7 @@ export default function CategoryForm({
             try {
                 imageUrls = await uploadImagesToCloudinary(files);
             } catch (error) {
-                toast.error('Failed to upload images');
+                toast.error(t('uploadImageFailed'));
                 return;
             }
         } else if (type === 'update') {
@@ -68,7 +73,7 @@ export default function CategoryForm({
         }
 
         // Gửi dữ liệu với danh sách URL thay vì File[]
-        const dataWithImageUrls = { ...formData, imageUrls };
+        const dataWithImageUrls = { ...formData, imageUrls, locale };
         formAction(dataWithImageUrls);
     });
 
@@ -76,22 +81,22 @@ export default function CategoryForm({
 
     useEffect(() => {
         if (state.success) {
-            toast(`Category has been ${type === 'create' ? 'created' : 'updated'}`);
+            toast(t('createSuccess', { type: type === 'create' ? t('created') : t('updated') }));
             setOpen(false);
             router.refresh();
         } else {
             toast.error(state.message);
         }
-    }, [state, type, router, setOpen]);
+    }, [state, type, router, setOpen, t]);
 
     return (
         <form method="POST" className="flex flex-col gap-8" onSubmit={onSubmit}>
             <h1 className="text-lg font-heading font-semibold">
-                {type === 'create' ? 'Create a new category' : 'Update the category'}
+                {type === 'create' ? t('createTitle') : t('updateTitle')}
             </h1>
             <div className="flex justify-between flex-wrap gap-4">
                 <InputField
-                    label="Category name"
+                    label={t('categoryName')}
                     name="name"
                     defaultValue={data?.name}
                     register={register}
@@ -99,7 +104,7 @@ export default function CategoryForm({
                     hideIcon
                 />
                 <InputField
-                    label="Description"
+                    label={t('description')}
                     name="description"
                     defaultValue={data?.description}
                     register={register}
@@ -118,7 +123,7 @@ export default function CategoryForm({
                 )}
             </div>
             <div>
-                <h2>Image</h2>
+                <h2>{t('image')}</h2>
                 <FileUploadDropzone
                     files={files}
                     setFiles={setFiles}
@@ -127,7 +132,9 @@ export default function CategoryForm({
                 />
             </div>
 
-            <button className="bg-gradient-light p-2 rounded-md">{type === 'create' ? 'Create' : 'Update'}</button>
+            <button className="bg-gradient-light p-2 rounded-md">
+                {type === 'create' ? t('create') : t('update')}
+            </button>
         </form>
     );
 }

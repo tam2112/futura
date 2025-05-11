@@ -5,8 +5,11 @@ import { useState } from 'react';
 import { CiUndo } from 'react-icons/ci';
 import Loader from '@/components/Loader';
 import { Tooltip } from 'react-tooltip';
+import { useTranslations } from 'next-intl';
 
 export default function ReloadButton() {
+    const t = useTranslations('Common');
+
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -37,7 +40,7 @@ export default function ReloadButton() {
                 className="size-8 flex items-center justify-center rounded-full bg-slate-200 hover:bg-gradient-lighter transition-all duration-300 disabled:opacity-50"
                 disabled={isLoading}
                 data-tooltip-id="reload-tooltip"
-                data-tooltip-content="Reload"
+                data-tooltip-content={t('reload')}
             >
                 <CiUndo width={14} height={14} />
             </button>

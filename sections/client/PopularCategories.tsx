@@ -2,10 +2,13 @@
 
 import { Link } from '@/navigation';
 import { useCategoryStore } from '@/store/categoryStore';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useEffect } from 'react';
 
 export default function PopularCategories() {
+    const t = useTranslations('PopularCategories');
+
     const { popularCategories, fetchPopularCategories } = useCategoryStore();
 
     useEffect(() => {
@@ -16,7 +19,7 @@ export default function PopularCategories() {
     return (
         <div className="py-8 pb-16">
             <div className="container">
-                <h2 className="text-xl font-heading font-bold">Popular Categories</h2>
+                <h2 className="text-xl font-heading font-bold">{t('title')}</h2>
                 <div>
                     <div className="mt-6 gap-x-5 gap-y-8 md:grid md:grid-cols-5 lg:grid-cols-7">
                         {popularCategories.map((cat) => (
@@ -33,7 +36,9 @@ export default function PopularCategories() {
                                             />
                                         </div>
                                     </div>
-                                    <h3 className="mt-3 w-full truncate text-center text-sm capitalize">{cat.name}</h3>
+                                    <h3 className="mt-3 w-full truncate text-center text-sm capitalize">
+                                        {t(`${cat.name}`)}
+                                    </h3>
                                 </div>
                             </Link>
                         ))}

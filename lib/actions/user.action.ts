@@ -9,12 +9,14 @@ import { loginSchema, LoginSchema, UserSchema, signUpSchema, SignUpSchema } from
 import prisma from '../prisma';
 import { generateToken } from '../auth';
 import { revalidatePath } from 'next/cache';
+import { messages } from '../messages';
 
 type CurrentState = { success: boolean; error: boolean };
 
 export const signUpUser = async (
     currentState: CurrentState,
     data: SignUpSchema,
+    locale: 'en' | 'vi' = 'en',
 ): Promise<{
     success: boolean;
     error: boolean;
@@ -24,8 +26,8 @@ export const signUpUser = async (
     user?: any;
 }> => {
     try {
-        // Xác thực dữ liệu đầu vào
-        signUpSchema.parse(data);
+        const t = messages[locale].SignUpPage;
+        signUpSchema(locale).parse(data);
 
         // check username exists
         const existingName = await prisma.user.findUnique({
@@ -35,7 +37,7 @@ export const signUpUser = async (
             return {
                 success: false,
                 error: true,
-                message: 'Full name is already exists',
+                message: t.fullNameExists,
             };
         }
 
@@ -47,7 +49,7 @@ export const signUpUser = async (
             return {
                 success: false,
                 error: true,
-                message: 'Email is already exists',
+                message: t.emailExists,
             };
         }
 
@@ -101,9 +103,10 @@ export const signUpUser = async (
     }
 };
 
-export const signInUser = async (currentState: CurrentState, data: LoginSchema) => {
+export const signInUser = async (currentState: CurrentState, data: LoginSchema, locale: 'en' | 'vi' = 'en') => {
     try {
-        loginSchema.parse(data);
+        const t = messages[locale].SignInPage;
+        loginSchema(locale).parse(data);
 
         const user = await prisma.user.findUnique({
             where: { email: data.email },
@@ -114,7 +117,7 @@ export const signInUser = async (currentState: CurrentState, data: LoginSchema) 
             return {
                 success: false,
                 error: true,
-                message: 'Email not exist!',
+                message: t.emailNotExist,
             };
         }
 
@@ -123,7 +126,7 @@ export const signInUser = async (currentState: CurrentState, data: LoginSchema) 
             return {
                 success: false,
                 error: true,
-                message: 'Password not match!',
+                message: t.passwordNotMatch,
             };
         }
 
@@ -149,7 +152,7 @@ export const signInUser = async (currentState: CurrentState, data: LoginSchema) 
         };
     } catch (error) {
         console.error('Error in signInUser:', error);
-        return { success: false, error: true };
+        return { success: false, error: true, message: messages[locale].SignInPage.signInFailed };
     }
 };
 
@@ -162,7 +165,9 @@ export const getUsers = async () => {
     }
 };
 
-export const createUser = async (currentState: CurrentState, data: UserSchema) => {
+export const createUser = async (currentState: CurrentState, data: UserSchema & { locale?: 'en' | 'vi' }) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].UserForm;
     try {
         await prisma.user.create({
             data: {
@@ -182,14 +187,16 @@ export const createUser = async (currentState: CurrentState, data: UserSchema) =
             return {
                 success: false,
                 error: true,
-                message: 'User full name/email already exists',
+                message: t.nameOrEmailExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to create user' };
+        return { success: false, error: true, message: t.createFailed };
     }
 };
 
-export const updateUser = async (currentState: CurrentState, data: UserSchema) => {
+export const updateUser = async (currentState: CurrentState, data: UserSchema & { locale?: 'en' | 'vi' }) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].UserForm;
     try {
         await prisma.user.update({
             where: {
@@ -212,10 +219,10 @@ export const updateUser = async (currentState: CurrentState, data: UserSchema) =
             return {
                 success: false,
                 error: true,
-                message: 'User full name/email already exists',
+                message: t.nameOrEmailExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to update user' };
+        return { success: false, error: true, message: t.updateFailed };
     }
 };
 

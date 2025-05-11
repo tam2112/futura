@@ -7,6 +7,7 @@ import { twMerge } from 'tailwind-merge';
 import CartItem from '../cart/CartItem';
 import { useStore } from '@/context/StoreContext';
 import CheckoutModal from './CheckoutModal';
+import { useTranslations } from 'next-intl';
 
 type CartModalType = {
     isOpenCart: boolean;
@@ -14,6 +15,8 @@ type CartModalType = {
 };
 
 export default function CartModal({ isOpenCart, setIsOpenCart }: CartModalType) {
+    const t = useTranslations('CartModal');
+
     const [cartScope, cartAnimate] = useAnimate();
     const [showOverlay, setShowOverlay] = useState(false);
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -68,7 +71,9 @@ export default function CartModal({ isOpenCart, setIsOpenCart }: CartModalType) 
                     <div className="sticky bg-white z-50 top-0 left-0 right-0">
                         <div className="flex items-center justify-between border-b border-gray-200">
                             <div className="pl-4">
-                                <h2 className="font-heading text-lg">Shopping Bag ({itemAmount})</h2>
+                                <h2 className="font-heading text-lg">
+                                    {t('shoppingBag')} ({itemAmount})
+                                </h2>
                             </div>
                             <div
                                 className="text-black py-5 pl-4 pr-4 border-l border-gray-200 cursor-pointer"
@@ -93,14 +98,14 @@ export default function CartModal({ isOpenCart, setIsOpenCart }: CartModalType) 
                                     />
                                 ))
                             ) : (
-                                <div className="text-center py-4">Your cart is empty</div>
+                                <div className="text-center py-4">{t('cartEmpty')}</div>
                             )}
                         </div>
                         {/* checkout */}
                         <div className="px-6 py-3 lg:py-6 mt-auto">
                             {/* total price */}
                             <div className="flex items-center justify-between mb-6 text-lg font-semibold">
-                                <div>Total:</div>
+                                <div>{t('total')}:</div>
                                 <div>${cartTotal.toFixed(2)}</div>
                             </div>
                             {/* btn */}
@@ -110,7 +115,7 @@ export default function CartModal({ isOpenCart, setIsOpenCart }: CartModalType) 
                                     className="py-2 bg-gradient font-semibold text-white flex justify-center rounded-md disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
                                     disabled={cart.length === 0}
                                 >
-                                    Checkout
+                                    {t('checkout')}
                                 </button>
                             </div>
                         </div>

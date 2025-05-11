@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
+import { useTranslations } from 'next-intl';
 
 type AuthContextType = {
     isLoggedIn: boolean;
@@ -13,6 +14,8 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+    const t = useTranslations('Common');
+
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
@@ -21,7 +24,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     const logout = () => {
-        toast('Sign out successful!!');
+        toast(t('signOutSuccess'));
         Cookies.remove('token');
         Cookies.remove('userId');
         setIsLoggedIn(false);

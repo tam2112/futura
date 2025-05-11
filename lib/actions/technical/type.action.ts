@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
+import { messages } from '@/lib/messages';
 import prisma from '@/lib/prisma';
 import { TypeSchema } from '@/lib/validation/technical/type.form';
 import { revalidatePath } from 'next/cache';
@@ -31,7 +32,9 @@ export const getTypeById = async (typeId: string) => {
     }
 };
 
-export const createType = async (currentState: CurrentState, data: TypeSchema) => {
+export const createType = async (currentState: CurrentState, data: TypeSchema & { locale?: 'en' | 'vi' }) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].TypeForm;
     try {
         // Tạo Type mới
         await prisma.type.create({
@@ -48,14 +51,16 @@ export const createType = async (currentState: CurrentState, data: TypeSchema) =
             return {
                 success: false,
                 error: true,
-                message: 'Type name already exists',
+                message: t.typeNameExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to create type' };
+        return { success: false, error: true, message: t.createFailed };
     }
 };
 
-export const updateType = async (currentState: CurrentState, data: TypeSchema) => {
+export const updateType = async (currentState: CurrentState, data: TypeSchema & { locale?: 'en' | 'vi' }) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].TypeForm;
     try {
         // Cập nhật Type
         await prisma.type.update({
@@ -73,10 +78,10 @@ export const updateType = async (currentState: CurrentState, data: TypeSchema) =
             return {
                 success: false,
                 error: true,
-                message: 'Type name already exists',
+                message: t.typeNameExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to update type' };
+        return { success: false, error: true, message: t.updateFailed };
     }
 };
 

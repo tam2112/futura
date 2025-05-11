@@ -3,17 +3,20 @@
 
 import DeviceSlider from '@/components/slider/DeviceSlider';
 import { useProductStore } from '@/store/productStore';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
-const popularDeviceTypes = [
-    { id: 1, name: 'New Arrivals' },
-    { id: 2, name: 'Popular iPhones' },
-    { id: 3, name: 'Popular Laptops' },
-    { id: 4, name: 'Trending iPads' },
-];
-
 export default function PopularDevices() {
-    const [activeTab, setActiveTab] = useState<string>('New Arrivals');
+    const t = useTranslations('PopularDevices');
+
+    const popularDeviceTypes = [
+        { id: 1, name: t('newArrivals') },
+        { id: 2, name: t('popularIPhones') },
+        { id: 3, name: t('popularLaptops') },
+        { id: 4, name: t('trendingIPads') },
+    ];
+
+    const [activeTab, setActiveTab] = useState<string>(t('newArrivals'));
     const {
         newArrivals,
         popularIPhones,
@@ -35,7 +38,7 @@ export default function PopularDevices() {
 
     const getDeviceData = () => {
         switch (activeTab) {
-            case 'New Arrivals':
+            case t('newArrivals'):
                 return newArrivals.map((product) => ({
                     id: product.id,
                     title: product.name,
@@ -43,7 +46,7 @@ export default function PopularDevices() {
                     img: product.images[0]?.url || '/placeholder.png', // Fallback image
                     href: `/collections/details/${product.slug}`,
                 }));
-            case 'Popular iPhones':
+            case t('popularIPhones'):
                 return popularIPhones.map((product) => ({
                     id: product.id,
                     title: product.name,
@@ -51,7 +54,7 @@ export default function PopularDevices() {
                     img: product.images[0]?.url || '/placeholder.png',
                     href: `/collections/details/${product.slug}`,
                 }));
-            case 'Popular Laptops':
+            case t('popularLaptops'):
                 return popularLaptops.map((product) => ({
                     id: product.id,
                     title: product.name,
@@ -59,7 +62,7 @@ export default function PopularDevices() {
                     img: product.images[0]?.url || '/placeholder.png',
                     href: `/collections/details/${product.slug}`,
                 }));
-            case 'Trending iPads':
+            case t('trendingIPads'):
                 return trendingIPads.map((product) => ({
                     id: product.id,
                     title: product.name,
@@ -79,7 +82,7 @@ export default function PopularDevices() {
                 <div className="hide-scrollbar flex w-full flex-col items-start justify-start gap-4 text-gray-700 md:justify-between">
                     <div className="flex w-full justify-between">
                         <h2 className="flex shrink-0 items-center text-lg font-bold font-heading md:text-xl">
-                            Most Popular Devices
+                            {t('title')}
                         </h2>
                     </div>
                     <div className="flex w-full flex-row justify-between">

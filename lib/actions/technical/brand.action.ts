@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
+import { messages } from '@/lib/messages';
 import prisma from '@/lib/prisma';
 import { BrandSchema } from '@/lib/validation/technical/brand.form';
 import { revalidatePath } from 'next/cache';
@@ -32,7 +33,13 @@ export const getBrandById = async (brandId: string) => {
     }
 };
 
-export const createBrand = async (currentState: CurrentState, data: BrandSchema & { imageUrls?: string[] }) => {
+export const createBrand = async (
+    currentState: CurrentState,
+    data: BrandSchema & { imageUrls?: string[] } & { locale?: 'en' | 'vi' },
+) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].BrandForm;
+
     try {
         // Tạo brand mới
         const newBrand = await prisma.brand.create({
@@ -60,14 +67,20 @@ export const createBrand = async (currentState: CurrentState, data: BrandSchema 
             return {
                 success: false,
                 error: true,
-                message: 'Brand name already exists',
+                message: t.brandNameExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to create brand' };
+        return { success: false, error: true, message: t.createFailed };
     }
 };
 
-export const updateBrand = async (currentState: CurrentState, data: BrandSchema & { imageUrls?: string[] }) => {
+export const updateBrand = async (
+    currentState: CurrentState,
+    data: BrandSchema & { imageUrls?: string[] } & { locale?: 'en' | 'vi' },
+) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].BrandForm;
+
     try {
         // Cập nhật brand
         const updatedBrand = await prisma.brand.update({
@@ -102,10 +115,10 @@ export const updateBrand = async (currentState: CurrentState, data: BrandSchema 
             return {
                 success: false,
                 error: true,
-                message: 'Brand name already exists',
+                message: t.brandNameExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to update brand' };
+        return { success: false, error: true, message: t.updateFailed };
     }
 };
 

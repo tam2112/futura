@@ -12,6 +12,7 @@ import {
 } from '@/lib/actions/cart.action';
 import { getUserIdFromCookie } from '@/lib/auth';
 import { toast } from 'react-toastify';
+import { useTranslations } from 'next-intl';
 
 type ProductType = {
     id: string;
@@ -44,6 +45,8 @@ type StoreContextType = {
 export const StoreContext = createContext<StoreContextType | null>(null);
 
 export function StoreContextProvider({ children }: { children: React.ReactNode }) {
+    const t = useTranslations('StoreContext');
+
     const [cart, setCart] = useState<CartItem[]>([]);
     const [cartTotal, setCartTotal] = useState(0);
     const [itemAmount, setItemAmount] = useState(0);
@@ -81,7 +84,7 @@ export function StoreContextProvider({ children }: { children: React.ReactNode }
             setCartTotal(cartTotal);
         } catch (error) {
             console.error('Error updating cart:', error);
-            toast.error('Failed to update cart');
+            toast.error(t('updateCartFailed'));
         }
     };
 
@@ -93,20 +96,20 @@ export function StoreContextProvider({ children }: { children: React.ReactNode }
         try {
             const userId = await getUserIdFromCookie();
             if (!userId) {
-                toast.error('Please log in to add items to cart');
+                toast.error(t('loginAddToCart'));
                 return;
             }
 
             const result = await addToCart(userId, productId);
             if (result.success) {
                 await updateCart();
-                toast.success('Item added to cart');
+                toast(t('addToCartSuccess'));
             } else {
                 toast.error(result.error);
             }
         } catch (error) {
             console.error('Error adding to cart:', error);
-            toast.error('Failed to add item to cart');
+            toast.error(t('addToCartFailed'));
         }
     };
 
@@ -118,13 +121,13 @@ export function StoreContextProvider({ children }: { children: React.ReactNode }
             const result = await removeFromCart(userId, productId);
             if (result.success) {
                 await updateCart();
-                toast.success('Item removed from cart');
+                toast(t('removeFromCartSuccess'));
             } else {
                 toast.error(result.error);
             }
         } catch (error) {
             console.error('Error removing from cart:', error);
-            toast.error('Failed to remove item from cart');
+            toast.error(t('removeFromCartFailed'));
         }
     };
 
@@ -141,7 +144,7 @@ export function StoreContextProvider({ children }: { children: React.ReactNode }
             }
         } catch (error) {
             console.error('Error increasing quantity:', error);
-            toast.error('Failed to increase quantity');
+            toast.error(t('increaseAmountFailed'));
         }
     };
 
@@ -158,7 +161,7 @@ export function StoreContextProvider({ children }: { children: React.ReactNode }
             }
         } catch (error) {
             console.error('Error decreasing quantity:', error);
-            toast.error('Failed to decrease quantity');
+            toast.error(t('decreaseAmountFailed'));
         }
     };
 

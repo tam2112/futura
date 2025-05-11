@@ -16,21 +16,25 @@ import ExportButton from '@/components/admin/ExportButton';
 import { exportProducts } from '@/lib/actions/product.action';
 import { deleteSelectedProducts } from '@/components/admin/DeleteSelectedButton';
 import { twMerge } from 'tailwind-merge';
+import { getTranslations } from 'next-intl/server';
+import ReloadButton from '@/components/admin/ReloadButton';
 
 type ProductList = Product & { images: { url: string }[] } & { category: Category } & { status: Status };
-
-const productSortOptions = [
-    { value: 'name-asc', label: 'A-Z' },
-    { value: 'name-desc', label: 'Z-A' },
-    { value: 'date-desc', label: 'Latest Release' },
-    { value: 'date-asc', label: 'Oldest Release' },
-];
 
 export default async function ProductListPage({
     searchParams,
 }: {
     searchParams: { [key: string]: string | undefined };
 }) {
+    const t = await getTranslations('ProductListAdmin');
+
+    const productSortOptions = [
+        { value: 'name-asc', label: 'A-Z' },
+        { value: 'name-desc', label: 'Z-A' },
+        { value: 'date-desc', label: t('latestRelease') },
+        { value: 'date-asc', label: t('oldRelease') },
+    ];
+
     const { page, sort, ...queryParams } = searchParams;
     const p = page ? parseInt(page) : 1;
 
@@ -90,11 +94,11 @@ export default async function ProductListPage({
     // Define columns after data is initialized
     const columns = [
         { header: <CheckboxHeader itemIds={data.map((item) => item.id)} />, accessor: 'check' },
-        { header: 'Image', accessor: 'img' },
-        { header: 'Name', accessor: 'name', className: 'hidden md:table-cell' },
-        { header: 'Description', accessor: 'description', className: 'hidden md:table-cell' },
-        { header: 'Category', accessor: 'category', className: 'hidden md:table-cell' },
-        { header: 'Status', accessor: 'status', className: 'hidden md:table-cell' },
+        { header: t('image'), accessor: 'img' },
+        { header: t('name'), accessor: 'name', className: 'hidden md:table-cell' },
+        { header: t('description'), accessor: 'description', className: 'hidden md:table-cell' },
+        { header: t('category'), accessor: 'category', className: 'hidden md:table-cell' },
+        { header: t('status'), accessor: 'status', className: 'hidden md:table-cell' },
     ];
 
     const renderRow = (item: ProductList) => (
@@ -125,7 +129,7 @@ export default async function ProductListPage({
                         item.status.name === 'In stock' ? 'bg-teal-400 text-white' : 'bg-rose-400 text-white',
                     )}
                 >
-                    {item.status.name}
+                    {t(`${item.status.name}`)}
                 </span>
             </td>
             <td className="py-2">
@@ -143,7 +147,7 @@ export default async function ProductListPage({
             <GoToTop />
             <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
                 <div className="flex items-center justify-between">
-                    <h1 className="hidden md:block text-lg font-semibold">All Products</h1>
+                    <h1 className="hidden md:block text-lg font-semibold">{t('allProducts')}</h1>
                     <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
                         <TableSearch />
                         <div className="flex items-center gap-4 self-end">
@@ -151,11 +155,15 @@ export default async function ProductListPage({
                             <FilterDropdown
                                 currentSort={currentSort}
                                 sortOptions={productSortOptions}
-                                entityName="Product"
+                                entityName={t('product')}
                             />
-                            <ExportButton exportAction={exportProducts} entityName="Product" />
+                            <ExportButton exportAction={exportProducts} entityName={t('product')} />
+                            <ReloadButton />
                             <FormContainer table="product" type="create" />
-                            <DeleteSelectedButtonClient deleteAction={deleteSelectedProducts} entityName="Product" />
+                            <DeleteSelectedButtonClient
+                                deleteAction={deleteSelectedProducts}
+                                entityName={t('product')}
+                            />
                         </div>
                     </div>
                 </div>

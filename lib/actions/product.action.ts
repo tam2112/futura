@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import prisma from '../prisma';
 import { generateSlug } from '../utils';
 import { ProductSchema } from '../validation/product.form';
+import { messages } from '../messages';
 
 type CurrentState = { success: boolean; error: boolean };
 
@@ -291,23 +292,13 @@ export const getRandomProductsByBrand = async (brandName: string, limit: number 
     }
 };
 
-// export const getCategoryById = async (categoryId: string) => {
-//     try {
-//         const category = await prisma.category.findUnique({
-//             where: { id: categoryId },
-//             include: { images: true },
-//         });
-//         if (!category) {
-//             throw new Error('Category not found');
-//         }
-//         return category;
-//     } catch (error) {
-//         console.error(error);
-//         throw error;
-//     }
-// };
+export const createProduct = async (
+    currentState: CurrentState,
+    data: ProductSchema & { imageUrls?: string[] } & { locale?: 'en' | 'vi' },
+) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].ProductForm;
 
-export const createProduct = async (currentState: CurrentState, data: ProductSchema & { imageUrls?: string[] }) => {
     try {
         const slug = generateSlug(data.name);
 
@@ -370,14 +361,20 @@ export const createProduct = async (currentState: CurrentState, data: ProductSch
             return {
                 success: false,
                 error: true,
-                message: 'Product name already exists',
+                message: t.productNameExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to create product' };
+        return { success: false, error: true, message: t.createFailed };
     }
 };
 
-export const updateProduct = async (currentState: CurrentState, data: ProductSchema & { imageUrls?: string[] }) => {
+export const updateProduct = async (
+    currentState: CurrentState,
+    data: ProductSchema & { imageUrls?: string[] } & { locale?: 'en' | 'vi' },
+) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].ProductForm;
+
     try {
         if (!data.id) {
             throw new Error('Product ID is required for update');
@@ -449,10 +446,10 @@ export const updateProduct = async (currentState: CurrentState, data: ProductSch
             return {
                 success: false,
                 error: true,
-                message: 'Product name already exists',
+                message: t.productNameExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to update product' };
+        return { success: false, error: true, message: t.updateFailed };
     }
 };
 

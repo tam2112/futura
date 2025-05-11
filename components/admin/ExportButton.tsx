@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { Tooltip } from 'react-tooltip';
 import * as XLSX from 'xlsx';
 import Loader from '../Loader';
+import { useTranslations } from 'next-intl';
 
 type ExportButtonProps = {
     exportAction: () => Promise<{
@@ -18,6 +19,8 @@ type ExportButtonProps = {
 };
 
 export default function ExportButton({ exportAction, entityName = 'Items' }: ExportButtonProps) {
+    const t = useTranslations('ExportInAdmin');
+
     const [isLoading, setIsLoading] = useState(false);
 
     const handleExport = async () => {
@@ -45,10 +48,10 @@ export default function ExportButton({ exportAction, entityName = 'Items' }: Exp
 
             // Trigger download
             XLSX.writeFile(workbook, `${entityName.toLowerCase()}.xlsx`);
-            toast(`${entityName} exported successfully!`);
+            toast(t('exportSuccess', { entityName: entityName }));
         } catch (error) {
             console.error('Export error:', error);
-            toast.error(`Failed to export ${entityName.toLowerCase()}.`);
+            toast.error(t('exportFailed', { entityName }));
         } finally {
             setIsLoading(false);
         }
@@ -66,7 +69,7 @@ export default function ExportButton({ exportAction, entityName = 'Items' }: Exp
                 onClick={handleExport}
                 disabled={isLoading}
                 data-tooltip-id="export-tooltip"
-                data-tooltip-content="Export to Excel"
+                data-tooltip-content={t('exportToExcel')}
             >
                 <CiSaveDown1 width={14} height={14} />
             </button>

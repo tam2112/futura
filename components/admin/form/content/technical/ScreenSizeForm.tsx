@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 import InputField from '@/components/form/InputField';
 import { screenSizeSchema, ScreenSizeSchema } from '@/lib/validation/technical/screen-size.form';
 import { createScreenSize, updateScreenSize } from '@/lib/actions/technical/screen-size.action';
+import { useLocale, useTranslations } from 'next-intl';
 
 export default function ScreenSizeForm({
     type,
@@ -24,12 +25,16 @@ export default function ScreenSizeForm({
     setOpen: Dispatch<SetStateAction<boolean>>;
     relatedData?: any;
 }) {
+    const t = useTranslations('ScreenSizeForm');
+    const locale = useLocale() as 'en' | 'vi';
+    const createScreenSizeSchema = screenSizeSchema(locale);
+
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm<ScreenSizeSchema>({
-        resolver: zodResolver(screenSizeSchema),
+        resolver: zodResolver(createScreenSizeSchema),
     });
 
     // AFTER REACT 19 IT'LL BE USEACTIONSTATE
@@ -39,7 +44,7 @@ export default function ScreenSizeForm({
     });
 
     const onSubmit = handleSubmit(async (formData) => {
-        const data = { ...formData };
+        const data = { ...formData, locale };
         formAction(data);
     });
 
@@ -47,22 +52,22 @@ export default function ScreenSizeForm({
 
     useEffect(() => {
         if (state.success) {
-            toast(`Screen size has been ${type === 'create' ? 'created' : 'updated'}`);
+            toast(t('createSuccess', { type: type === 'create' ? t('created') : t('updated') }));
             setOpen(false);
             router.refresh();
         } else {
             toast.error(state.message);
         }
-    }, [state, type, router, setOpen]);
+    }, [state, type, router, setOpen, t]);
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
             <h1 className="text-lg font-heading font-semibold">
-                {type === 'create' ? 'Create a new screen size' : 'Update the screen size'}
+                {type === 'create' ? t('createTitle') : t('updateTitle')}
             </h1>
             <div className="flex justify-between flex-wrap gap-4">
                 <InputField
-                    label="Screen size name"
+                    label={t('screenSizeName')}
                     name="name"
                     defaultValue={data?.name}
                     register={register}
@@ -81,7 +86,9 @@ export default function ScreenSizeForm({
                 )}
             </div>
 
-            <button className="bg-gradient-light p-2 rounded-md">{type === 'create' ? 'Create' : 'Update'}</button>
+            <button className="bg-gradient-light p-2 rounded-md">
+                {type === 'create' ? t('create') : t('update')}
+            </button>
         </form>
     );
 }

@@ -18,16 +18,20 @@ import { PiEyeClosedLight, PiEyeLight } from 'react-icons/pi';
 
 import heroImg from '@/public/log-hero-v3.png';
 import { useAuth } from '@/context/AuthContext';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 export default function SignInForm() {
+    const t = useTranslations('SignInPage');
+    const locale = useLocale() as 'en' | 'vi';
+    const createLoginSchema = loginSchema(locale);
+
     const {
         register,
         handleSubmit,
         formState: { errors },
         clearErrors,
     } = useForm<LoginSchema>({
-        resolver: zodResolver(loginSchema),
+        resolver: zodResolver(createLoginSchema),
     });
 
     const router = useRouter();
@@ -46,7 +50,7 @@ export default function SignInForm() {
     const { setIsLoggedIn } = useAuth();
 
     const onSubmit = handleSubmit(async (data) => {
-        const response = await signInUser(state, data);
+        const response = await signInUser(state, data, locale);
 
         if (response.success) {
             if (response.token) {
@@ -62,7 +66,7 @@ export default function SignInForm() {
                 Cookies.set('role', response.role);
             }
             setIsLoggedIn(true);
-            toast('Sign in successful');
+            toast(t('signInSuccess'));
 
             // Redirect based on role
             if (response.role === 'admin') {
@@ -71,7 +75,7 @@ export default function SignInForm() {
                 await router.push('/', { locale: currentLocale });
             }
         } else {
-            toast.error(response.message || 'Sign in failed');
+            toast.error(response.message || t('signInFailed'));
             setTouchedFields({});
         }
     });
@@ -107,16 +111,16 @@ export default function SignInForm() {
                 </div>
                 {/* form */}
                 <form onSubmit={onSubmit} className="flex flex-col justify-center items-center">
-                    <h2 className="font-heading font-bold text-4xl mb-8">Login</h2>
+                    <h2 className="font-heading font-bold text-4xl mb-8">{t('logIn')}</h2>
                     <div>
                         <div className="space-y-4">
                             <div className="flex flex-col gap-1">
-                                <label htmlFor={'email'}>Email</label>
+                                <label htmlFor={'email'}>{t('email')}</label>
                                 <div className="relative bg-white border border-black rounded-lg">
                                     <input
                                         type="email"
                                         {...register('email')}
-                                        placeholder={`Enter your email`}
+                                        placeholder={`${t('emailPlaceholder')}`}
                                         className={`px-4 pl-[52px] py-2 min-w-[320px] rounded-lg outline-none`}
                                         onChange={() => {
                                             handleFieldChange('email'), clearErrors('email');
@@ -132,12 +136,12 @@ export default function SignInForm() {
                                 )}
                             </div>
                             <div className="flex flex-col gap-1">
-                                <label htmlFor={'password'}>Password</label>
+                                <label htmlFor={'password'}>{t('password')}</label>
                                 <div className="relative bg-white border border-black rounded-lg">
                                     <input
                                         type={showPassword ? 'text' : 'password'}
                                         {...register('password')}
-                                        placeholder={`Enter your password`}
+                                        placeholder={`${t('passwordPlaceholder')}`}
                                         className={`px-4 pl-[52px] py-2 min-w-[320px] rounded-lg outline-none`}
                                         onChange={() => {
                                             handleFieldChange('password'), clearErrors('password');
@@ -161,22 +165,22 @@ export default function SignInForm() {
                         <div className="space-y-3 mt-6">
                             <div>
                                 <button type="submit" className="bg-gradient-light w-full py-2 rounded-lg font-bold">
-                                    Login
+                                    {t('logIn')}
                                 </button>
                             </div>
                             <div className="">
                                 <p>
-                                    New Customer?{' '}
+                                    {t('newCustomer')}{' '}
                                     <Link href="/sign-up" className="font-bold cursor-pointer hover:underline">
-                                        Create your account
+                                        {t('createAccount')}
                                     </Link>
                                 </p>
                             </div>
                             <div className="">
                                 <p>
-                                    Lost password?{' '}
+                                    {t('lostPassword')}{' '}
                                     <Link href="/recover" className="font-bold cursor-pointer hover:underline">
-                                        Recover password
+                                        {t('recoverPassword')}
                                     </Link>
                                 </p>
                             </div>

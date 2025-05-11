@@ -19,16 +19,20 @@ import { PiEyeClosedLight, PiEyeLight } from 'react-icons/pi';
 
 import heroImg from '@/public/log-hero-v3.png';
 import InputField from './InputField';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 export default function SignUpForm() {
+    const t = useTranslations('SignUpPage');
+    const locale = useLocale() as 'en' | 'vi';
+    const createSignUpSchema = signUpSchema(locale);
+
     const {
         register,
         handleSubmit,
         formState: { errors },
         clearErrors,
     } = useForm<SignUpSchema>({
-        resolver: zodResolver(signUpSchema),
+        resolver: zodResolver(createSignUpSchema),
     });
 
     const router = useRouter();
@@ -70,7 +74,7 @@ export default function SignUpForm() {
     useEffect(() => {
         console.log('State updated:', state);
         if (state.success) {
-            toast(`Sign up successful`);
+            toast(t('signUpSuccess'));
             router.push('/sign-in', { locale: currentLocale });
         }
         if (state.error) {
@@ -88,11 +92,11 @@ export default function SignUpForm() {
                 </div>
                 {/* form */}
                 <form onSubmit={onSubmit} className="flex flex-col justify-center items-center">
-                    <h2 className="font-heading font-bold text-4xl mb-8">Sign Up</h2>
+                    <h2 className="font-heading font-bold text-4xl mb-8">{t('signUp')}</h2>
                     <div>
                         <div className="space-y-4">
                             <InputField
-                                label="Full name"
+                                label={t('fullName')}
                                 name="fullName"
                                 register={register}
                                 error={touchedFields.fullName ? errors.fullName : undefined}
@@ -102,7 +106,7 @@ export default function SignUpForm() {
                                 }}
                             />
                             <InputField
-                                label="Email"
+                                label={t('email')}
                                 name="email"
                                 type="email"
                                 register={register}
@@ -113,7 +117,7 @@ export default function SignUpForm() {
                                 }}
                             />
                             <InputField
-                                label="Password"
+                                label={t('password')}
                                 name="password"
                                 className="pr-8"
                                 register={register}
@@ -128,14 +132,14 @@ export default function SignUpForm() {
                         <div className="space-y-3 mt-6">
                             <div>
                                 <button className="bg-gradient-light w-full py-2 rounded-lg font-bold">
-                                    Create my account
+                                    {t('createAccount')}
                                 </button>
                             </div>
                             <div className="">
                                 <p>
-                                    Already a member? Log in{' '}
+                                    {t('alreadyMember')} {t('logIn')}{' '}
                                     <Link href="/sign-in" className="font-bold cursor-pointer hover:underline">
-                                        here
+                                        {t('here')}
                                     </Link>
                                 </p>
                             </div>

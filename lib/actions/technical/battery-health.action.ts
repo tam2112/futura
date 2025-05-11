@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
+import { messages } from '@/lib/messages';
 import prisma from '@/lib/prisma';
 import { BatteryHealthSchema } from '@/lib/validation/technical/battery-health.form';
 import { revalidatePath } from 'next/cache';
@@ -31,7 +32,12 @@ export const getBatteryHealthById = async (batteryHealthId: string) => {
     }
 };
 
-export const createBatteryHealth = async (currentState: CurrentState, data: BatteryHealthSchema) => {
+export const createBatteryHealth = async (
+    currentState: CurrentState,
+    data: BatteryHealthSchema & { locale?: 'en' | 'vi' },
+) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].BatteryHealthForm;
     try {
         // Tạo batteryHealth mới
         await prisma.batteryHealth.create({
@@ -48,14 +54,19 @@ export const createBatteryHealth = async (currentState: CurrentState, data: Batt
             return {
                 success: false,
                 error: true,
-                message: 'Title already exists',
+                message: t.titleExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to create battery health' };
+        return { success: false, error: true, message: t.createFailed };
     }
 };
 
-export const updateBatteryHealth = async (currentState: CurrentState, data: BatteryHealthSchema) => {
+export const updateBatteryHealth = async (
+    currentState: CurrentState,
+    data: BatteryHealthSchema & { locale?: 'en' | 'vi' },
+) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].BatteryHealthForm;
     try {
         // Cập nhật BatteryHealth
         await prisma.batteryHealth.update({
@@ -73,10 +84,10 @@ export const updateBatteryHealth = async (currentState: CurrentState, data: Batt
             return {
                 success: false,
                 error: true,
-                message: 'Title already exists',
+                message: t.titleExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to update battery health' };
+        return { success: false, error: true, message: t.updateFailed };
     }
 };
 

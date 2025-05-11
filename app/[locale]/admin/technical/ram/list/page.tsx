@@ -14,17 +14,19 @@ import ExportButton from '@/components/admin/ExportButton';
 import FilterTechnicalDropdown from '@/components/admin/FilterTechnicalDropdown';
 import { exportRams } from '@/lib/actions/technical/ram.action';
 import { deleteSelectedRams } from '@/components/admin/DeleteSelectedButton';
+import { getTranslations } from 'next-intl/server';
+import ReloadButton from '@/components/admin/ReloadButton';
 
 type RamList = Ram;
 
-const categorySortOptions = [
-    { value: 'name-asc', label: 'A-Z' },
-    { value: 'name-desc', label: 'Z-A' },
-    { value: 'date-desc', label: 'Latest Release' },
-    { value: 'date-asc', label: 'Oldest Release' },
-];
-
 export default async function RamListPage({ searchParams }: { searchParams: { [key: string]: string | undefined } }) {
+    const t = await getTranslations('RamList');
+    const categorySortOptions = [
+        { value: 'name-asc', label: 'A-Z' },
+        { value: 'name-desc', label: 'Z-A' },
+        { value: 'date-desc', label: t('latestRelease') },
+        { value: 'date-asc', label: t('oldRelease') },
+    ];
     const { page, sort, ...queryParams } = searchParams;
     const p = page ? parseInt(page) : 1;
 
@@ -73,7 +75,7 @@ export default async function RamListPage({ searchParams }: { searchParams: { [k
     // Define columns after data is initialized
     const columns = [
         { header: <CheckboxHeader itemIds={data.map((item) => item.id)} />, accessor: 'check' },
-        { header: 'Title', accessor: 'title', className: 'hidden md:table-cell' },
+        { header: t('title'), accessor: 'title', className: 'hidden md:table-cell' },
     ];
 
     const renderRow = (item: RamList) => (
@@ -84,11 +86,6 @@ export default async function RamListPage({ searchParams }: { searchParams: { [k
             <td className="hidden md:table-cell py-2">{item.title}</td>
             <td className="py-2">
                 <div className="flex items-center gap-2">
-                    {/* <Link href={`/list/categories/${item.id}`}>
-                        <button className="size-7 flex items-center justify-center rounded-full bg-violet-400">
-                            <PiEyeBold width={16} height={16} className="text-white left-half-px" />
-                        </button>
-                    </Link> */}
                     <FormContainer table="ram" type="update" data={item} />
                     <FormContainer table="ram" type="delete" id={item.id} />
                 </div>
@@ -101,7 +98,7 @@ export default async function RamListPage({ searchParams }: { searchParams: { [k
             <GoToTop />
             <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
                 <div className="flex items-center justify-between">
-                    <h1 className="hidden md:block text-lg font-semibold">All Rams</h1>
+                    <h1 className="hidden md:block text-lg font-semibold">{t('allRams')}</h1>
                     <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
                         <TableSearch />
                         <div className="flex items-center gap-4 self-end">
@@ -109,11 +106,12 @@ export default async function RamListPage({ searchParams }: { searchParams: { [k
                             <FilterTechnicalDropdown
                                 currentSort={currentSort}
                                 sortOptions={categorySortOptions}
-                                entityName="Ram"
+                                entityName={t('ram')}
                             />
-                            <ExportButton exportAction={exportRams} entityName="Ram" />
+                            <ExportButton exportAction={exportRams} entityName={t('ram')} />
+                            <ReloadButton />
                             <FormContainer table="ram" type="create" />
-                            <DeleteSelectedButtonClient deleteAction={deleteSelectedRams} entityName="Ram" />
+                            <DeleteSelectedButtonClient deleteAction={deleteSelectedRams} entityName={t('ram')} />
                         </div>
                     </div>
                 </div>

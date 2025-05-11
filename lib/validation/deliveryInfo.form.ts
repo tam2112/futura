@@ -1,15 +1,24 @@
 import { z } from 'zod';
+import { messages } from '../messages';
 
-export const deliveryInfoSchema = z.object({
-    id: z.string().optional(),
-    firstName: z.string().min(1, { message: 'First name is required' }),
-    lastName: z.string().min(1, { message: 'Last name is required' }),
-    street: z.string().min(1, { message: 'Street is required' }),
-    city: z.string().min(1, { message: 'City is required' }),
-    country: z.string().min(1, { message: 'Country is required' }),
-    phone: z.string().min(1, { message: 'Phone is required' }),
-    userId: z.coerce.string().min(1, { message: 'User is required' }),
-    orderId: z.coerce.string().min(1, { message: 'Order is required' }),
-});
+const getTranslationsCheckoutModal = (locale: 'en' | 'vi') => {
+    return messages[locale].CheckoutModal;
+};
 
-export type DeliveryInfoSchema = z.infer<typeof deliveryInfoSchema>;
+export const deliveryInfoSchema = (locale: 'en' | 'vi') => {
+    const t = getTranslationsCheckoutModal(locale);
+
+    return z.object({
+        id: z.string().optional(),
+        firstName: z.string().min(1, { message: t.firstNameRequired }),
+        lastName: z.string().min(1, { message: t.lastNameRequired }),
+        street: z.string().min(1, { message: t.streetRequired }),
+        city: z.string().min(1, { message: t.cityRequired }),
+        country: z.string().min(1, { message: t.countryRequired }),
+        phone: z.string().min(1, { message: t.phoneRequired }),
+        userId: z.coerce.string().min(1, { message: 'User is required' }),
+        orderId: z.coerce.string().min(1, { message: 'Order is required' }),
+    });
+};
+
+export type DeliveryInfoSchema = z.infer<ReturnType<typeof deliveryInfoSchema>>;

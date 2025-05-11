@@ -16,6 +16,7 @@ import { twMerge } from 'tailwind-merge';
 import { categoryTechnicalMap } from '@/constants/categoryTechnicalMap';
 import SelectField from '@/components/form/SelectField';
 import TextareaField from '@/components/form/TextareaField';
+import { useLocale, useTranslations } from 'next-intl';
 
 export default function ProductForm({
     type,
@@ -28,6 +29,10 @@ export default function ProductForm({
     setOpen: Dispatch<SetStateAction<boolean>>;
     relatedData?: any;
 }) {
+    const t = useTranslations('ProductForm');
+    const locale = useLocale() as 'en' | 'vi';
+    const createProductSchema = productSchema(locale);
+
     const {
         register,
         handleSubmit,
@@ -35,7 +40,7 @@ export default function ProductForm({
         watch,
         control,
     } = useForm<ProductSchema>({
-        resolver: zodResolver(productSchema),
+        resolver: zodResolver(createProductSchema),
         defaultValues: {
             id: data?.id || '',
             name: data?.name || '',
@@ -86,14 +91,14 @@ export default function ProductForm({
             try {
                 imageUrls = await uploadImagesToCloudinary(files);
             } catch (error) {
-                toast.error('Failed to upload images');
+                toast.error(t('uploadImageFailed'));
                 return;
             }
         } else if (type === 'update') {
             imageUrls = existingImageUrls;
         }
 
-        const dataWithImageUrls = { ...formData, imageUrls };
+        const dataWithImageUrls = { ...formData, imageUrls, locale };
         formAction(dataWithImageUrls);
     });
 
@@ -101,13 +106,13 @@ export default function ProductForm({
 
     useEffect(() => {
         if (state.success) {
-            toast(`Product has been ${type === 'create' ? 'created' : 'updated'}`);
+            toast(t('createSuccess', { type: type === 'create' ? t('created') : t('updated') }));
             setOpen(false);
             router.refresh();
         } else {
             toast.error(state.message);
         }
-    }, [state, type, router, setOpen]);
+    }, [state, type, router, setOpen, t]);
 
     const {
         categories,
@@ -182,7 +187,7 @@ export default function ProductForm({
             onSubmit={onSubmit}
         >
             <h1 className="text-lg font-heading font-semibold">
-                {type === 'create' ? 'Create a new product' : 'Update the product'}
+                {type === 'create' ? t('createTitle') : t('updateTitle')}
             </h1>
             <div className="flex items-center gap-2">
                 <button
@@ -193,7 +198,7 @@ export default function ProductForm({
                         tab === 'main' && 'bg-gradient-lighter font-semibold',
                     )}
                 >
-                    Main
+                    {t('main')}
                 </button>
                 <button
                     type="button"
@@ -203,16 +208,22 @@ export default function ProductForm({
                         tab === 'technical' && 'bg-gradient-lighter font-semibold',
                     )}
                 >
-                    Technical
+                    {t('technical')}
                 </button>
             </div>
             {tab === 'main' && (
                 <>
                     <div className="flex justify-between flex-wrap gap-4">
-                        <InputField label="Product name" name="name" register={register} error={errors.name} hideIcon />
-                        <InputField label="Price" name="price" register={register} error={errors.price} hideIcon />
                         <InputField
-                            label="Quantity"
+                            label={t('productName')}
+                            name="name"
+                            register={register}
+                            error={errors.name}
+                            hideIcon
+                        />
+                        <InputField label={t('price')} name="price" register={register} error={errors.price} hideIcon />
+                        <InputField
+                            label={t('quantity')}
                             name="quantity"
                             register={register}
                             error={errors.quantity}
@@ -220,7 +231,7 @@ export default function ProductForm({
                         />
                         {/* category */}
                         <SelectField
-                            label="Category"
+                            label={t('category')}
                             name="categoryId"
                             options={categoryOptions}
                             control={control}
@@ -239,14 +250,14 @@ export default function ProductForm({
                     </div>
                     <div>
                         <TextareaField
-                            label="Description"
+                            label={t('description')}
                             name="description"
                             register={register}
                             error={errors.description}
                         />
                     </div>
                     <div>
-                        <h2>Image</h2>
+                        <h2>{t('image')}</h2>
                         <FileUploadDropzone
                             files={files}
                             setFiles={setFiles}
@@ -260,7 +271,7 @@ export default function ProductForm({
                 <div className="flex justify-between flex-wrap gap-4">
                     {shouldShowTechnical('brand') && (
                         <SelectField
-                            label="Brand"
+                            label={t('brand')}
                             name="brandId"
                             options={brandOptions}
                             control={control}
@@ -269,7 +280,7 @@ export default function ProductForm({
                     )}
                     {shouldShowTechnical('color') && (
                         <SelectField
-                            label="Color"
+                            label={t('color')}
                             name="colorId"
                             options={colorOptions}
                             control={control}
@@ -278,7 +289,7 @@ export default function ProductForm({
                     )}
                     {shouldShowTechnical('storage') && (
                         <SelectField
-                            label="Storage"
+                            label={t('storage')}
                             name="storageId"
                             options={storageOptions}
                             control={control}
@@ -287,7 +298,7 @@ export default function ProductForm({
                     )}
                     {shouldShowTechnical('connectivity') && (
                         <SelectField
-                            label="Connectivity"
+                            label={t('connectivity')}
                             name="connectivityId"
                             options={connectivityOptions}
                             control={control}
@@ -296,7 +307,7 @@ export default function ProductForm({
                     )}
                     {shouldShowTechnical('simSlot') && (
                         <SelectField
-                            label="Sim slot"
+                            label={t('simSlot')}
                             name="simSlotId"
                             options={simSlotOptions}
                             control={control}
@@ -305,7 +316,7 @@ export default function ProductForm({
                     )}
                     {shouldShowTechnical('batteryHealth') && (
                         <SelectField
-                            label="Battery health"
+                            label={t('batteryHealth')}
                             name="batteryHealthId"
                             options={batteryHealthOptions}
                             control={control}
@@ -314,7 +325,7 @@ export default function ProductForm({
                     )}
                     {shouldShowTechnical('ram') && (
                         <SelectField
-                            label="RAM"
+                            label={t('ram')}
                             name="ramId"
                             options={ramOptions}
                             control={control}
@@ -323,7 +334,7 @@ export default function ProductForm({
                     )}
                     {shouldShowTechnical('cpu') && (
                         <SelectField
-                            label="CPU"
+                            label={t('cpu')}
                             name="cpuId"
                             options={cpuOptions}
                             control={control}
@@ -332,7 +343,7 @@ export default function ProductForm({
                     )}
                     {shouldShowTechnical('screenSize') && (
                         <SelectField
-                            label="Screen size"
+                            label={t('screenSize')}
                             name="screenSizeId"
                             options={screenSizeOptions}
                             control={control}
@@ -341,7 +352,7 @@ export default function ProductForm({
                     )}
                     {shouldShowTechnical('type') && (
                         <SelectField
-                            label="Type"
+                            label={t('type')}
                             name="typeId"
                             options={typeOptions}
                             control={control}
@@ -351,7 +362,9 @@ export default function ProductForm({
                 </div>
             )}
 
-            <button className="bg-gradient-light p-2 rounded-md">{type === 'create' ? 'Create' : 'Update'}</button>
+            <button className="bg-gradient-light p-2 rounded-md">
+                {type === 'create' ? t('create') : t('update')}
+            </button>
         </form>
     );
 }

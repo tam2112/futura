@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 import InputField from '@/components/form/InputField';
 import { connectivitySchema, ConnectivitySchema } from '@/lib/validation/technical/connectivity.form';
 import { createConnectivity, updateConnectivity } from '@/lib/actions/technical/connectivity.action';
+import { useLocale, useTranslations } from 'next-intl';
 
 export default function ConnectivityForm({
     type,
@@ -24,12 +25,16 @@ export default function ConnectivityForm({
     setOpen: Dispatch<SetStateAction<boolean>>;
     relatedData?: any;
 }) {
+    const t = useTranslations('ConnectivityForm');
+    const locale = useLocale() as 'en' | 'vi';
+    const createConnectivitySchema = connectivitySchema(locale);
+
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm<ConnectivitySchema>({
-        resolver: zodResolver(connectivitySchema),
+        resolver: zodResolver(createConnectivitySchema),
     });
 
     // AFTER REACT 19 IT'LL BE USEACTIONSTATE
@@ -39,7 +44,7 @@ export default function ConnectivityForm({
     });
 
     const onSubmit = handleSubmit(async (formData) => {
-        const data = { ...formData };
+        const data = { ...formData, locale };
         formAction(data);
     });
 
@@ -47,22 +52,22 @@ export default function ConnectivityForm({
 
     useEffect(() => {
         if (state.success) {
-            toast(`Connectivity has been ${type === 'create' ? 'created' : 'updated'}`);
+            toast(t('createSuccess', { type: type === 'create' ? t('created') : t('updated') }));
             setOpen(false);
             router.refresh();
         } else {
             toast.error(state.message);
         }
-    }, [state, type, router, setOpen]);
+    }, [state, type, router, setOpen, t]);
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
             <h1 className="text-lg font-heading font-semibold">
-                {type === 'create' ? 'Create a new connectivity' : 'Update the connectivity'}
+                {type === 'create' ? t('createTitle') : t('updateTitle')}
             </h1>
             <div className="flex justify-between flex-wrap gap-4">
                 <InputField
-                    label="Connectivity name"
+                    label={t('connectivityName')}
                     name="name"
                     defaultValue={data?.name}
                     register={register}
@@ -81,7 +86,9 @@ export default function ConnectivityForm({
                 )}
             </div>
 
-            <button className="bg-gradient-light p-2 rounded-md">{type === 'create' ? 'Create' : 'Update'}</button>
+            <button className="bg-gradient-light p-2 rounded-md">
+                {type === 'create' ? t('create') : t('update')}
+            </button>
         </form>
     );
 }

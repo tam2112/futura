@@ -4,6 +4,7 @@
 import { revalidatePath } from 'next/cache';
 import prisma from '../prisma';
 import { RoleSchema } from '../validation/role.form';
+import { messages } from '../messages';
 
 type CurrentState = { success: boolean; error: boolean };
 
@@ -16,7 +17,10 @@ export const getRoles = async () => {
     }
 };
 
-export const createRole = async (currentState: CurrentState, data: RoleSchema) => {
+export const createRole = async (currentState: CurrentState, data: RoleSchema & { locale?: 'en' | 'vi' }) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].RoleForm;
+
     try {
         await prisma.role.create({
             data: {
@@ -33,14 +37,17 @@ export const createRole = async (currentState: CurrentState, data: RoleSchema) =
             return {
                 success: false,
                 error: true,
-                message: 'Role name already exists',
+                message: t.roleNameExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to create role' };
+        return { success: false, error: true, message: t.createFailed };
     }
 };
 
-export const updateRole = async (currentState: CurrentState, data: RoleSchema) => {
+export const updateRole = async (currentState: CurrentState, data: RoleSchema & { locale?: 'en' | 'vi' }) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].RoleForm;
+
     try {
         await prisma.role.update({
             where: {
@@ -60,10 +67,10 @@ export const updateRole = async (currentState: CurrentState, data: RoleSchema) =
             return {
                 success: false,
                 error: true,
-                message: 'Role name already exists',
+                message: t.roleNameExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to update role' };
+        return { success: false, error: true, message: t.updateFailed };
     }
 };
 

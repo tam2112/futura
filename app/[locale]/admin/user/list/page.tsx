@@ -14,17 +14,21 @@ import ExportButton from '@/components/admin/ExportButton';
 import FilterDropdown from '@/components/admin/FilterDropdown';
 import { exportUsers } from '@/lib/actions/user.action';
 import { deleteSelectedUsers } from '@/components/admin/DeleteSelectedButton';
+import { getTranslations } from 'next-intl/server';
+import ReloadButton from '@/components/admin/ReloadButton';
 
 type UserList = User & { role: Role };
 
-const userSortOptions = [
-    { value: 'name-asc', label: 'A-Z' },
-    { value: 'name-desc', label: 'Z-A' },
-    { value: 'date-desc', label: 'Latest Release' },
-    { value: 'date-asc', label: 'Oldest Release' },
-];
-
 export default async function UserListPage({ searchParams }: { searchParams: { [key: string]: string | undefined } }) {
+    const t = await getTranslations('UserList');
+
+    const userSortOptions = [
+        { value: 'name-asc', label: 'A-Z' },
+        { value: 'name-desc', label: 'Z-A' },
+        { value: 'date-desc', label: t('latestRelease') },
+        { value: 'date-asc', label: t('oldRelease') },
+    ];
+
     const { page, sort, ...queryParams } = searchParams;
     const p = page ? parseInt(page) : 1;
 
@@ -76,9 +80,9 @@ export default async function UserListPage({ searchParams }: { searchParams: { [
     // Define columns after data is initialized
     const columns = [
         { header: <CheckboxHeader itemIds={data.map((item) => item.id)} />, accessor: 'check' },
-        { header: 'Full name', accessor: 'fullName', className: 'hidden md:table-cell' },
-        { header: 'Email', accessor: 'email', className: 'hidden md:table-cell' },
-        { header: 'Role', accessor: 'role', className: 'hidden md:table-cell' },
+        { header: t('fullName'), accessor: 'fullName', className: 'hidden md:table-cell' },
+        { header: t('email'), accessor: 'email', className: 'hidden md:table-cell' },
+        { header: t('role'), accessor: 'role', className: 'hidden md:table-cell' },
     ];
 
     const renderRow = (item: UserList) => (
@@ -103,15 +107,20 @@ export default async function UserListPage({ searchParams }: { searchParams: { [
             <GoToTop />
             <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
                 <div className="flex items-center justify-between">
-                    <h1 className="hidden md:block text-lg font-semibold">All Users</h1>
+                    <h1 className="hidden md:block text-lg font-semibold">{t('allUsers')}</h1>
                     <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
                         <TableSearch />
                         <div className="flex items-center gap-4 self-end">
                             {/* Filter Dropdown */}
-                            <FilterDropdown currentSort={currentSort} sortOptions={userSortOptions} entityName="User" />
-                            <ExportButton exportAction={exportUsers} entityName="User" />
+                            <FilterDropdown
+                                currentSort={currentSort}
+                                sortOptions={userSortOptions}
+                                entityName={t('user')}
+                            />
+                            <ExportButton exportAction={exportUsers} entityName={t('user')} />
+                            <ReloadButton />
                             <FormContainer table="user" type="create" />
-                            <DeleteSelectedButtonClient deleteAction={deleteSelectedUsers} entityName="User" />
+                            <DeleteSelectedButtonClient deleteAction={deleteSelectedUsers} entityName={t('user')} />
                         </div>
                     </div>
                 </div>

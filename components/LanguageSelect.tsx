@@ -7,9 +7,11 @@ import vietnamFlag from '@/public/vietnam.png';
 import englishFlag from '@/public/united-kingdom.png';
 import { useRouter } from '@/navigation';
 import Button from './Button';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 export default function LanguageSelect() {
+    const t = useTranslations('LanguageSelect');
+
     const router = useRouter();
     const currentLocale = useLocale();
 
@@ -40,7 +42,7 @@ export default function LanguageSelect() {
                                 onClick={() => handleChangeLocale('vi')}
                             >
                                 <Image src={vietnamFlag} alt="vietnam flag" className="size-6" />
-                                <span className="">Vietnam</span>
+                                <span className="">{t('vietnam')}</span>
                             </Button>
                         </div>
                         <div>
@@ -50,7 +52,7 @@ export default function LanguageSelect() {
                                 onClick={() => handleChangeLocale('en')}
                             >
                                 <Image src={englishFlag} alt="english flag" className="size-6" />
-                                <span className="">English</span>
+                                <span className="">{t('english')}</span>
                             </Button>
                         </div>
                     </div>

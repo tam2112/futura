@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
+import { messages } from '@/lib/messages';
 import prisma from '@/lib/prisma';
 import { StorageSchema } from '@/lib/validation/technical/storage.form';
 import { revalidatePath } from 'next/cache';
@@ -31,7 +32,10 @@ export const getStorageById = async (storageId: string) => {
     }
 };
 
-export const createStorage = async (currentState: CurrentState, data: StorageSchema) => {
+export const createStorage = async (currentState: CurrentState, data: StorageSchema & { locale?: 'en' | 'vi' }) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].StorageForm;
+
     try {
         // Tạo Storage mới
         await prisma.storage.create({
@@ -48,14 +52,16 @@ export const createStorage = async (currentState: CurrentState, data: StorageSch
             return {
                 success: false,
                 error: true,
-                message: 'Storage name already exists',
+                message: t.storageNameExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to create storage' };
+        return { success: false, error: true, message: t.createFailed };
     }
 };
 
-export const updateStorage = async (currentState: CurrentState, data: StorageSchema) => {
+export const updateStorage = async (currentState: CurrentState, data: StorageSchema & { locale?: 'en' | 'vi' }) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].StorageForm;
     try {
         // Cập nhật storage
         await prisma.storage.update({
@@ -73,10 +79,10 @@ export const updateStorage = async (currentState: CurrentState, data: StorageSch
             return {
                 success: false,
                 error: true,
-                message: 'Storage name already exists',
+                message: t.storageNameExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to update storage' };
+        return { success: false, error: true, message: t.updateFailed };
     }
 };
 

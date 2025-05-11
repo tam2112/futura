@@ -9,15 +9,18 @@ import dealAddedDailyImg from '@/public/top-deals/deal-added-daily.svg?url';
 import TopDealsSlider from '@/components/slider/TopDealsSlider';
 import underlineImage from '@/public/underline.svg?url';
 import { Link } from '@/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function TopDeals() {
+    const t = useTranslations('TopDeals');
+
     return (
         <div className="py-6">
             <div className="container">
                 <h2 className="flex items-center gap-1 text-lg font-bold md:text-xl">
-                    Today&apos;s{' '}
+                    {t('titleSub')}{' '}
                     <span className="relative">
-                        <span>Top Deals</span>
+                        <span>{t('title')}</span>
                         <span
                             className="absolute w-full left-0 top-full -translate-y-1/2 h-4 bg-[linear-gradient(to_right,var(--color-amber-200),var(--color-teal-200),var(--color-violet-300),var(--color-fuchsia-300))]"
                             style={{
@@ -87,11 +90,11 @@ export default function TopDeals() {
                                     className="h-full w-auto object-contain"
                                 />
                             </div>
-                            <h3 className="text-base md:text-lg">Today Deals</h3>
+                            <h3 className="text-base md:text-lg">{t('todayDeals')}</h3>
                             <span className="text-2xl font-extrabold">23 : 35 : 51</span>
                             <Link href={'/collections/top-deals'}>
                                 <button className="mt-5 h-8 rounded-md !bg-white px-3 text-xs font-extrabold text-gray-700">
-                                    Shop all Deals
+                                    {t('shopAllDeals')}
                                 </button>
                             </Link>
                             <div className="mt-3 h-9">

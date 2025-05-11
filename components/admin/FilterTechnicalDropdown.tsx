@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import Loader from '@/components/Loader';
 import Select from 'react-select';
 import { Tooltip } from 'react-tooltip';
+import { useTranslations } from 'next-intl';
 
 type SortOption = {
     value: string;
@@ -23,6 +24,8 @@ export default function FilterTechnicalDropdown({
     sortOptions,
     entityName = 'Items',
 }: FilterDropdownProps) {
+    const t = useTranslations('UserList');
+
     const router = useRouter();
     const searchParams = useSearchParams();
     const [isLoading, setIsLoading] = useState(false);
@@ -65,14 +68,18 @@ export default function FilterTechnicalDropdown({
                     <Loader />
                 </div>
             )}
-            <div className="relative w-64" data-tooltip-id="sort-tooltip" data-tooltip-content={`Sort ${entityName}`}>
+            <div
+                className="relative w-64"
+                data-tooltip-id="sort-tooltip"
+                data-tooltip-content={`${t('sort')} ${entityName}`}
+            >
                 <Select
                     isMulti
                     options={sortOptions}
                     value={selectedOptions}
                     onChange={(newOptions) => handleSortChange(newOptions as SortOption[])}
                     isDisabled={isLoading}
-                    placeholder={`Sort ${entityName}`}
+                    placeholder={`${t('sort')} ${entityName}`}
                     className="text-sm"
                     classNamePrefix="react-select"
                     styles={{

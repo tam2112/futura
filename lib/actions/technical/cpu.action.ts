@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
+import { messages } from '@/lib/messages';
 import prisma from '@/lib/prisma';
 import { CpuSchema } from '@/lib/validation/technical/cpu.form';
 import { revalidatePath } from 'next/cache';
@@ -31,7 +32,9 @@ export const getCpuById = async (cpuId: string) => {
     }
 };
 
-export const createCpu = async (currentState: CurrentState, data: CpuSchema) => {
+export const createCpu = async (currentState: CurrentState, data: CpuSchema & { locale?: 'en' | 'vi' }) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].CpuForm;
     try {
         await prisma.cpu.create({
             data: {
@@ -46,14 +49,16 @@ export const createCpu = async (currentState: CurrentState, data: CpuSchema) => 
             return {
                 success: false,
                 error: true,
-                message: 'CPU name already exists',
+                message: t.cpuNameExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to create CPU' };
+        return { success: false, error: true, message: t.createFailed };
     }
 };
 
-export const updateCpu = async (currentState: CurrentState, data: CpuSchema) => {
+export const updateCpu = async (currentState: CurrentState, data: CpuSchema & { locale?: 'en' | 'vi' }) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].CpuForm;
     try {
         await prisma.cpu.update({
             where: { id: data.id },
@@ -69,10 +74,10 @@ export const updateCpu = async (currentState: CurrentState, data: CpuSchema) => 
             return {
                 success: false,
                 error: true,
-                message: 'CPU name already exists',
+                message: t.cpuNameExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to update CPU' };
+        return { success: false, error: true, message: t.updateFailed };
     }
 };
 

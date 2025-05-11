@@ -1,8 +1,17 @@
+import { messages } from '@/lib/messages';
 import { z } from 'zod';
 
-export const screenSizeSchema = z.object({
-    id: z.string().optional(),
-    name: z.string().min(1, { message: 'Screen size name is required' }),
-});
+const getTranslationsScreenSizeForm = (locale: 'en' | 'vi') => {
+    return messages[locale].ScreenSizeForm;
+};
 
-export type ScreenSizeSchema = z.infer<typeof screenSizeSchema>;
+export const screenSizeSchema = (locale: 'en' | 'vi') => {
+    const t = getTranslationsScreenSizeForm(locale);
+
+    return z.object({
+        id: z.string().optional(),
+        name: z.string().min(1, { message: t.screenSizeNameRequired }),
+    });
+};
+
+export type ScreenSizeSchema = z.infer<ReturnType<typeof screenSizeSchema>>;

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { ReactNode, useState } from 'react';
 import { FieldError } from 'react-hook-form';
 
@@ -39,6 +40,8 @@ export default function InputField({
     inputProps,
     formType,
 }: InputFieldProps) {
+    const t = useTranslations('Common');
+
     // show and hide input type password
     const [showPassword, setShowPassword] = useState(false);
     // const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -69,7 +72,7 @@ export default function InputField({
                             onChange={onChange}
                             {...inputProps}
                             defaultValue={defaultValue}
-                            placeholder={`Enter your ${label}`}
+                            placeholder={`${t('placeholder')} ${label}`}
                             min={type === 'date' ? '1950-01-01' : undefined}
                             max={type === 'date' ? '2020-12-31' : undefined}
                         />
@@ -93,19 +96,20 @@ export default function InputField({
                         <input
                             type={type}
                             {...register(name)}
-                            placeholder={`Enter your ${label}`}
+                            placeholder={`${t('placeholder')} ${label}`}
                             className={`px-4 ${
-                                !hideIcon || (name === 'hex' && 'pl-[52px]')
+                                !hideIcon || name === 'hex' ? 'pl-[52px]' : ''
                             } py-2 min-w-[320px] rounded-lg outline-none ${className}`}
                             onChange={handleHexChange}
                             defaultValue={defaultValue}
                             {...inputProps}
                         />
                         {!hideIcon && icon}
-                        {!hideIcon ||
-                            (name === 'hex' && (
-                                <span className="absolute top-1/2 -translate-y-1/2 left-10 w-px h-[56%] bg-black"></span>
-                            ))}
+                        {!hideIcon || name === 'hex' ? (
+                            <span className="absolute top-1/2 -translate-y-1/2 left-10 w-px h-[56%] bg-black"></span>
+                        ) : (
+                            <></>
+                        )}
                         {name === 'hex' && (
                             <div
                                 className="absolute top-1/2 -translate-y-1/2 left-2.5 w-[20px] h-[20px] rounded-lg"

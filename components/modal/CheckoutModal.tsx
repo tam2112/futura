@@ -14,6 +14,7 @@ import { useStore } from '@/context/StoreContext';
 import { getUserIdFromCookie } from '@/lib/auth';
 import { useRouter } from '@/navigation';
 import SelectField from '../form/SelectField';
+import { useLocale, useTranslations } from 'next-intl';
 
 const paymentMethodSchema = z
     .object({
@@ -47,6 +48,10 @@ type CheckoutModalProps = {
 };
 
 export default function CheckoutModal({ isOpen, setIsOpen, cartTotal }: CheckoutModalProps) {
+    const t = useTranslations('CheckoutModal');
+    const locale = useLocale() as 'en' | 'vi';
+    const createDeliveryInfoSchema = deliveryInfoSchema(locale);
+
     const [step, setStep] = useState(1);
     const [isStep1Complete, setIsStep1Complete] = useState(false);
     const [modalScope, modalAnimate] = useAnimate();
@@ -56,7 +61,7 @@ export default function CheckoutModal({ isOpen, setIsOpen, cartTotal }: Checkout
 
     // Delivery Form
     const deliveryForm = useForm<DeliveryInfoSchema>({
-        resolver: zodResolver(deliveryInfoSchema),
+        resolver: zodResolver(createDeliveryInfoSchema),
         defaultValues: {
             firstName: '',
             lastName: '',
@@ -102,31 +107,31 @@ export default function CheckoutModal({ isOpen, setIsOpen, cartTotal }: Checkout
         const deliveryData = deliveryForm.getValues();
         const isValid = await deliveryForm.trigger();
         if (!isValid) {
-            toast.error('Please fill in all required delivery information');
+            toast.error(t('fillAllOrderRequired'));
             return;
         }
 
         const userId = await getUserIdFromCookie();
         if (!userId) {
-            toast.error('Please log in to place an order');
+            toast.error(t('logInPlaceOrder'));
             return;
         }
 
         const response = await createOrder(userId, deliveryData);
         if (response.success) {
-            toast.success('Order placed successfully');
+            toast(t('orderSuccess'));
             await updateCart();
             setIsOpen(false);
             router.push('/my-orders');
         } else {
-            toast.error(response.message || 'Failed to place order');
+            toast.error(response.message || t('orderFailed'));
         }
     };
 
     const handlePayNow = async () => {
         const isValid = await deliveryForm.trigger();
         if (!isValid) {
-            toast.error('Please fill in all required delivery information');
+            toast.error(t('fillAllOrderRequired'));
             return;
         }
         setIsStep1Complete(true);
@@ -137,40 +142,40 @@ export default function CheckoutModal({ isOpen, setIsOpen, cartTotal }: Checkout
         const paymentData = paymentForm.getValues();
         const isValid = await paymentForm.trigger();
         if (!isValid) {
-            toast.error('Please provide all required payment details');
+            toast.error(t('fillAllPayRequired'));
             return;
         }
 
         const deliveryData = deliveryForm.getValues();
         const userId = await getUserIdFromCookie();
         if (!userId) {
-            toast.error('Please log in to place an order');
+            toast.error(t('logInPlaceOrder'));
             return;
         }
 
         const response = await createOrder(userId, deliveryData);
         if (response.success) {
-            toast.success('Payment successful and order placed');
+            toast(t('paySuccess'));
             await updateCart();
             setIsOpen(false);
             router.push('/my-orders');
         } else {
-            toast.error(response.message || 'Failed to place order');
+            toast.error(response.message || t('orderFailed'));
         }
     });
 
     const handleMoveToStep2 = async () => {
         const isValid = await deliveryForm.trigger();
         if (!isValid) {
-            toast.error('Please fill in all required delivery information');
+            toast.error(t('fillAllOrderRequired'));
             return;
         }
         setStep(2);
     };
 
     const paymentMethodOptions = [
-        { value: 'ewallet', label: 'E-Wallet' },
-        { value: 'creditCard', label: 'Credit Card' },
+        { value: 'ewallet', label: t('eWallet') },
+        { value: 'creditCard', label: t('creditCard') },
     ];
 
     const ewalletProviderOptions = [
@@ -204,7 +209,7 @@ export default function CheckoutModal({ isOpen, setIsOpen, cartTotal }: Checkout
                     {/* Header */}
                     <div className="sticky top-0 bg-white z-10 border-b border-gray-200">
                         <div className="flex items-center justify-between p-4">
-                            <h2 className="font-heading text-lg">Checkout</h2>
+                            <h2 className="font-heading text-lg">{t('checkout')}</h2>
                             <div className="cursor-pointer" onClick={() => setIsOpen(false)}>
                                 <HiOutlineXMark size={30} />
                             </div>
@@ -218,7 +223,7 @@ export default function CheckoutModal({ isOpen, setIsOpen, cartTotal }: Checkout
                                 )}
                                 onClick={() => setStep(1)}
                             >
-                                Step 1: Delivery Info {isStep1Complete && '✓'}
+                                {t('step')} 1: {t('deliveryInfo')} {isStep1Complete && '✓'}
                             </button>
                             <button
                                 className={twMerge(
@@ -228,7 +233,7 @@ export default function CheckoutModal({ isOpen, setIsOpen, cartTotal }: Checkout
                                 onClick={() => handleMoveToStep2()}
                                 disabled={!isStep1Complete}
                             >
-                                Step 2: Payment
+                                {t('step')} 2: {t('payment')}
                             </button>
                         </div>
                     </div>
@@ -239,15 +244,15 @@ export default function CheckoutModal({ isOpen, setIsOpen, cartTotal }: Checkout
                             <div className="grid grid-cols-2 gap-16">
                                 {/* Delivery Form */}
                                 <div>
-                                    <h3 className="font-semibold mb-4 text-lg">Delivery Information</h3>
+                                    <h3 className="font-semibold mb-4 text-lg">{t('deliveryInformation')}</h3>
                                     <form className="space-y-4">
                                         <div className="flex flex-col gap-1">
-                                            <label>First Name</label>
+                                            <label>{t('firstName')}</label>
                                             <div className="relative bg-white border border-black rounded-lg">
                                                 <input
                                                     {...deliveryForm.register('firstName')}
                                                     className="w-full px-4 py-2 rounded-lg outline-none"
-                                                    placeholder="Enter first name"
+                                                    placeholder={t('firstNamePlaceholder')}
                                                 />
                                             </div>
                                             {deliveryForm.formState.errors.firstName && (
@@ -257,12 +262,12 @@ export default function CheckoutModal({ isOpen, setIsOpen, cartTotal }: Checkout
                                             )}
                                         </div>
                                         <div className="flex flex-col gap-1">
-                                            <label>Last Name</label>
+                                            <label>{t('lastName')}</label>
                                             <div className="relative bg-white border border-black rounded-lg">
                                                 <input
                                                     {...deliveryForm.register('lastName')}
                                                     className="w-full px-4 py-2 rounded-lg outline-none"
-                                                    placeholder="Enter last name"
+                                                    placeholder={t('lastNamePlaceholder')}
                                                 />
                                             </div>
                                             {deliveryForm.formState.errors.lastName && (
@@ -272,12 +277,12 @@ export default function CheckoutModal({ isOpen, setIsOpen, cartTotal }: Checkout
                                             )}
                                         </div>
                                         <div className="flex flex-col gap-1">
-                                            <label>Street</label>
+                                            <label>{t('street')}</label>
                                             <div className="relative bg-white border border-black rounded-lg">
                                                 <input
                                                     {...deliveryForm.register('street')}
                                                     className="w-full px-4 py-2 rounded-lg outline-none"
-                                                    placeholder="Enter street"
+                                                    placeholder={t('streetPlaceholder')}
                                                 />
                                             </div>
                                             {deliveryForm.formState.errors.street && (
@@ -287,12 +292,12 @@ export default function CheckoutModal({ isOpen, setIsOpen, cartTotal }: Checkout
                                             )}
                                         </div>
                                         <div className="flex flex-col gap-1">
-                                            <label>City</label>
+                                            <label>{t('city')}</label>
                                             <div className="relative bg-white border border-black rounded-lg">
                                                 <input
                                                     {...deliveryForm.register('city')}
                                                     className="w-full px-4 py-2 rounded-lg outline-none"
-                                                    placeholder="Enter city"
+                                                    placeholder={t('cityPlaceholder')}
                                                 />
                                             </div>
                                             {deliveryForm.formState.errors.city && (
@@ -302,12 +307,12 @@ export default function CheckoutModal({ isOpen, setIsOpen, cartTotal }: Checkout
                                             )}
                                         </div>
                                         <div className="flex flex-col gap-1">
-                                            <label>Country</label>
+                                            <label>{t('country')}</label>
                                             <div className="relative bg-white border border-black rounded-lg">
                                                 <input
                                                     {...deliveryForm.register('country')}
                                                     className="w-full px-4 py-2 rounded-lg outline-none"
-                                                    placeholder="Enter country"
+                                                    placeholder={t('countryPlaceholder')}
                                                 />
                                             </div>
                                             {deliveryForm.formState.errors.country && (
@@ -317,12 +322,12 @@ export default function CheckoutModal({ isOpen, setIsOpen, cartTotal }: Checkout
                                             )}
                                         </div>
                                         <div className="flex flex-col gap-1">
-                                            <label>Phone</label>
+                                            <label>{t('phone')}</label>
                                             <div className="relative bg-white border border-black rounded-lg">
                                                 <input
                                                     {...deliveryForm.register('phone')}
                                                     className="w-full px-4 py-2 rounded-lg outline-none"
-                                                    placeholder="Enter phone"
+                                                    placeholder={t('phonePlaceholder')}
                                                 />
                                             </div>
                                             {deliveryForm.formState.errors.phone && (
@@ -335,18 +340,18 @@ export default function CheckoutModal({ isOpen, setIsOpen, cartTotal }: Checkout
                                 </div>
                                 {/* Cart Totals */}
                                 <div>
-                                    <h3 className="font-semibold mb-4 text-lg">Order Summary</h3>
+                                    <h3 className="font-semibold mb-4 text-lg">{t('orderSum')}</h3>
                                     <div className="space-y-2">
                                         <div className="flex justify-between">
-                                            <span>Subtotal:</span>
+                                            <span>{t('subtotal')}:</span>
                                             <span>${cartTotal.toFixed(2)}</span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span>Tax:</span>
+                                            <span>{t('tax')}:</span>
                                             <span>$0.00</span>
                                         </div>
                                         <div className="flex justify-between font-semibold">
-                                            <span>Total:</span>
+                                            <span>{t('total')}:</span>
                                             <span>${cartTotal.toFixed(2)}</span>
                                         </div>
                                     </div>
@@ -356,13 +361,13 @@ export default function CheckoutModal({ isOpen, setIsOpen, cartTotal }: Checkout
                                                 onClick={handleOrderNow}
                                                 className="w-full py-2 bg-gradient-light text-black rounded font-semibold"
                                             >
-                                                Order Now
+                                                {t('orderNow')}
                                             </button>
                                             <button
                                                 onClick={handlePayNow}
                                                 className="w-full py-2 border-gradient text-black rounded font-semibold"
                                             >
-                                                Pay Now
+                                                {t('payNow')}
                                             </button>
                                         </div>
                                     )}
@@ -372,7 +377,7 @@ export default function CheckoutModal({ isOpen, setIsOpen, cartTotal }: Checkout
                                                 onClick={handleMoveToStep2}
                                                 className="w-full py-2 bg-gradient-light text-black rounded font-semibold"
                                             >
-                                                Move to Step 2
+                                                {t('moveToStep2')}
                                             </button>
                                         </div>
                                     )}
@@ -381,10 +386,10 @@ export default function CheckoutModal({ isOpen, setIsOpen, cartTotal }: Checkout
                         )}
                         {step === 2 && (
                             <div>
-                                <h3 className="font-semibold mb-4 text-lg">Payment Information</h3>
+                                <h3 className="font-semibold mb-4 text-lg">{t('paymentInformation')}</h3>
                                 <form onSubmit={handlePay} className="space-y-4">
                                     <SelectField
-                                        label="Payment Method"
+                                        label={t('paymentMethod')}
                                         name="paymentMethod"
                                         options={paymentMethodOptions}
                                         control={paymentForm.control}
@@ -392,7 +397,7 @@ export default function CheckoutModal({ isOpen, setIsOpen, cartTotal }: Checkout
                                     />
                                     {paymentForm.watch('paymentMethod') === 'ewallet' && (
                                         <SelectField
-                                            label="E-Wallet Provider"
+                                            label={t('eWalletProvider')}
                                             name="ewalletProvider"
                                             options={ewalletProviderOptions}
                                             control={paymentForm.control}
@@ -402,12 +407,12 @@ export default function CheckoutModal({ isOpen, setIsOpen, cartTotal }: Checkout
                                     {paymentForm.watch('paymentMethod') === 'creditCard' && (
                                         <>
                                             <div className="flex flex-col gap-1">
-                                                <label>Card Number</label>
+                                                <label>{t('cardNumber')}</label>
                                                 <div className="relative bg-white border border-black rounded-lg">
                                                     <input
                                                         {...paymentForm.register('cardNumber')}
                                                         className="w-full px-4 py-2 rounded-lg outline-none"
-                                                        placeholder="Enter card number"
+                                                        placeholder={t('cardNumberPlaceholder')}
                                                     />
                                                 </div>
                                                 {paymentForm.formState.errors.cardNumber && (
@@ -417,12 +422,12 @@ export default function CheckoutModal({ isOpen, setIsOpen, cartTotal }: Checkout
                                                 )}
                                             </div>
                                             <div className="flex flex-col gap-1">
-                                                <label>Bank Name</label>
+                                                <label>{t('bankName')}</label>
                                                 <div className="relative bg-white border border-black rounded-lg">
                                                     <input
                                                         {...paymentForm.register('bankName')}
                                                         className="w-full px-4 py-2 rounded-lg outline-none"
-                                                        placeholder="Enter bank name"
+                                                        placeholder={t('bankNamePlaceholder')}
                                                     />
                                                 </div>
                                                 {paymentForm.formState.errors.bankName && (
@@ -437,7 +442,7 @@ export default function CheckoutModal({ isOpen, setIsOpen, cartTotal }: Checkout
                                         type="submit"
                                         className="w-full py-2 bg-gradient-medium text-black rounded font-semibold"
                                     >
-                                        Pay
+                                        {t('pay')}
                                     </button>
                                 </form>
                             </div>

@@ -15,6 +15,7 @@ import { useRef, useState } from 'react';
 import DeviceSliderBtn from '@/components/slider/DeviceSliderBtn';
 import { useStore } from '@/context/StoreContext';
 import { twMerge } from 'tailwind-merge';
+import { useTranslations } from 'next-intl';
 
 type Product = {
     id: string;
@@ -46,23 +47,25 @@ type ProductDetailsProps = {
 };
 
 export default function ProductDetails({ product, relatedProducts }: ProductDetailsProps) {
+    const t = useTranslations('ProductDetails');
+
     const [selectedImage, setSelectedImage] = useState(product.images[0]?.url || '/placeholder.png');
     const swiperRef = useRef<SwiperType | null>(null);
     const { handleAddToCart } = useStore();
 
     // Tạo breadcrumb động từ category
     const breadcrumbs = [
-        { id: 1, title: 'Home', href: '/' },
+        { id: 1, title: t('home'), href: '/' },
         { id: 2, title: product.category.name, href: `/collections/list/${product.category.slug}` },
         { id: 3, title: product.name, href: '' },
     ];
 
     // Danh sách technical để hiển thị
     const technicals = [
-        { key: 'Storage', value: product.storage?.name, display: product.storage?.name },
-        { key: 'Connectivity', value: product.connectivity?.name, display: product.connectivity?.name },
+        { key: 'Brand', title: t('brand'), value: product.brand?.name, display: product.brand?.name },
         {
             key: 'Color',
+            title: t('color'),
             value: product.color?.id,
             display: product.color ? (
                 <div className="flex items-center gap-2">
@@ -71,11 +74,29 @@ export default function ProductDetails({ product, relatedProducts }: ProductDeta
                 </div>
             ) : null,
         },
-        { key: 'CPU', value: product.cpu?.name, display: product.cpu?.name },
-        { key: 'RAM', value: product.ram?.title, display: product.ram?.title },
-        { key: 'Type', value: product.type?.name, display: product.type?.name },
-        { key: 'Battery Health', value: product.batteryHealth?.title, display: product.batteryHealth?.title },
-        { key: 'Screen Size', value: product.screenSize?.name, display: product.screenSize?.name },
+        { key: 'Storage', title: t('storage'), value: product.storage?.name, display: product.storage?.name },
+        { key: 'Sim Slot', title: t('simSlot'), value: product.simSlot?.title, display: product.simSlot?.title },
+        {
+            key: 'Connectivity',
+            title: t('connectivity'),
+            value: product.connectivity?.name,
+            display: product.connectivity?.name,
+        },
+        {
+            key: 'Battery Health',
+            title: t('batteryHealth'),
+            value: product.batteryHealth?.title,
+            display: product.batteryHealth?.title,
+        },
+        { key: 'RAM', title: t('ram'), value: product.ram?.title, display: product.ram?.title },
+        { key: 'CPU', title: t('cpu'), value: product.cpu?.name, display: product.cpu?.name },
+        {
+            key: 'Screen Size',
+            title: t('screenSize'),
+            value: product.screenSize?.name,
+            display: product.screenSize?.name,
+        },
+        { key: 'Type', title: t('type'), value: product.type?.name, display: product.type?.name },
     ].filter((tech) => tech.value); // Chỉ hiển thị technical có dữ liệu
 
     return (
@@ -121,14 +142,16 @@ export default function ProductDetails({ product, relatedProducts }: ProductDeta
                                             </Link>
                                         </div>
                                         <div className="text-sm lg:hidden">
-                                            <span className="mr-2 text-xs">Already {product.quantity}</span>
+                                            <span className="mr-2 text-xs">
+                                                {t('already')} {product.quantity}
+                                            </span>
                                             <span
                                                 className={twMerge(
                                                     'text-xs p-2 rounded-lg',
                                                     product.status?.name === 'In stock' ? 'bg-teal-400' : 'bg-rose-400',
                                                 )}
                                             >
-                                                {product.status?.name}
+                                                {t(`${product.status?.name}`)}
                                             </span>
                                         </div>
                                     </div>
@@ -136,18 +159,20 @@ export default function ProductDetails({ product, relatedProducts }: ProductDeta
                                     <div className="mr-3 hidden truncate lg:block">
                                         <div className="flex items-center gap-1.5 rounded-md bg-[#ECFCF5] px-3 py-1.5 text-xs text-[#1D6C49]">
                                             <LuLeaf size={15} />
-                                            Sustainable <span className="hidden xs:inline-block">choice</span>
+                                            {t('sustainable')} <span className="hidden xs:inline-block">choice</span>
                                         </div>
                                     </div>
                                     <div className="hidden text-sm lg:block">
-                                        <span className="mr-2 text-xs">Already {product.quantity}</span>
+                                        <span className="mr-2 text-xs">
+                                            {t('already')} {product.quantity}
+                                        </span>
                                         <span
                                             className={twMerge(
                                                 'text-xs p-2 rounded-lg text-white',
                                                 product.status?.name === 'In stock' ? 'bg-teal-400' : 'bg-rose-400',
                                             )}
                                         >
-                                            {product.status?.name}
+                                            {t(`${product.status?.name}`)}
                                         </span>
                                     </div>
                                 </div>
@@ -212,7 +237,7 @@ export default function ProductDetails({ product, relatedProducts }: ProductDeta
                                                     </div>
                                                     <div className="absolute right-[-39px] top-6 ml-2 hidden w-[40px] rounded-r-full bg-rose-600 pr-2 leading-3 lg:block">
                                                         <span className="flex items-center justify-center p-1 px-1.5 text-center text-xs font-bold text-white lg:p-1.5">
-                                                            {product.promotions?.[0]?.percentageNumber}% OFF
+                                                            {product.promotions?.[0]?.percentageNumber}% {t('off')}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -242,7 +267,7 @@ export default function ProductDetails({ product, relatedProducts }: ProductDeta
                                                 onClick={() => handleAddToCart(product.id)}
                                                 className="sm:text-base font-bold p-0 h-11 sm:h-auto text-sm xs:text-base sm:p-3 my-1 rounded-md duration-200 ease-in-out hover:opacity-90 disabled:opacity-70 bg-gradient-light hover:shadow-lg"
                                             >
-                                                Add to Cart
+                                                {t('addToCart')}
                                             </button>
                                         </div>
                                         <div className="w-[118px]">
@@ -260,17 +285,17 @@ export default function ProductDetails({ product, relatedProducts }: ProductDeta
                                                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                                                 </svg>
                                                 <div className="-mt-1 text-center text-[10px] lg:mt-0">
-                                                    <span className="mr-0.5">Add to List</span>
+                                                    <span className="mr-0.5">{t('addToList')}</span>
                                                 </div>
                                             </button>
                                         </div>
                                     </div>
                                     <div className="mt-3 hidden lg:block">
                                         {/* Technical */}
-                                        {technicals.map(({ key, display }) => (
+                                        {technicals.map(({ key, title, display }) => (
                                             <div key={key} className="mb-4">
                                                 <h3 className="mb-1 text-[10px] font-bold uppercase text-gray-700 xs:mb-2 lg:font-normal">
-                                                    {key}: {typeof display === 'string' ? <b>{display}</b> : display}
+                                                    {title}: {typeof display === 'string' ? <b>{display}</b> : display}
                                                 </h3>
                                                 {key === 'Color' ? (
                                                     <div className="mb-5 grid grid-cols-[repeat(auto-fill,26px)] gap-x-4 gap-y-3">
@@ -298,7 +323,7 @@ export default function ProductDetails({ product, relatedProducts }: ProductDeta
                                                                         : (product as any)[key.toLowerCase()]?.name ||
                                                                           (product as Record<string, any>)[
                                                                               key.toLowerCase()
-                                                                          ]?.title}
+                                                                          ]?.t}
                                                                 </div>
                                                             </div>
                                                         )}
@@ -308,7 +333,7 @@ export default function ProductDetails({ product, relatedProducts }: ProductDeta
                                         ))}
                                         {/* Description */}
                                         <div className="mt-4 bg-white text-gray-700">
-                                            <h3 className="mb-1 text-lg font-bold">About this item</h3>
+                                            <h3 className="mb-1 text-lg font-bold">{t('description')}</h3>
                                             <div className="mb-4">
                                                 <p className="text-[15px]">{product.description}</p>
                                             </div>
@@ -323,7 +348,7 @@ export default function ProductDetails({ product, relatedProducts }: ProductDeta
             {/* Related Products */}
             <div className="bg-white py-8">
                 <div className="container relative">
-                    <h2 className="flex items-center text-lg font-semibold md:text-xl mb-4">You May Also Like</h2>
+                    <h2 className="flex items-center text-lg font-semibold md:text-xl mb-4">{t('relatedTitle')}</h2>
                     <>
                         <Swiper
                             modules={[Navigation]}
@@ -369,30 +394,6 @@ export default function ProductDetails({ product, relatedProducts }: ProductDeta
                     </>
                 </div>
             </div>
-            <style jsx>{`
-                .related-products-swiper .swiper-button-prev,
-                .related-products-swiper .swiper-button-next {
-                    color: #374151;
-                    background: rgba(255, 255, 255, 0.8);
-                    border-radius: 50%;
-                    width: 40px;
-                    height: 40px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                }
-                .related-products-swiper .swiper-button-prev:after,
-                .related-products-swiper .swiper-button-next:after {
-                    font-size: 20px;
-                }
-                .related-products-swiper .swiper-pagination-bullet {
-                    background: #374151;
-                }
-                .related-products-swiper .swiper-pagination-bullet-active {
-                    background: #1f2323;
-                }
-            `}</style>
         </>
     );
 }

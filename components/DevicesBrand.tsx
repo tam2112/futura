@@ -2,6 +2,7 @@ import Image from 'next/image';
 
 import checkOutlineImg from '@/public/official-store/check-outline.svg?url';
 import { Link } from '@/navigation';
+import { useTranslations } from 'next-intl';
 
 interface DevicesBrandProps {
     data: {
@@ -14,6 +15,8 @@ interface DevicesBrandProps {
 }
 
 export default function DevicesBrand({ data }: DevicesBrandProps) {
+    const t = useTranslations('OfficialStores');
+
     return (
         <div className="hidden lg:grid lg:grid-cols-2 lg:grid-rows-2 lg:gap-2">
             {data.map(({ id, title, price, img, href }) => (
@@ -24,7 +27,7 @@ export default function DevicesBrand({ data }: DevicesBrandProps) {
                                 <div className="h-3.5 w-3.5">
                                     <Image src={checkOutlineImg} alt="" width={15} height={15} className="size-full" />
                                 </div>
-                                Direct from brand
+                                {t('hashtag')}
                             </div>
                         </div>
                         <div className="flex h-full w-full flex-col p-3">

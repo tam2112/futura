@@ -9,8 +9,11 @@ import { useEffect, useState } from 'react';
 import CategoryModal from '@/components/modal/CategoryModal';
 import { useCategoryStore } from '@/store/categoryStore';
 import { Link } from '@/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function NavCategory() {
+    const t = useTranslations('NavCategory');
+
     const [isOpen, setIsOpen] = useState(false);
     const { randomCategories, fetchRandomCategories } = useCategoryStore();
 
@@ -34,7 +37,7 @@ export default function NavCategory() {
                             >
                                 <div className="flex items-center gap-2">
                                     <HiBars3 />
-                                    <span>All Items</span>
+                                    <span>{t('allItems')}</span>
                                 </div>
                             </Button>
                         </li>
@@ -42,7 +45,7 @@ export default function NavCategory() {
                             <Link href={'/collections/top-deals'}>
                                 <Button variant="text" className="font-normal relative after:left-0">
                                     <div className="flex items-center gap-2">
-                                        <span>Deals</span>
+                                        <span>{t('deals')}</span>
                                         <Fire />
                                     </div>
                                 </Button>
@@ -52,7 +55,7 @@ export default function NavCategory() {
                             <li key={cat.id}>
                                 <Link href={`/collections/list/${cat.slug}`}>
                                     <Button variant="text" className="font-normal relative after:left-0 capitalize">
-                                        {cat.name}
+                                        {t(`${cat.name}`)}
                                     </Button>
                                 </Link>
                             </li>

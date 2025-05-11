@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
+import { messages } from '@/lib/messages';
 import prisma from '@/lib/prisma';
 import { ScreenSizeSchema } from '@/lib/validation/technical/screen-size.form';
 import { revalidatePath } from 'next/cache';
@@ -31,7 +32,12 @@ export const getScreenSizeById = async (screenSizeId: string) => {
     }
 };
 
-export const createScreenSize = async (currentState: CurrentState, data: ScreenSizeSchema) => {
+export const createScreenSize = async (
+    currentState: CurrentState,
+    data: ScreenSizeSchema & { locale?: 'en' | 'vi' },
+) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].ScreenSizeForm;
     try {
         // Tạo ScreenSize mới
         await prisma.screenSize.create({
@@ -48,14 +54,19 @@ export const createScreenSize = async (currentState: CurrentState, data: ScreenS
             return {
                 success: false,
                 error: true,
-                message: 'Screen size name already exists',
+                message: t.screenSizeNameExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to create screen size' };
+        return { success: false, error: true, message: t.createFailed };
     }
 };
 
-export const updateScreenSize = async (currentState: CurrentState, data: ScreenSizeSchema) => {
+export const updateScreenSize = async (
+    currentState: CurrentState,
+    data: ScreenSizeSchema & { locale?: 'en' | 'vi' },
+) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].ScreenSizeForm;
     try {
         // Cập nhật ScreenSize
         await prisma.screenSize.update({
@@ -73,10 +84,10 @@ export const updateScreenSize = async (currentState: CurrentState, data: ScreenS
             return {
                 success: false,
                 error: true,
-                message: 'Screen size name already exists',
+                message: t.screenSizeNameExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to update screen size' };
+        return { success: false, error: true, message: t.updateFailed };
     }
 };
 

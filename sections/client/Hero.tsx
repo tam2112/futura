@@ -3,9 +3,12 @@
 import Button from '@/components/Button';
 import ModelSlider from '@/components/model/ModelSlider';
 import underlineImage from '@/public/underline.svg?url';
+import { useTranslations } from 'next-intl';
 import { animateScroll as scroll } from 'react-scroll';
 
 export default function Hero() {
+    const t = useTranslations('Hero');
+
     // Hàm xử lý scroll
     const handleScroll = () => {
         scroll.scrollMore(600, {
@@ -24,12 +27,12 @@ export default function Hero() {
                                 <span className="size-3 rounded-full bg-conic-gradient relative">
                                     <div className="bg-conic-gradient absolute inset-0 rounded-full animate-ping-large"></div>
                                 </span>
-                                <span className="uppercase">The next era</span>
+                                <span className="uppercase">{t('hashtag')}</span>
                             </div>
                             <h1 className="text-4xl md:text-5xl lg:text-6xl max-w-5xl font-semibold leading-tight mt-2">
-                                Experience the Future of Shopping – Only with{' '}
+                                {t('titleSub')}{' '}
                                 <span className="relative">
-                                    <span>Futura</span>
+                                    <span>{t('titleMain')}</span>
                                     <span
                                         className="absolute w-full left-0 top-full -translate-y-1/2 h-4 bg-[linear-gradient(to_right,var(--color-amber-200),var(--color-teal-200),var(--color-violet-300),var(--color-fuchsia-300))]"
                                         style={{
@@ -41,31 +44,28 @@ export default function Hero() {
                                     ></span>
                                 </span>
                             </h1>
-                            <p className="text-lg md:text-xl mt-8 max-w-3xl mx-auto">
-                                Discover a seamless. Futura brings innovation, personalization, and automation to
-                                redefine the way you shop online.
-                            </p>
+                            <p className="text-lg md:text-xl mt-8 max-w-3xl mx-auto">{t('description')}</p>
                             <p className="mt-8">
-                                <Button onClick={handleScroll}>Explore Now</Button>
+                                <Button onClick={handleScroll}>{t('exploreNow')}</Button>
                             </p>
                             <div className="flex items-center gap-4 pt-8 divide-x-2">
                                 <div>
                                     <h2 className="text-4xl font-bold font-heading">
                                         16<span className="bg-gradient bg-clip-text text-transparent">%</span>
                                     </h2>
-                                    <p className="text-sm font-extralight">Less Commission</p>
+                                    <p className="text-sm font-extralight">{t('lessCommission')}</p>
                                 </div>
                                 <div className="pl-8">
                                     <h2 className="text-4xl font-bold font-heading">
                                         25<span className="bg-gradient bg-clip-text text-transparent">K</span>
                                     </h2>
-                                    <p className="text-sm font-extralight">Registered users</p>
+                                    <p className="text-sm font-extralight">{t('registeredUsers')}</p>
                                 </div>
                                 <div className="pl-8">
                                     <h2 className="text-4xl font-bold font-heading">
                                         95<span className="bg-gradient bg-clip-text text-transparent">%</span>
                                     </h2>
-                                    <p className="text-sm font-extralight">Effective Trading</p>
+                                    <p className="text-sm font-extralight">{t('effectiveTrading')}</p>
                                 </div>
                             </div>
                         </div>

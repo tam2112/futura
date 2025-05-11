@@ -12,6 +12,7 @@ import { useAuth } from '@/context/AuthContext';
 import { PiShoppingBagOpenLight, PiSignOut, PiUser } from 'react-icons/pi';
 import { Link } from '@/navigation';
 import { useCategoryStore } from '@/store/categoryStore';
+import { useTranslations } from 'next-intl';
 
 type CategoryModalType = {
     isOpen: boolean;
@@ -19,6 +20,8 @@ type CategoryModalType = {
 };
 
 export default function CategoryModal({ isOpen, setIsOpen }: CategoryModalType) {
+    const t = useTranslations('CategoryModal');
+
     const [navScope, navAnimate] = useAnimate();
     const [showOverlay, setShowOverlay] = useState(false);
     const [showAllCategories, setShowAllCategories] = useState(false);
@@ -114,7 +117,7 @@ export default function CategoryModal({ isOpen, setIsOpen }: CategoryModalType) 
                             </div>
                             <Link href={'/collections/top-deals'} onClick={() => setIsOpen(false)}>
                                 <div className="shrink-0 px-4 py-2 bg-red-400 text-white font-semibold rounded-full font-body text-xs">
-                                    Browse Deals
+                                    {t('browseDeals')}
                                 </div>
                             </Link>
                         </div>
@@ -122,7 +125,7 @@ export default function CategoryModal({ isOpen, setIsOpen }: CategoryModalType) 
                     <nav className="mt-4 px-4 flex flex-col space-y-4 divide-y divide-gray-200">
                         {/* Trending */}
                         <div>
-                            <h3 className="font-semibold font-heading mb-1">Trending</h3>
+                            <h3 className="font-semibold font-heading mb-1">{t('trending')}</h3>
                             <ul>
                                 {trendingCategories.map(({ id, name, slug }) => (
                                     <li key={id} onClick={(e) => e.stopPropagation()}>
@@ -132,7 +135,7 @@ export default function CategoryModal({ isOpen, setIsOpen }: CategoryModalType) 
                                         >
                                             <div className="relative isolate">
                                                 <span className="text-sm group-hover/nav-item:pl-4 transition-all duration-500 capitalize">
-                                                    {name}
+                                                    {t(`${name}`)}
                                                 </span>
                                             </div>
                                             <div className="absolute w-full h-0 bg-gray-100 group-hover/nav-item:h-full transition-all duration-500 bottom-0 -z-10"></div>
@@ -143,7 +146,7 @@ export default function CategoryModal({ isOpen, setIsOpen }: CategoryModalType) 
                         </div>
                         {/* All Categories */}
                         <div>
-                            <h3 className="font-semibold font-heading mt-4 mb-1">All Categories</h3>
+                            <h3 className="font-semibold font-heading mt-4 mb-1">{t('allCategories')}</h3>
                             <ul>
                                 {categories
                                     .slice(0, showAllCategories ? categories.length : 5)
@@ -155,7 +158,7 @@ export default function CategoryModal({ isOpen, setIsOpen }: CategoryModalType) 
                                             >
                                                 <div className="relative isolate">
                                                     <span className="text-sm group-hover/nav-item:pl-4 transition-all duration-500 capitalize">
-                                                        {name}
+                                                        {t(`${name}`)}
                                                     </span>
                                                 </div>
                                                 <div className="absolute w-full h-0 bg-gray-100 group-hover/nav-item:h-full transition-all duration-500 bottom-0 -z-10"></div>
@@ -172,7 +175,7 @@ export default function CategoryModal({ isOpen, setIsOpen }: CategoryModalType) 
                                     <div className="relative isolate">
                                         <div className="flex items-center gap-2">
                                             <span className="text-sm group-hover/nav-item:pl-4 transition-all duration-500">
-                                                {showAllCategories ? 'See Less' : 'See All'}
+                                                {showAllCategories ? t('seeLess') : t('seeAll')}
                                             </span>
                                             {showAllCategories ? (
                                                 <HiOutlineChevronUp size={14} />
@@ -187,7 +190,7 @@ export default function CategoryModal({ isOpen, setIsOpen }: CategoryModalType) 
                         </div>
                         {/* Settings */}
                         <div>
-                            <h3 className="font-semibold font-heading mt-4 mb-2">Settings</h3>
+                            <h3 className="font-semibold font-heading mt-4 mb-2">{t('settings')}</h3>
                             {isLoggedIn ? (
                                 <ul>
                                     <li
@@ -199,7 +202,7 @@ export default function CategoryModal({ isOpen, setIsOpen }: CategoryModalType) 
                                         <div className="relative isolate">
                                             <span className="text-sm group-hover/nav-item:pl-4 transition-all duration-500 flex items-center gap-1">
                                                 <PiUser size={14} />
-                                                <span className="ml-2">My Profile</span>
+                                                <span className="ml-2">{t('myProfile')}</span>
                                             </span>
                                         </div>
                                         <div className="absolute w-full h-0 bg-gray-100 group-hover/nav-item:h-full transition-all duration-500 bottom-0 -z-10"></div>
@@ -216,7 +219,7 @@ export default function CategoryModal({ isOpen, setIsOpen }: CategoryModalType) 
                                             <div className="relative isolate">
                                                 <span className="text-sm group-hover/nav-item:pl-4 transition-all duration-500 flex items-center gap-1">
                                                     <PiShoppingBagOpenLight size={14} />
-                                                    <span className="ml-2">My Orders</span>
+                                                    <span className="ml-2">{t('myOrders')}</span>
                                                 </span>
                                             </div>
                                             <div className="absolute w-full h-0 bg-gray-100 group-hover/nav-item:h-full transition-all duration-500 bottom-0 -z-10"></div>
@@ -231,7 +234,7 @@ export default function CategoryModal({ isOpen, setIsOpen }: CategoryModalType) 
                                         <div className="relative isolate">
                                             <span className="text-sm group-hover/nav-item:pl-4 transition-all duration-500 flex items-center gap-1">
                                                 <PiSignOut size={14} />
-                                                <span className="ml-2">Sign Out</span>
+                                                <span className="ml-2">{t('signOut')}</span>
                                             </span>
                                         </div>
                                         <div className="absolute w-full h-0 bg-gray-100 group-hover/nav-item:h-full transition-all duration-500 bottom-0 -z-10"></div>
@@ -241,11 +244,11 @@ export default function CategoryModal({ isOpen, setIsOpen }: CategoryModalType) 
                                 <ul className="flex items-center justify-center gap-4">
                                     <li className="relative">
                                         <Button variant="text" className="after:left-0">
-                                            Sign Up
+                                            {t('signUp')}
                                         </Button>
                                     </li>
                                     <li>
-                                        <Button>Sign In</Button>
+                                        <Button>{t('signIn')}</Button>
                                     </li>
                                 </ul>
                             )}

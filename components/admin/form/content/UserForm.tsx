@@ -14,8 +14,9 @@ import InputField from '@/components/form/InputField';
 import { userSchema, UserSchema } from '@/lib/validation/user.form';
 import { createUser, updateUser } from '@/lib/actions/user.action';
 import SelectField from '@/components/form/SelectField';
+import { useLocale, useTranslations } from 'next-intl';
 
-export default function ColorForm({
+export default function UserForm({
     type,
     data,
     setOpen,
@@ -26,13 +27,17 @@ export default function ColorForm({
     setOpen: Dispatch<SetStateAction<boolean>>;
     relatedData?: any;
 }) {
+    const t = useTranslations('UserForm');
+    const locale = useLocale() as 'en' | 'vi';
+    const createUserSchema = userSchema(locale);
+
     const {
         register,
         handleSubmit,
         formState: { errors },
         control,
     } = useForm<UserSchema>({
-        resolver: zodResolver(userSchema),
+        resolver: zodResolver(createUserSchema),
     });
 
     // AFTER REACT 19 IT'LL BE USEACTIONSTATE
@@ -42,21 +47,21 @@ export default function ColorForm({
     });
 
     const onSubmit = handleSubmit(async (formData) => {
-        const data = { ...formData };
-        formAction(data);
+        const dataWithLocale = { ...formData, locale };
+        formAction(dataWithLocale);
     });
 
     const router = useRouter();
 
     useEffect(() => {
         if (state.success) {
-            toast(`User has been ${type === 'create' ? 'created' : 'updated'}`);
+            toast.success(t('createSuccess', { type: type === 'create' ? t('created') : t('updated') }));
             setOpen(false);
             router.refresh();
-        } else {
+        } else if (state.error && state.message) {
             toast.error(state.message);
         }
-    }, [state, type, router, setOpen]);
+    }, [state, type, router, setOpen, t]);
 
     const { roles } = relatedData;
 
@@ -68,11 +73,11 @@ export default function ColorForm({
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
             <h1 className="text-lg font-heading font-semibold">
-                {type === 'create' ? 'Create a new user' : 'Update the user'}
+                {type === 'create' ? t('createTitle') : t('updateTitle')}
             </h1>
             <div className="flex justify-between flex-wrap gap-4">
                 <InputField
-                    label="Full name"
+                    label={t('fullName')}
                     name="fullName"
                     defaultValue={data?.fullName}
                     register={register}
@@ -80,7 +85,7 @@ export default function ColorForm({
                     hideIcon
                 />
                 <InputField
-                    label="Email"
+                    label={t('email')}
                     name="email"
                     type="email"
                     defaultValue={data?.email}
@@ -89,7 +94,7 @@ export default function ColorForm({
                     hideIcon
                 />
                 <InputField
-                    label="Password"
+                    label={t('password')}
                     name="password"
                     type="password"
                     defaultValue={data?.password}
@@ -97,7 +102,13 @@ export default function ColorForm({
                     error={errors.password}
                     hideIcon
                 />
-                <SelectField label="Role" name="roleId" options={roleOptions} control={control} error={errors.roleId} />
+                <SelectField
+                    label={t('role')}
+                    name="roleId"
+                    options={roleOptions}
+                    control={control}
+                    error={errors.roleId}
+                />
                 {data && (
                     <InputField
                         label="Id"
@@ -110,7 +121,9 @@ export default function ColorForm({
                 )}
             </div>
 
-            <button className="bg-gradient-light p-2 rounded-md">{type === 'create' ? 'Create' : 'Update'}</button>
+            <button className="bg-gradient-light p-2 rounded-md">
+                {type === 'create' ? t('create') : t('update')}
+            </button>
         </form>
     );
 }

@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 import InputField from '@/components/form/InputField';
 import { roleSchema, RoleSchema } from '@/lib/validation/role.form';
 import { createRole, updateRole } from '@/lib/actions/role.action';
+import { useLocale, useTranslations } from 'next-intl';
 
 export default function RoleForm({
     type,
@@ -24,12 +25,16 @@ export default function RoleForm({
     setOpen: Dispatch<SetStateAction<boolean>>;
     relatedData?: any;
 }) {
+    const t = useTranslations('RoleForm');
+    const locale = useLocale() as 'en' | 'vi';
+    const createRoleSchema = roleSchema(locale);
+
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm<RoleSchema>({
-        resolver: zodResolver(roleSchema),
+        resolver: zodResolver(createRoleSchema),
     });
 
     // AFTER REACT 19 IT'LL BE USEACTIONSTATE
@@ -39,7 +44,7 @@ export default function RoleForm({
     });
 
     const onSubmit = handleSubmit(async (formData) => {
-        const data = { ...formData };
+        const data = { ...formData, locale };
         formAction(data);
     });
 
@@ -47,22 +52,22 @@ export default function RoleForm({
 
     useEffect(() => {
         if (state.success) {
-            toast(`Role has been ${type === 'create' ? 'created' : 'updated'}`);
+            toast(t('createSuccess', { type: type === 'create' ? t('created') : t('updated') }));
             setOpen(false);
             router.refresh();
         } else {
             toast.error(state.message);
         }
-    }, [state, type, router, setOpen]);
+    }, [state, type, router, setOpen, t]);
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
             <h1 className="text-lg font-heading font-semibold">
-                {type === 'create' ? 'Create a new role' : 'Update the role'}
+                {type === 'create' ? t('createTitle') : t('updateTitle')}
             </h1>
             <div className="flex justify-between flex-wrap gap-4">
                 <InputField
-                    label="Role name"
+                    label={t('roleName')}
                     name="name"
                     defaultValue={data?.name}
                     register={register}
@@ -81,7 +86,9 @@ export default function RoleForm({
                 )}
             </div>
 
-            <button className="bg-gradient-light p-2 rounded-md">{type === 'create' ? 'Create' : 'Update'}</button>
+            <button className="bg-gradient-light p-2 rounded-md">
+                {type === 'create' ? t('create') : t('update')}
+            </button>
         </form>
     );
 }

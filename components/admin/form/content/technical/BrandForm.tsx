@@ -15,6 +15,7 @@ import FileUploadDropzone from '@/components/FileUploadDropzone';
 import { uploadImagesToCloudinary } from '@/lib/upload';
 import { brandSchema, BrandSchema } from '@/lib/validation/technical/brand.form';
 import { createBrand, updateBrand } from '@/lib/actions/technical/brand.action';
+import { useLocale, useTranslations } from 'next-intl';
 // import { uploadFileToServer } from '@/lib/upload';
 // import { uploadImages } from '@/lib/actions/image.action';
 
@@ -28,12 +29,16 @@ export default function BrandForm({
     setOpen: Dispatch<SetStateAction<boolean>>;
     relatedData?: any;
 }) {
+    const t = useTranslations('BrandForm');
+    const locale = useLocale() as 'en' | 'vi';
+    const createBrandSchema = brandSchema(locale);
+
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm<BrandSchema>({
-        resolver: zodResolver(brandSchema),
+        resolver: zodResolver(createBrandSchema),
     });
 
     const [files, setFiles] = useState<File[]>([]);
@@ -68,7 +73,7 @@ export default function BrandForm({
         }
 
         // Gửi dữ liệu với danh sách URL thay vì File[]
-        const dataWithImageUrls = { ...formData, imageUrls };
+        const dataWithImageUrls = { ...formData, imageUrls, locale };
         formAction(dataWithImageUrls);
     });
 
@@ -76,22 +81,22 @@ export default function BrandForm({
 
     useEffect(() => {
         if (state.success) {
-            toast(`Brand has been ${type === 'create' ? 'created' : 'updated'}`);
+            toast(t('createSuccess', { type: type === 'create' ? t('created') : t('updated') }));
             setOpen(false);
             router.refresh();
         } else {
             toast.error(state.message);
         }
-    }, [state, type, router, setOpen]);
+    }, [state, type, router, setOpen, t]);
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
             <h1 className="text-lg font-heading font-semibold">
-                {type === 'create' ? 'Create a new brand' : 'Update the brand'}
+                {type === 'create' ? t('createTitle') : t('updateTitle')}
             </h1>
             <div className="flex justify-between flex-wrap gap-4">
                 <InputField
-                    label="Brand name"
+                    label={t('brandName')}
                     name="name"
                     defaultValue={data?.name}
                     register={register}
@@ -110,7 +115,7 @@ export default function BrandForm({
                 )}
             </div>
             <div>
-                <h2>Image</h2>
+                <h2>{t('image')}</h2>
                 <FileUploadDropzone
                     files={files}
                     setFiles={setFiles}
@@ -119,7 +124,9 @@ export default function BrandForm({
                 />
             </div>
 
-            <button className="bg-gradient-light p-2 rounded-md">{type === 'create' ? 'Create' : 'Update'}</button>
+            <button className="bg-gradient-light p-2 rounded-md">
+                {type === 'create' ? t('create') : t('update')}
+            </button>
         </form>
     );
 }

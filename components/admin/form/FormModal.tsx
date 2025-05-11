@@ -33,6 +33,8 @@ import { deleteType } from '@/lib/actions/technical/type.action';
 import { deleteProduct } from '@/lib/actions/product.action';
 import { deletePromotion } from '@/lib/actions/promotion.action';
 import { deleteStatus } from '@/lib/actions/status.action';
+import { Tooltip } from 'react-tooltip';
+import { useTranslations } from 'next-intl';
 
 const deleteActionMap = {
     // main actions
@@ -268,6 +270,7 @@ const forms: {
 
 export default function FormModal({ table, type, data, id, relatedData }: FormContainerProps & { relatedData?: any }) {
     // const size = type === 'create' ? 'w-8 h-8' : 'w-7 h-7';
+    const t = useTranslations('FormModal');
 
     const [open, setOpen] = useState(false);
 
@@ -278,7 +281,7 @@ export default function FormModal({ table, type, data, id, relatedData }: FormCo
 
         useEffect(() => {
             if (state.success) {
-                toast(`${table} has been deleted`);
+                toast(t('deleteSuccess', { table: t(`${table}`) }));
                 setOpen(false);
                 router.refresh();
             }
@@ -288,17 +291,17 @@ export default function FormModal({ table, type, data, id, relatedData }: FormCo
             <form action={formAction} className="p-4 flex flex-col gap-4">
                 <input type="text | number" name="id" value={id} hidden />
                 <h2 className="font-heading text-lg text-center font-medium">
-                    All data will be lost. Are you sure you want to delete this {table}?
+                    {t('deleteConfirm', { table: t(`${table}`) })}
                 </h2>
                 <button className="bg-rose-500 text-white py-2 px-4 rounded-md border-none w-max self-center">
-                    Delete
+                    {t('delete')}
                 </button>
             </form>
         ) : type === 'create' || type === 'update' || type === 'details' ? (
             // <CategoryForm type="create" data={data} setOpen={setOpen} />
             forms[table](setOpen, type, data, relatedData)
         ) : (
-            'Form not found'
+            t('formNotFound')
         );
     };
 
@@ -310,29 +313,44 @@ export default function FormModal({ table, type, data, id, relatedData }: FormCo
                     className="bg-gradient-light font-semibold px-5 py-2 flex gap-1 items-center rounded-lg text-black/80"
                 >
                     <BsPlusLg width={16} height={16} />
-                    <span>Add</span>
+                    <span>{t('add')}</span>
                 </button>
             ) : type === 'update' ? (
-                <button
-                    onClick={() => setOpen(true)}
-                    className="size-7 flex items-center justify-center rounded-full bg-amber-400"
-                >
-                    <CiEdit width={16} height={16} className="text-white" />
-                </button>
+                <>
+                    <button
+                        onClick={() => setOpen(true)}
+                        className="size-7 flex items-center justify-center rounded-full bg-amber-400"
+                        data-tooltip-id="edit-icon-tooltip"
+                        data-tooltip-content={t('editTooltip')}
+                    >
+                        <CiEdit width={16} height={16} className="text-white" />
+                    </button>
+                    <Tooltip id="edit-icon-tooltip" />
+                </>
             ) : type === 'delete' ? (
-                <button
-                    onClick={() => setOpen(true)}
-                    className="size-7 flex items-center justify-center rounded-full bg-rose-400"
-                >
-                    <PiTrash width={16} height={16} className="text-white" />
-                </button>
+                <>
+                    <button
+                        onClick={() => setOpen(true)}
+                        className="size-7 flex items-center justify-center rounded-full bg-rose-400"
+                        data-tooltip-id="delete-icon-tooltip"
+                        data-tooltip-content={t('deleteTooltip')}
+                    >
+                        <PiTrash width={16} height={16} className="text-white" />
+                    </button>
+                    <Tooltip id="delete-icon-tooltip" />
+                </>
             ) : (
-                <button
-                    onClick={() => setOpen(true)}
-                    className="size-7 flex items-center justify-center rounded-full bg-violet-400"
-                >
-                    <PiEyeBold width={16} height={16} className="text-white left-half-px" />
-                </button>
+                <>
+                    <button
+                        onClick={() => setOpen(true)}
+                        className="size-7 flex items-center justify-center rounded-full bg-violet-400"
+                        data-tooltip-id="details-icon-tooltip"
+                        data-tooltip-content={t('detailsTooltip')}
+                    >
+                        <PiEyeBold width={16} height={16} className="text-white left-half-px" />
+                    </button>
+                    <Tooltip id="details-icon-tooltip" />
+                </>
             )}
             {open && (
                 <div

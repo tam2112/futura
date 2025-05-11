@@ -12,8 +12,11 @@ import DeviceSliderBtn from './DeviceSliderBtn';
 import { useEffect, useRef } from 'react';
 import { useProductStore } from '@/store/productStore';
 import { Link } from '@/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function TopDealsSlider() {
+    const t = useTranslations('TopDeals');
+
     const swiperRef = useRef<SwiperType | null>(null);
     const { dealProducts, fetchDealProducts } = useProductStore();
 
@@ -59,10 +62,10 @@ export default function TopDealsSlider() {
                                     <div className="mt-5 flex h-6 items-center gap-2 text-xs">
                                         {promotions?.[0]?.percentageNumber && (
                                             <div className="flex h-6 items-center justify-center rounded-sm bg-rose-500 px-2 text-[11px] font-extrabold text-white">
-                                                {promotions[0].percentageNumber}% off
+                                                {promotions[0].percentageNumber}% {t('off')}
                                             </div>
                                         )}
-                                        <span className="font-extrabold text-rose-500">Deal</span>
+                                        <span className="font-extrabold text-rose-500">{t('deal')}</span>
                                     </div>
                                 </div>
                                 {/* Content */}

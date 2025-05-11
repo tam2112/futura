@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useTranslations } from 'next-intl';
 import { useController } from 'react-hook-form';
 import Select from 'react-select';
 import { twMerge } from 'tailwind-merge';
@@ -23,6 +24,8 @@ export default function SelectField({
     className,
     isMulti = false,
 }: SelectFieldProps) {
+    const t = useTranslations('Common');
+
     const { field } = useController({
         name,
         control,
@@ -49,7 +52,7 @@ export default function SelectField({
                     }}
                     onBlur={field.onBlur}
                     classNamePrefix="react-select"
-                    placeholder={`Select ${label}`}
+                    placeholder={`${t('select')} ${label}`}
                     isClearable
                     isMulti={isMulti}
                     styles={{

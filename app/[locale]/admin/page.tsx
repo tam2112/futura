@@ -1,3 +1,9 @@
+import Welcome from '@/components/admin/Welcome';
+
 export default function AdminPage() {
-    return <div>Admin</div>;
+    return (
+        <div>
+            <Welcome />
+        </div>
+    );
 }

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
+import { messages } from '@/lib/messages';
 import prisma from '@/lib/prisma';
 import { SimSlotSchema } from '@/lib/validation/technical/sim-slot.form';
 import { revalidatePath } from 'next/cache';
@@ -31,7 +32,9 @@ export const getSimSlotById = async (simSlotId: string) => {
     }
 };
 
-export const createSimSlot = async (currentState: CurrentState, data: SimSlotSchema) => {
+export const createSimSlot = async (currentState: CurrentState, data: SimSlotSchema & { locale?: 'en' | 'vi' }) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].SimSlotForm;
     try {
         // Tạo SimSlot mới
         await prisma.simSlot.create({
@@ -48,14 +51,16 @@ export const createSimSlot = async (currentState: CurrentState, data: SimSlotSch
             return {
                 success: false,
                 error: true,
-                message: 'Title already exists',
+                message: t.titleExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to create sim slot' };
+        return { success: false, error: true, message: t.createFailed };
     }
 };
 
-export const updateSimSlot = async (currentState: CurrentState, data: SimSlotSchema) => {
+export const updateSimSlot = async (currentState: CurrentState, data: SimSlotSchema & { locale?: 'en' | 'vi' }) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].SimSlotForm;
     try {
         // Cập nhật SimSlot
         await prisma.simSlot.update({
@@ -73,10 +78,10 @@ export const updateSimSlot = async (currentState: CurrentState, data: SimSlotSch
             return {
                 success: false,
                 error: true,
-                message: 'Title already exists',
+                message: t.titleExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to update sim slot' };
+        return { success: false, error: true, message: t.updateFailed };
     }
 };
 

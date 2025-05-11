@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import prisma from '../prisma';
 import { generateSlug } from '../utils';
 import { CategorySchema } from '../validation/category.form';
+import { messages } from '../messages';
 
 type CurrentState = { success: boolean; error: boolean };
 
@@ -45,23 +46,13 @@ export const getRandomCategories = async (limit: number = 5) => {
     }
 };
 
-// export const getCategoryById = async (categoryId: string) => {
-//     try {
-//         const category = await prisma.category.findUnique({
-//             where: { id: categoryId },
-//             include: { images: true },
-//         });
-//         if (!category) {
-//             throw new Error('Category not found');
-//         }
-//         return category;
-//     } catch (error) {
-//         console.error(error);
-//         throw error;
-//     }
-// };
+export const createCategory = async (
+    currentState: CurrentState,
+    data: CategorySchema & { imageUrls?: string[] } & { locale?: 'en' | 'vi' },
+) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].CategoryForm;
 
-export const createCategory = async (currentState: CurrentState, data: CategorySchema & { imageUrls?: string[] }) => {
     try {
         const slug = generateSlug(data.name);
 
@@ -91,14 +82,20 @@ export const createCategory = async (currentState: CurrentState, data: CategoryS
             return {
                 success: false,
                 error: true,
-                message: 'Category name already exists',
+                message: t.categoryNameExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to create category' };
+        return { success: false, error: true, message: t.createFailed };
     }
 };
 
-export const updateCategory = async (currentState: CurrentState, data: CategorySchema & { imageUrls?: string[] }) => {
+export const updateCategory = async (
+    currentState: CurrentState,
+    data: CategorySchema & { imageUrls?: string[] } & { locale?: 'en' | 'vi' },
+) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].CategoryForm;
+
     try {
         if (!data.id) {
             throw new Error('Category ID is required for update');
@@ -137,10 +134,10 @@ export const updateCategory = async (currentState: CurrentState, data: CategoryS
             return {
                 success: false,
                 error: true,
-                message: 'Category name already exists',
+                message: t.categoryNameExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to update category' };
+        return { success: false, error: true, message: t.updateFailed };
     }
 };
 

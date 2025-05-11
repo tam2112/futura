@@ -20,6 +20,7 @@ import { useStore } from '@/context/StoreContext';
 import { getProducts } from '@/lib/actions/product.action';
 import { debounce } from 'lodash';
 import Loader from '@/components/Loader';
+import { useTranslations } from 'next-intl';
 
 export default function Navigation() {
     const { isLoggedIn, logout } = useAuth();
@@ -33,6 +34,7 @@ export default function Navigation() {
     const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const searchContainerRef = useRef<HTMLDivElement>(null);
+    const t = useTranslations('Navigation');
 
     useEffect(() => {
         updateCartAmount();
@@ -119,7 +121,7 @@ export default function Navigation() {
                                     <CiSearch size={20} className="absolute top-1/2 -translate-y-1/2 ml-3" />
                                     <input
                                         type="text"
-                                        placeholder="Search Product"
+                                        placeholder={t('searchPlaceholder')}
                                         className="w-full outline-none rounded-full px-4 pl-10 py-2 bg-transparent"
                                         value={searchQuery}
                                         onChange={handleSearchChange}
@@ -173,7 +175,7 @@ export default function Navigation() {
                                             <HiOutlineShoppingBag size={20} />
                                         </div>
                                         <div>
-                                            <Box className="py-1 px-4 text-center group relative">
+                                            <Box className="py-1 px-[34px] text-center group relative">
                                                 <div className="flex items-center gap-3">
                                                     <div>
                                                         <Image src={avatarImage} alt="" className="size-8" />
@@ -191,7 +193,7 @@ export default function Navigation() {
                                                                     className="inline-flex items-center gap-2 font-normal relative"
                                                                 >
                                                                     <PiUser size={20} />
-                                                                    <span>Profile</span>
+                                                                    <span>{t('profile')}</span>
                                                                 </Button>
                                                             </li>
                                                             <li>
@@ -201,16 +203,16 @@ export default function Navigation() {
                                                                         className="inline-flex items-center gap-2 font-normal relative"
                                                                     >
                                                                         <PiShoppingBagOpenLight size={20} />
-                                                                        <span>My orders</span>
+                                                                        <span>{t('myOrders')}</span>
                                                                     </Button>
                                                                 </Link>
                                                             </li>
-                                                            <li className="inline-flex justify-center">
+                                                            <li className="inline-flex justify-center w-full">
                                                                 <Button
-                                                                    className="px-[36px] font-medium mt-2"
+                                                                    className="w-full font-medium mt-2"
                                                                     onClick={handleLogout}
                                                                 >
-                                                                    Sign out
+                                                                    {t('signOut')}
                                                                 </Button>
                                                             </li>
                                                         </ul>
@@ -223,11 +225,11 @@ export default function Navigation() {
                                     <>
                                         <Link href="/sign-in" className="relative">
                                             <Button variant="text" className="after:left-0">
-                                                Login
+                                                {t('logIn')}
                                             </Button>
                                         </Link>
                                         <Link href="/sign-up">
-                                            <Button>Sign Up</Button>
+                                            <Button>{t('signUp')}</Button>
                                         </Link>
                                     </>
                                 )}

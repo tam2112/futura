@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 import InputField from '@/components/form/InputField';
 import { ramSchema, RamSchema } from '@/lib/validation/technical/ram.form';
 import { createRam, updateRam } from '@/lib/actions/technical/ram.action';
+import { useLocale, useTranslations } from 'next-intl';
 
 export default function RamForm({
     type,
@@ -24,12 +25,16 @@ export default function RamForm({
     setOpen: Dispatch<SetStateAction<boolean>>;
     relatedData?: any;
 }) {
+    const t = useTranslations('RamForm');
+    const locale = useLocale() as 'en' | 'vi';
+    const createRamSchema = ramSchema(locale);
+
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm<RamSchema>({
-        resolver: zodResolver(ramSchema),
+        resolver: zodResolver(createRamSchema),
     });
 
     // AFTER REACT 19 IT'LL BE USEACTIONSTATE
@@ -39,7 +44,7 @@ export default function RamForm({
     });
 
     const onSubmit = handleSubmit(async (formData) => {
-        const data = { ...formData };
+        const data = { ...formData, locale };
         formAction(data);
     });
 
@@ -47,22 +52,22 @@ export default function RamForm({
 
     useEffect(() => {
         if (state.success) {
-            toast(`Ram has been ${type === 'create' ? 'created' : 'updated'}`);
+            toast(t('createSuccess', { type: type === 'create' ? t('created') : t('updated') }));
             setOpen(false);
             router.refresh();
         } else {
             toast.error(state.message);
         }
-    }, [state, type, router, setOpen]);
+    }, [state, type, router, setOpen, t]);
 
     return (
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
             <h1 className="text-lg font-heading font-semibold">
-                {type === 'create' ? 'Create a new ram' : 'Update the ram'}
+                {type === 'create' ? t('createTitle') : t('updateTitle')}
             </h1>
             <div className="flex justify-between flex-wrap gap-4">
                 <InputField
-                    label="Title"
+                    label={t('title')}
                     name="title"
                     defaultValue={data?.title}
                     register={register}
@@ -81,7 +86,9 @@ export default function RamForm({
                 )}
             </div>
 
-            <button className="bg-gradient-light p-2 rounded-md">{type === 'create' ? 'Create' : 'Update'}</button>
+            <button className="bg-gradient-light p-2 rounded-md">
+                {type === 'create' ? t('create') : t('update')}
+            </button>
         </form>
     );
 }

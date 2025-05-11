@@ -4,8 +4,10 @@ import Image from 'next/image';
 import { DropzoneOptions } from 'react-dropzone';
 import { FileInput, FileUploader, FileUploaderContent, FileUploaderItem } from './FileUpload';
 import { Trash2 as RemoveIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 const FileSvgDraw = () => {
+    const t = useTranslations('Common');
     return (
         <>
             <svg
@@ -24,10 +26,10 @@ const FileSvgDraw = () => {
                 />
             </svg>
             <p className="mb-1 text-sm text-black">
-                <span className="font-semibold">Click to upload</span>
-                &nbsp; or drag and drop
+                <span className="font-semibold">{t('clickToUpload')}</span>
+                &nbsp; {t('dragAndDrop')}
             </p>
-            <p className="text-xs text-gray-600">PNG, JPG or WEBP</p>
+            <p className="text-xs text-gray-600">{t('typeFiles')}</p>
         </>
     );
 };

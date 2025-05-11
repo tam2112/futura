@@ -4,6 +4,7 @@
 import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import { StatusSchema } from '../validation/status.form';
+import { messages } from '../messages';
 
 type CurrentState = { success: boolean; error: boolean };
 
@@ -31,7 +32,10 @@ export const getStatusById = async (statusId: string) => {
     }
 };
 
-export const createStatus = async (currentState: CurrentState, data: StatusSchema) => {
+export const createStatus = async (currentState: CurrentState, data: StatusSchema & { locale?: 'en' | 'vi' }) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].StatusForm;
+
     try {
         await prisma.status.create({
             data: {
@@ -46,14 +50,17 @@ export const createStatus = async (currentState: CurrentState, data: StatusSchem
             return {
                 success: false,
                 error: true,
-                message: 'Status name already exists',
+                message: t.statusNameExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to create status' };
+        return { success: false, error: true, message: t.createFailed };
     }
 };
 
-export const updateStatus = async (currentState: CurrentState, data: StatusSchema) => {
+export const updateStatus = async (currentState: CurrentState, data: StatusSchema & { locale?: 'en' | 'vi' }) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].StatusForm;
+
     try {
         await prisma.status.update({
             where: { id: data.id },
@@ -69,10 +76,10 @@ export const updateStatus = async (currentState: CurrentState, data: StatusSchem
             return {
                 success: false,
                 error: true,
-                message: 'Status name already exists',
+                message: t.statusNameExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to update status' };
+        return { success: false, error: true, message: t.updateFailed };
     }
 };
 

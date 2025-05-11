@@ -1,9 +1,12 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { Tooltip } from 'react-tooltip';
 
 export default function CheckboxHeader({ itemIds }: { itemIds: string[] }) {
+    const t = useTranslations('Common');
+
     const [isChecked, setIsChecked] = useState(false);
 
     // Hàm xử lý khi checkbox header thay đổi
@@ -37,7 +40,7 @@ export default function CheckboxHeader({ itemIds }: { itemIds: string[] }) {
 
     return (
         <>
-            <label className="neon-checkbox" data-tooltip-id="header-checkbox" data-tooltip-content="Select All">
+            <label className="neon-checkbox" data-tooltip-id="header-checkbox" data-tooltip-content={t('selectAll')}>
                 <input type="checkbox" checked={isChecked} onChange={handleHeaderChange} className="w-4 h-4" />
                 <div className="neon-checkbox__frame">
                     <div className="neon-checkbox__box">

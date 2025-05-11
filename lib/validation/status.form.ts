@@ -1,8 +1,17 @@
 import { z } from 'zod';
+import { messages } from '../messages';
 
-export const statusSchema = z.object({
-    id: z.string().optional(),
-    name: z.string().min(1, { message: 'Role name is required' }),
-});
+const getTranslationsStatusForm = (locale: 'en' | 'vi') => {
+    return messages[locale].StatusForm;
+};
 
-export type StatusSchema = z.infer<typeof statusSchema>;
+export const statusSchema = (locale: 'en' | 'vi') => {
+    const t = getTranslationsStatusForm(locale);
+
+    return z.object({
+        id: z.string().optional(),
+        name: z.string().min(1, { message: t.statusNameRequired }),
+    });
+};
+
+export type StatusSchema = z.infer<ReturnType<typeof statusSchema>>;

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
+import { messages } from '@/lib/messages';
 import prisma from '@/lib/prisma';
 import { ConnectivitySchema } from '@/lib/validation/technical/connectivity.form';
 import { revalidatePath } from 'next/cache';
@@ -31,7 +32,12 @@ export const getConnectivityById = async (connectivityId: string) => {
     }
 };
 
-export const createConnectivity = async (currentState: CurrentState, data: ConnectivitySchema) => {
+export const createConnectivity = async (
+    currentState: CurrentState,
+    data: ConnectivitySchema & { locale?: 'en' | 'vi' },
+) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].ConnectivityForm;
     try {
         // Tạo Connectivity mới
         await prisma.connectivity.create({
@@ -48,14 +54,19 @@ export const createConnectivity = async (currentState: CurrentState, data: Conne
             return {
                 success: false,
                 error: true,
-                message: 'Connectivity name already exists',
+                message: t.connectivityNameExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to create connectivity' };
+        return { success: false, error: true, message: t.createFailed };
     }
 };
 
-export const updateConnectivity = async (currentState: CurrentState, data: ConnectivitySchema) => {
+export const updateConnectivity = async (
+    currentState: CurrentState,
+    data: ConnectivitySchema & { locale?: 'en' | 'vi' },
+) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].ConnectivityForm;
     try {
         // Cập nhật Connectivity
         await prisma.connectivity.update({
@@ -73,10 +84,10 @@ export const updateConnectivity = async (currentState: CurrentState, data: Conne
             return {
                 success: false,
                 error: true,
-                message: 'Connectivity name already exists',
+                message: t.connectivityNameExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to update connectivity' };
+        return { success: false, error: true, message: t.updateFailed };
     }
 };
 

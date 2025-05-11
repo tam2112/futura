@@ -14,21 +14,23 @@ import ExportButton from '@/components/admin/ExportButton';
 import { exportStorages } from '@/lib/actions/technical/storage.action';
 import { deleteSelectedStorages } from '@/components/admin/DeleteSelectedButton';
 import FilterTechnicalDropdown from '@/components/admin/FilterTechnicalDropdown';
+import { getTranslations } from 'next-intl/server';
+import ReloadButton from '@/components/admin/ReloadButton';
 
 type StorageList = Storage;
-
-const categorySortOptions = [
-    { value: 'name-asc', label: 'A-Z' },
-    { value: 'name-desc', label: 'Z-A' },
-    { value: 'date-desc', label: 'Latest Release' },
-    { value: 'date-asc', label: 'Oldest Release' },
-];
 
 export default async function StorageListPage({
     searchParams,
 }: {
     searchParams: { [key: string]: string | undefined };
 }) {
+    const t = await getTranslations('StorageList');
+    const categorySortOptions = [
+        { value: 'name-asc', label: 'A-Z' },
+        { value: 'name-desc', label: 'Z-A' },
+        { value: 'date-desc', label: t('latestRelease') },
+        { value: 'date-asc', label: t('oldRelease') },
+    ];
     const { page, sort, ...queryParams } = searchParams;
     const p = page ? parseInt(page) : 1;
 
@@ -77,7 +79,7 @@ export default async function StorageListPage({
     // Define columns after data is initialized
     const columns = [
         { header: <CheckboxHeader itemIds={data.map((item) => item.id)} />, accessor: 'check' },
-        { header: 'Name', accessor: 'name', className: 'hidden md:table-cell' },
+        { header: t('name'), accessor: 'name', className: 'hidden md:table-cell' },
     ];
 
     const renderRow = (item: StorageList) => (
@@ -88,11 +90,6 @@ export default async function StorageListPage({
             <td className="hidden md:table-cell py-2">{item.name}</td>
             <td className="py-2">
                 <div className="flex items-center gap-2">
-                    {/* <Link href={`/list/categories/${item.id}`}>
-                        <button className="size-7 flex items-center justify-center rounded-full bg-violet-400">
-                            <PiEyeBold width={16} height={16} className="text-white left-half-px" />
-                        </button>
-                    </Link> */}
                     <FormContainer table="storage" type="update" data={item} />
                     <FormContainer table="storage" type="delete" id={item.id} />
                 </div>
@@ -105,7 +102,7 @@ export default async function StorageListPage({
             <GoToTop />
             <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
                 <div className="flex items-center justify-between">
-                    <h1 className="hidden md:block text-lg font-semibold">All Storages</h1>
+                    <h1 className="hidden md:block text-lg font-semibold">{t('allStorages')}</h1>
                     <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
                         <TableSearch />
                         <div className="flex items-center gap-4 self-end">
@@ -113,11 +110,15 @@ export default async function StorageListPage({
                             <FilterTechnicalDropdown
                                 currentSort={currentSort}
                                 sortOptions={categorySortOptions}
-                                entityName="Storage"
+                                entityName={t('storage')}
                             />
-                            <ExportButton exportAction={exportStorages} entityName="Storage" />
+                            <ExportButton exportAction={exportStorages} entityName={t('storage')} />
+                            <ReloadButton />
                             <FormContainer table="storage" type="create" />
-                            <DeleteSelectedButtonClient deleteAction={deleteSelectedStorages} entityName="Storage" />
+                            <DeleteSelectedButtonClient
+                                deleteAction={deleteSelectedStorages}
+                                entityName={t('storage')}
+                            />
                         </div>
                     </div>
                 </div>

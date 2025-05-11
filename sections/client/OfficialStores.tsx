@@ -8,6 +8,7 @@ import dellImg from '@/public/official-store/dell.webp';
 import { useState, useEffect } from 'react';
 import DevicesBrand from '@/components/DevicesBrand';
 import { useProductStore } from '@/store/productStore';
+import { useTranslations } from 'next-intl';
 
 const brands = [
     { id: 1, title: 'Sony' },
@@ -17,6 +18,8 @@ const brands = [
 ];
 
 export default function OfficialStores() {
+    const t = useTranslations('OfficialStores');
+
     const [activeTab, setActiveTab] = useState<string>('Sony');
     const {
         sonyProducts,
@@ -80,7 +83,7 @@ export default function OfficialStores() {
         <div className="py-8 bg-light-gray">
             <div className="container">
                 <div className="flex items-center justify-between">
-                    <h2 className="flex items-center text-lg font-bold font-heading md:text-xl">Official Stores</h2>
+                    <h2 className="flex items-center text-lg font-bold font-heading md:text-xl">{t('title')}</h2>
                 </div>
                 {/* Heading */}
                 <div className="mt-3 flex items-center justify-between">

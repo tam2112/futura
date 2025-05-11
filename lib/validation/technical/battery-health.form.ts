@@ -1,8 +1,17 @@
+import { messages } from '@/lib/messages';
 import { z } from 'zod';
 
-export const batteryHealthSchema = z.object({
-    id: z.string().optional(),
-    title: z.string().min(1, { message: 'Title is required' }),
-});
+const getTranslationsBatteryHealthForm = (locale: 'en' | 'vi') => {
+    return messages[locale].BatteryHealthForm;
+};
 
-export type BatteryHealthSchema = z.infer<typeof batteryHealthSchema>;
+export const batteryHealthSchema = (locale: 'en' | 'vi') => {
+    const t = getTranslationsBatteryHealthForm(locale);
+
+    return z.object({
+        id: z.string().optional(),
+        title: z.string().min(1, { message: t.titleRequired }),
+    });
+};
+
+export type BatteryHealthSchema = z.infer<ReturnType<typeof batteryHealthSchema>>;

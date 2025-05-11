@@ -13,17 +13,20 @@ import ExportButton from '@/components/admin/ExportButton';
 import { exportOrders } from '@/lib/actions/order.action';
 import { twMerge } from 'tailwind-merge';
 import ReloadButton from '@/components/admin/ReloadButton';
+import { getTranslations } from 'next-intl/server';
 
 type OrderList = Order & { product: Product & { images: { url: string }[] } } & { status: Status } & {
     deliveryInfo: Delivery;
 } & { user: User };
 
-const orderSortOptions = [
-    { value: 'date-desc', label: 'Latest Release' },
-    { value: 'date-asc', label: 'Oldest Release' },
-];
-
 export default async function OrderListPage({ searchParams }: { searchParams: { [key: string]: string | undefined } }) {
+    const t = await getTranslations('OrderList');
+
+    const orderSortOptions = [
+        { value: 'date-desc', label: t('latestRelease') },
+        { value: 'date-asc', label: t('oldRelease') },
+    ];
+
     const { page, sort, ...queryParams } = searchParams;
     const p = page ? parseInt(page) : 1;
 
@@ -82,12 +85,12 @@ export default async function OrderListPage({ searchParams }: { searchParams: { 
 
     // Define columns after data is initialized
     const columns = [
-        { header: 'Product image', accessor: 'productImage' },
-        { header: 'User', accessor: 'user' },
-        { header: 'Product name', accessor: 'productName', className: 'hidden md:table-cell' },
-        { header: 'Quantity', accessor: 'quantity', className: 'hidden md:table-cell' },
-        { header: 'Status', accessor: 'status' },
-        { header: 'Date', accessor: 'createdDate' },
+        { header: t('productImage'), accessor: 'productImage' },
+        { header: t('user'), accessor: 'user' },
+        { header: t('productName'), accessor: 'productName', className: 'hidden md:table-cell' },
+        { header: t('quantity'), accessor: 'quantity', className: 'hidden md:table-cell' },
+        { header: t('status'), accessor: 'status' },
+        { header: t('date'), accessor: 'createdDate' },
     ];
 
     const renderRow = (item: OrderList) => (
@@ -119,7 +122,7 @@ export default async function OrderListPage({ searchParams }: { searchParams: { 
                             : 'bg-rose-100 text-rose-800',
                     )}
                 >
-                    {item.status.name}
+                    {t(`${item.status.name}`)}
                 </span>
             </td>
             <td className="py-2">{item.createdDate.toLocaleDateString()}</td>
@@ -137,7 +140,7 @@ export default async function OrderListPage({ searchParams }: { searchParams: { 
             <GoToTop />
             <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
                 <div className="flex items-center justify-between">
-                    <h1 className="hidden md:block text-lg font-semibold">All Orders</h1>
+                    <h1 className="hidden md:block text-lg font-semibold">{t('allOrders')}</h1>
                     <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
                         <TableSearch />
                         <div className="flex items-center gap-4 self-end">
@@ -145,9 +148,9 @@ export default async function OrderListPage({ searchParams }: { searchParams: { 
                             <FilterDropdown
                                 currentSort={currentSort}
                                 sortOptions={orderSortOptions}
-                                entityName="Order"
+                                entityName={t('order')}
                             />
-                            <ExportButton exportAction={exportOrders} entityName="Order" />
+                            <ExportButton exportAction={exportOrders} entityName={t('order')} />
                             <ReloadButton />
                         </div>
                     </div>

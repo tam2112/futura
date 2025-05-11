@@ -4,6 +4,7 @@
 import prisma from '../prisma';
 import { revalidatePath } from 'next/cache';
 import { DeliveryInfoSchema } from '../validation/deliveryInfo.form';
+import { messages } from '../messages';
 
 type OrderResponse = {
     success: boolean;
@@ -175,10 +176,14 @@ export const createOrder = async (userId: string, deliveryInfo: DeliveryInfoSche
 export const updateOrderStatus = async ({
     orderId,
     statusId,
+    locale = 'en',
 }: {
     orderId: string;
     statusId: string;
+    locale?: 'en' | 'vi';
 }): Promise<OrderResponse> => {
+    const t = messages[locale].OrderForm;
+
     try {
         // Check if the order exists and get its current status
         const order = await prisma.order.findUnique({
@@ -238,7 +243,7 @@ export const updateOrderStatus = async ({
             success: true,
             error: false,
             data: updatedOrder,
-            message: `Order status updated to ${status.name}`,
+            message: `${t.updateOrderStatusSuccess} ${status.name}`,
         };
     } catch (error) {
         console.error('Error updating order status:', error);
@@ -246,12 +251,14 @@ export const updateOrderStatus = async ({
             success: false,
             error: true,
             data: null,
-            message: error instanceof Error ? error.message : 'Failed to update order status',
+            message: error instanceof Error ? error.message : t.updateOrderStatusFailed,
         };
     }
 };
 
-export const updateOrderStatusByName = async (orderId: string, statusName: OrderStatus) => {
+export const updateOrderStatusByName = async (orderId: string, statusName: OrderStatus, locale: 'en' | 'vi') => {
+    const t = messages[locale].OrderForm;
+
     try {
         // Get the status ID for the new status
         const status = await prisma.status.findUnique({
@@ -312,7 +319,7 @@ export const updateOrderStatusByName = async (orderId: string, statusName: Order
             success: true,
             error: false,
             data: updatedOrder,
-            message: `Order status updated to ${statusName}`,
+            message: `${t.updateOrderStatusSuccess} ${statusName}`,
         };
     } catch (error) {
         console.error('Error updating order status:', error);
@@ -320,7 +327,7 @@ export const updateOrderStatusByName = async (orderId: string, statusName: Order
             success: false,
             error: true,
             data: null,
-            message: error instanceof Error ? error.message : 'Failed to update order status',
+            message: error instanceof Error ? error.message : t.updateOrderStatusFailed,
         };
     }
 };

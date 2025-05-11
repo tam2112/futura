@@ -1,8 +1,17 @@
+import { messages } from '@/lib/messages';
 import { z } from 'zod';
 
-export const cpuSchema = z.object({
-    id: z.string().optional(),
-    name: z.string().min(1, { message: 'CPU name is required' }),
-});
+const getTranslationsCpuForm = (locale: 'en' | 'vi') => {
+    return messages[locale].CpuForm;
+};
 
-export type CpuSchema = z.infer<typeof cpuSchema>;
+export const cpuSchema = (locale: 'en' | 'vi') => {
+    const t = getTranslationsCpuForm(locale);
+
+    return z.object({
+        id: z.string().optional(),
+        name: z.string().min(1, { message: t.cpuNameRequired }),
+    });
+};
+
+export type CpuSchema = z.infer<ReturnType<typeof cpuSchema>>;

@@ -1,72 +1,89 @@
 import { z } from 'zod';
+import { messages } from '../messages';
 
-export const signUpSchema = z.object({
-    id: z.string().optional(),
-    fullName: z
-        .string()
-        .nonempty({ message: 'Full name is required' })
-        .min(2, { message: 'Full name must be at least 2 characters long!' }),
-    email: z.string().nonempty({ message: 'Email is required' }).email({ message: 'Invalid email address' }),
-    password: z
-        .string()
-        .nonempty({ message: 'Password is required' })
-        .min(8, { message: 'Password must be at least 8 characters long!' })
-        .max(40, { message: 'Password must be at most 40 characters long!' })
-        .refine(
-            (value) =>
-                /[A-Z]/.test(value) && // Kiểm tra chữ hoa
-                /[0-9]/.test(value) && // Kiểm tra số
-                /[^a-zA-Z0-9]/.test(value), // Kiểm tra ký tự đặc biệt
-            {
-                message: 'Password must contain at least one uppercase letter, one number, and one special character!',
-            },
-        ),
-});
+const getTranslationsSignIn = (locale: 'en' | 'vi') => {
+    return messages[locale].SignInPage;
+};
+const getTranslationsSignUp = (locale: 'en' | 'vi') => {
+    return messages[locale].SignUpPage;
+};
+const getTranslationsUserForm = (locale: 'en' | 'vi') => {
+    return messages[locale].UserForm;
+};
 
-export type SignUpSchema = z.infer<typeof signUpSchema>;
+export const signUpSchema = (locale: 'en' | 'vi') => {
+    const t = getTranslationsSignUp(locale);
 
-export const loginSchema = z.object({
-    email: z.string().nonempty({ message: 'Email is required' }).email({ message: 'Invalid email address' }),
-    password: z
-        .string()
-        .nonempty({ message: 'Password is required' })
-        .min(8, { message: 'Password must be at least 8 characters long!' })
-        .max(40, { message: 'Password must be at most 40 characters long!' })
-        .refine(
-            (value) =>
-                /[A-Z]/.test(value) && // Kiểm tra chữ hoa
-                /[0-9]/.test(value) && // Kiểm tra số
-                /[^a-zA-Z0-9]/.test(value), // Kiểm tra ký tự đặc biệt
-            {
-                message: 'Password must contain at least one uppercase letter, one number, and one special character!',
-            },
-        ),
-});
+    return z.object({
+        id: z.string().optional(),
+        fullName: z.string().nonempty({ message: t.fullNameRequired }).min(2, { message: t.minFullName }),
+        email: z.string().nonempty({ message: t.emailIsRequired }).email({ message: t.invalidEmail }),
+        password: z
+            .string()
+            .nonempty({ message: t.passwordIsRequired })
+            .min(8, { message: t.minPassword })
+            .max(40, { message: t.maxPassword })
+            .refine(
+                (value) =>
+                    /[A-Z]/.test(value) && // Kiểm tra chữ hoa
+                    /[0-9]/.test(value) && // Kiểm tra số
+                    /[^a-zA-Z0-9]/.test(value), // Kiểm tra ký tự đặc biệt
+                {
+                    message: t.passwordContainRequired,
+                },
+            ),
+    });
+};
 
-export type LoginSchema = z.infer<typeof loginSchema>;
+export type SignUpSchema = z.infer<ReturnType<typeof signUpSchema>>;
 
-export const userSchema = z.object({
-    id: z.string().optional(),
-    fullName: z
-        .string()
-        .nonempty({ message: 'Full name is required' })
-        .min(2, { message: 'Full name must be at least 2 characters long!' }),
-    email: z.string().nonempty({ message: 'Email is required' }).email({ message: 'Invalid email address' }),
-    password: z
-        .string()
-        .nonempty({ message: 'Password is required' })
-        .min(8, { message: 'Password must be at least 8 characters long!' })
-        .max(40, { message: 'Password must be at most 40 characters long!' })
-        .refine(
-            (value) =>
-                /[A-Z]/.test(value) && // Kiểm tra chữ hoa
-                /[0-9]/.test(value) && // Kiểm tra số
-                /[^a-zA-Z0-9]/.test(value), // Kiểm tra ký tự đặc biệt
-            {
-                message: 'Password must contain at least one uppercase letter, one number, and one special character!',
-            },
-        ),
-    roleId: z.coerce.string().min(1, { message: 'Role is required' }),
-});
+export const loginSchema = (locale: 'en' | 'vi') => {
+    const t = getTranslationsSignIn(locale);
 
-export type UserSchema = z.infer<typeof userSchema>;
+    return z.object({
+        email: z.string().nonempty({ message: t.emailIsRequired }).email({ message: t.invalidEmail }),
+        password: z
+            .string()
+            .nonempty({ message: t.passwordIsRequired })
+            .min(8, { message: t.minPassword })
+            .max(40, { message: t.maxPassword })
+            .refine(
+                (value) =>
+                    /[A-Z]/.test(value) && // Kiểm tra chữ hoa
+                    /[0-9]/.test(value) && // Kiểm tra số
+                    /[^a-zA-Z0-9]/.test(value), // Kiểm tra ký tự đặc biệt
+                {
+                    message: t.passwordContainRequired,
+                },
+            ),
+    });
+};
+
+export type LoginSchema = z.infer<ReturnType<typeof loginSchema>>;
+
+export const userSchema = (locale: 'en' | 'vi') => {
+    const t = getTranslationsUserForm(locale);
+
+    return z.object({
+        id: z.string().optional(),
+        fullName: z.string().nonempty({ message: t.fullNameRequired }).min(2, { message: t.minFullName }),
+        email: z.string().nonempty({ message: t.emailIsRequired }).email({ message: t.invalidEmail }),
+        password: z
+            .string()
+            .nonempty({ message: t.passwordIsRequired })
+            .min(8, { message: t.minPassword })
+            .max(40, { message: t.maxPassword })
+            .refine(
+                (value) =>
+                    /[A-Z]/.test(value) && // Kiểm tra chữ hoa
+                    /[0-9]/.test(value) && // Kiểm tra số
+                    /[^a-zA-Z0-9]/.test(value), // Kiểm tra ký tự đặc biệt
+                {
+                    message: t.passwordContainRequired,
+                },
+            ),
+        roleId: z.coerce.string().min(1, { message: t.roleRequired }),
+    });
+};
+
+export type UserSchema = z.infer<ReturnType<typeof userSchema>>;

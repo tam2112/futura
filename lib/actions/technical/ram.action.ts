@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
+import { messages } from '@/lib/messages';
 import prisma from '@/lib/prisma';
 import { RamSchema } from '@/lib/validation/technical/ram.form';
 import { revalidatePath } from 'next/cache';
@@ -31,7 +32,9 @@ export const getRamById = async (ramId: string) => {
     }
 };
 
-export const createRam = async (currentState: CurrentState, data: RamSchema) => {
+export const createRam = async (currentState: CurrentState, data: RamSchema & { locale?: 'en' | 'vi' }) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].RamForm;
     try {
         // Tạo Ram mới
         await prisma.ram.create({
@@ -48,14 +51,16 @@ export const createRam = async (currentState: CurrentState, data: RamSchema) => 
             return {
                 success: false,
                 error: true,
-                message: 'Title already exists',
+                message: t.titleExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to create RAM' };
+        return { success: false, error: true, message: t.createFailed };
     }
 };
 
-export const updateRam = async (currentState: CurrentState, data: RamSchema) => {
+export const updateRam = async (currentState: CurrentState, data: RamSchema & { locale?: 'en' | 'vi' }) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].RamForm;
     try {
         // Cập nhật Ram
         await prisma.ram.update({
@@ -73,10 +78,10 @@ export const updateRam = async (currentState: CurrentState, data: RamSchema) => 
             return {
                 success: false,
                 error: true,
-                message: 'Title already exists',
+                message: t.titleExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to update RAM' };
+        return { success: false, error: true, message: t.updateFailed };
     }
 };
 

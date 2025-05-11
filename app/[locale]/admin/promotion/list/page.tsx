@@ -14,6 +14,9 @@ import FilterDropdown from '@/components/admin/FilterDropdown';
 import ExportButton from '@/components/admin/ExportButton';
 import { exportPromotions } from '@/lib/actions/promotion.action';
 import { deleteSelectedPromotions } from '@/components/admin/DeleteSelectedButton';
+import { getTranslations } from 'next-intl/server';
+import { twMerge } from 'tailwind-merge';
+import ReloadButton from '@/components/admin/ReloadButton';
 // import '@/lib/server';
 
 type PromotionList = Promotion & {
@@ -27,13 +30,6 @@ type PromotionList = Promotion & {
     endMinutes?: number | null;
     endSeconds?: number | null;
 };
-
-const promotionSortOptions = [
-    { value: 'name-asc', label: 'A-Z' },
-    { value: 'name-desc', label: 'Z-A' },
-    { value: 'date-desc', label: 'Latest Release' },
-    { value: 'date-asc', label: 'Oldest Release' },
-];
 
 const formatRemainingTime = (seconds: number): string => {
     if (seconds <= 0) return 'Expired';
@@ -49,6 +45,15 @@ export default async function PromotionListPage({
 }: {
     searchParams: { [key: string]: string | undefined };
 }) {
+    const t = await getTranslations('PromotionList');
+
+    const promotionSortOptions = [
+        { value: 'name-asc', label: 'A-Z' },
+        { value: 'name-desc', label: 'Z-A' },
+        { value: 'date-desc', label: t('latestRelease') },
+        { value: 'date-asc', label: t('oldRelease') },
+    ];
+
     const { page, sort, ...queryParams } = searchParams;
     const p = page ? parseInt(page) : 1;
 
@@ -108,9 +113,9 @@ export default async function PromotionListPage({
     // Define columns after data is initialized
     const columns = [
         { header: <CheckboxHeader itemIds={data.map((item) => item.id)} />, accessor: 'check' },
-        { header: 'Name', accessor: 'name', className: 'hidden md:table-cell' },
-        { header: 'Status', accessor: 'status', className: 'hidden md:table-cell' },
-        { header: 'Remaining Time', accessor: 'remainingTime', className: 'hidden md:table-cell' },
+        { header: t('name'), accessor: 'name', className: 'hidden md:table-cell' },
+        { header: t('status'), accessor: 'status', className: 'hidden md:table-cell' },
+        { header: t('remainingTime'), accessor: 'remainingTime', className: 'hidden md:table-cell' },
     ];
 
     const renderRow = (item: PromotionList) => (
@@ -122,7 +127,14 @@ export default async function PromotionListPage({
                 <span className="line-clamp-2">{item.name}</span>
             </td>
             <td className="hidden md:table-cell py-2">
-                <span>{item.status.name}</span>
+                <span
+                    className={twMerge(
+                        'p-1 px-2 rounded-lg',
+                        item.status.name === 'In deals' ? 'bg-teal-400 text-white' : 'bg-rose-400 text-white',
+                    )}
+                >
+                    {t(`${item.status.name}`)}
+                </span>
             </td>
             <td className="hidden md:table-cell py-2">
                 <span>{formatRemainingTime(item.remainingTime)}</span>
@@ -145,7 +157,7 @@ export default async function PromotionListPage({
             </head> */}
             <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
                 <div className="flex items-center justify-between">
-                    <h1 className="hidden md:block text-lg font-semibold">All Promotions</h1>
+                    <h1 className="hidden md:block text-lg font-semibold">{t('allPromotions')}</h1>
                     <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
                         <TableSearch />
                         <div className="flex items-center gap-4 self-end">
@@ -153,13 +165,14 @@ export default async function PromotionListPage({
                             <FilterDropdown
                                 currentSort={currentSort}
                                 sortOptions={promotionSortOptions}
-                                entityName="Promotion"
+                                entityName={t('promotion')}
                             />
-                            <ExportButton exportAction={exportPromotions} entityName="Promotion" />
+                            <ExportButton exportAction={exportPromotions} entityName={t('promotion')} />
+                            <ReloadButton />
                             <FormContainer table="promotion" type="create" />
                             <DeleteSelectedButtonClient
                                 deleteAction={deleteSelectedPromotions}
-                                entityName="Promotion"
+                                entityName={t('promotion')}
                             />
                         </div>
                     </div>

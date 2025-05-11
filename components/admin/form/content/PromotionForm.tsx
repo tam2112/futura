@@ -12,6 +12,7 @@ import { twMerge } from 'tailwind-merge';
 import SelectField from '@/components/form/SelectField';
 import { promotionSchema, PromotionSchema } from '@/lib/validation/promotion.form';
 import { createPromotion, updatePromotion } from '@/lib/actions/promotion.action';
+import { useLocale, useTranslations } from 'next-intl';
 
 export default function PromotionForm({
     type,
@@ -24,6 +25,10 @@ export default function PromotionForm({
     setOpen: Dispatch<SetStateAction<boolean>>;
     relatedData?: any;
 }) {
+    const t = useTranslations('PromotionForm');
+    const locale = useLocale() as 'en' | 'vi';
+    const createPromotionSchema = promotionSchema(locale);
+
     const {
         register,
         handleSubmit,
@@ -32,7 +37,7 @@ export default function PromotionForm({
         getValues,
         watch,
     } = useForm<PromotionSchema>({
-        resolver: zodResolver(promotionSchema),
+        resolver: zodResolver(createPromotionSchema),
         defaultValues: {
             id: data?.id || '',
             name: data?.name || '',
@@ -77,6 +82,7 @@ export default function PromotionForm({
                 selectedOption === 'category'
                     ? formData.categoryIds?.filter((id) => id).map((id) => id.toString()) || []
                     : [],
+            locale,
         };
         try {
             formAction(data);
@@ -89,13 +95,13 @@ export default function PromotionForm({
 
     useEffect(() => {
         if (state.success) {
-            toast(`Promotion has been ${type === 'create' ? 'created' : 'updated'}`);
+            toast(t('createSuccess', { type: type === 'create' ? t('created') : t('updated') }));
             setOpen(false);
             router.refresh();
         } else if (state.error) {
             toast.error(state.message);
         }
-    }, [state, type, router, setOpen]);
+    }, [state, type, router, setOpen, t]);
 
     useEffect(() => {
         console.log('Form type:', type);
@@ -143,7 +149,7 @@ export default function PromotionForm({
             onSubmit={onSubmit}
         >
             <h1 className="text-lg font-heading font-semibold">
-                {type === 'create' ? 'Create a new promotion' : 'Update the promotion'}
+                {type === 'create' ? t('createTitle') : t('updateTitle')}
             </h1>
             <div className="flex items-center gap-2">
                 <button
@@ -154,7 +160,7 @@ export default function PromotionForm({
                         tab === 'main' && 'bg-gradient-lighter font-semibold',
                     )}
                 >
-                    Main
+                    {t('main')}
                 </button>
                 {selectedOption !== 'category' && (
                     <button
@@ -165,7 +171,7 @@ export default function PromotionForm({
                             tab === 'product' && 'bg-gradient-lighter font-semibold',
                         )}
                     >
-                        Product
+                        {t('product')}
                     </button>
                 )}
                 {selectedOption !== 'product' && (
@@ -177,7 +183,7 @@ export default function PromotionForm({
                             tab === 'category' && 'bg-gradient-lighter font-semibold',
                         )}
                     >
-                        Category
+                        {t('category')}
                     </button>
                 )}
             </div>
@@ -185,31 +191,33 @@ export default function PromotionForm({
                 <>
                     <div className="flex justify-between flex-wrap gap-4">
                         <InputField
-                            label="Promotion name"
+                            label={t('promotionName')}
                             name="name"
                             register={register}
                             error={errors.name}
                             hideIcon
                         />
                         <InputField
-                            label="Percentage Number"
+                            label={t('percentageNumber')}
                             name="percentageNumber"
                             type="number"
                             register={register}
                             error={errors.percentageNumber}
                             hideIcon
                         />
-                        <div className="w-full">
-                            <label className="block text-sm font-medium text-gray-700">Duration Type</label>
-                            <select
-                                {...register('durationType')}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            >
-                                <option value="date">Date Range</option>
-                                <option value="hours">Hour Range</option>
-                                <option value="minutes">Minute Range</option>
-                                <option value="seconds">Second Range</option>
-                            </select>
+                        <div className="w-full space-y-1">
+                            <label>{t('durationType')}</label>
+                            <div className="relative bg-white border border-black rounded-lg">
+                                <select
+                                    {...register('durationType')}
+                                    className="px-4 py-2 w-full rounded-lg outline-none"
+                                >
+                                    <option value="date">{t('dateRange')}</option>
+                                    <option value="hours">{t('hourRange')}</option>
+                                    <option value="minutes">{t('minuteRange')}</option>
+                                    <option value="seconds">{t('secondRange')}</option>
+                                </select>
+                            </div>
                             {errors.durationType && (
                                 <p className="mt-1 text-sm text-red-600">{errors.durationType.message}</p>
                             )}
@@ -217,7 +225,7 @@ export default function PromotionForm({
                         {durationType === 'date' && (
                             <>
                                 <InputField
-                                    label="Start Date"
+                                    label={t('startDate')}
                                     name="startDate"
                                     type="date"
                                     register={register}
@@ -225,7 +233,7 @@ export default function PromotionForm({
                                     hideIcon
                                 />
                                 <InputField
-                                    label="End Date"
+                                    label={t('endDate')}
                                     name="endDate"
                                     type="date"
                                     register={register}
@@ -237,7 +245,7 @@ export default function PromotionForm({
                         {durationType === 'hours' && (
                             <>
                                 <InputField
-                                    label="Start Hour (0-23)"
+                                    label={t('startHour')}
                                     name="startHours"
                                     type="number"
                                     register={register}
@@ -245,7 +253,7 @@ export default function PromotionForm({
                                     hideIcon
                                 />
                                 <InputField
-                                    label="End Hour (0-23)"
+                                    label={t('endHour')}
                                     name="endHours"
                                     type="number"
                                     register={register}
@@ -257,7 +265,7 @@ export default function PromotionForm({
                         {durationType === 'minutes' && (
                             <>
                                 <InputField
-                                    label="Start Minute (0-59)"
+                                    label={t('startMinute')}
                                     name="startMinutes"
                                     type="number"
                                     register={register}
@@ -265,7 +273,7 @@ export default function PromotionForm({
                                     hideIcon
                                 />
                                 <InputField
-                                    label="End Minute (0-59)"
+                                    label={t('endMinute')}
                                     name="endMinutes"
                                     type="number"
                                     register={register}
@@ -277,7 +285,7 @@ export default function PromotionForm({
                         {durationType === 'seconds' && (
                             <>
                                 <InputField
-                                    label="Start Second (0-59)"
+                                    label={t('startSecond')}
                                     name="startSeconds"
                                     type="number"
                                     register={register}
@@ -285,7 +293,7 @@ export default function PromotionForm({
                                     hideIcon
                                 />
                                 <InputField
-                                    label="End Second (0-59)"
+                                    label={t('endSecond')}
                                     name="endSeconds"
                                     type="number"
                                     register={register}
@@ -306,7 +314,7 @@ export default function PromotionForm({
                         )}
                     </div>
                     <div>
-                        <h2>Option</h2>
+                        <h2>{t('option')}</h2>
                         <ul className="items-center w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg sm:flex">
                             <li className="w-full border-b border-gray-200 sm:border-b-0 sm:border-r">
                                 <div className="flex items-center ps-3">
@@ -324,7 +332,7 @@ export default function PromotionForm({
                                         htmlFor="productOption"
                                         className="w-full py-3 ms-2 text-sm font-medium text-gray-900"
                                     >
-                                        Product
+                                        {t('product')}
                                     </label>
                                 </div>
                             </li>
@@ -344,7 +352,7 @@ export default function PromotionForm({
                                         htmlFor="categoryOption"
                                         className="w-full py-3 ms-2 text-sm font-medium text-gray-900"
                                     >
-                                        Category
+                                        {t('category')}
                                     </label>
                                 </div>
                             </li>
@@ -355,7 +363,7 @@ export default function PromotionForm({
             {tab === 'product' && (
                 <div className="flex justify-between flex-wrap gap-4">
                     <SelectField
-                        label="Product"
+                        label={t('product')}
                         name="productIds"
                         options={productOptions}
                         control={control}
@@ -367,7 +375,7 @@ export default function PromotionForm({
             {tab === 'category' && (
                 <div className="flex justify-between flex-wrap gap-4">
                     <SelectField
-                        label="Category"
+                        label={t('category')}
                         name="categoryIds"
                         options={categoryOptions}
                         control={control}
@@ -377,7 +385,9 @@ export default function PromotionForm({
                 </div>
             )}
 
-            <button className="bg-gradient-light p-2 rounded-md">{type === 'create' ? 'Create' : 'Update'}</button>
+            <button className="bg-gradient-light p-2 rounded-md">
+                {type === 'create' ? t('create') : t('update')}
+            </button>
         </form>
     );
 }

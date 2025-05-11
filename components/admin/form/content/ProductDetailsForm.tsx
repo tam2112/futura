@@ -5,6 +5,7 @@ import { Dispatch, SetStateAction, useState } from 'react';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 import { categoryTechnicalMap } from '@/constants/categoryTechnicalMap';
+import { useTranslations } from 'next-intl';
 
 export default function ProductDetailsForm({
     data,
@@ -16,6 +17,8 @@ export default function ProductDetailsForm({
     setOpen: Dispatch<SetStateAction<boolean>>;
     relatedData?: any;
 }) {
+    const t = useTranslations('ProductDetailsForm');
+
     const [tab, setTab] = useState('main');
 
     const selectedCategory = relatedData?.categories
@@ -34,7 +37,7 @@ export default function ProductDetailsForm({
 
     return (
         <div className="flex flex-col gap-8 max-h-[500px] overflow-y-auto hide-scrollbar">
-            <h1 className="text-lg font-heading font-semibold">Product Details</h1>
+            <h1 className="text-lg font-heading font-semibold">{t('title')}</h1>
             <div className="flex items-center gap-2">
                 <button
                     type="button"
@@ -44,7 +47,7 @@ export default function ProductDetailsForm({
                         tab === 'main' && 'bg-gradient-lighter font-semibold',
                     )}
                 >
-                    Main
+                    {t('main')}
                 </button>
                 <button
                     type="button"
@@ -54,37 +57,37 @@ export default function ProductDetailsForm({
                         tab === 'technical' && 'bg-gradient-lighter font-semibold',
                     )}
                 >
-                    Technical
+                    {t('technical')}
                 </button>
             </div>
             {tab === 'main' && (
                 <>
                     <div className="flex flex-col gap-3">
                         <div className="flex items-center text-base justify-between">
-                            <h2 className="font-medium">Product name</h2>
+                            <h2 className="font-medium">{t('productName')}</h2>
                             <p className="max-w-[420px] line-clamp-2 text-right">{data?.name || '-'}</p>
                         </div>
                         <div className="flex items-center text-base justify-between">
-                            <h2 className="font-medium">Price</h2>
+                            <h2 className="font-medium">{t('price')}</h2>
                             <p>{data?.price ? `$${data.price}` : '-'}</p>
                         </div>
                         <div className="flex items-center text-base justify-between">
-                            <h2 className="font-medium">Quantity</h2>
+                            <h2 className="font-medium">{t('quantity')}</h2>
                             <p>{data?.quantity ? `$${data.quantity}` : '-'}</p>
                         </div>
                         <div className="flex items-center text-base justify-between">
-                            <h2 className="font-medium">Category</h2>
+                            <h2 className="font-medium">{t('category')}</h2>
                             <p>{getRelatedDataName(data?.categoryId, 'categories')}</p>
                         </div>
                     </div>
                     <div>
                         <div className="flex flex-col gap-3 text-base">
-                            <h2 className="font-medium">Description</h2>
+                            <h2 className="font-medium">{t('description')}</h2>
                             <p className="max-w-[420px] line-clamp-2">{data?.description || '-'}</p>
                         </div>
                     </div>
                     <div>
-                        <h2 className="font-medium text-lg">Images</h2>
+                        <h2 className="font-medium text-lg">{t('images')}</h2>
                         <div className="flex justify-center flex-wrap gap-2 pt-4">
                             {data?.images?.length > 0 ? (
                                 data.images.map((img: { url: string }, index: number) => (
@@ -98,7 +101,7 @@ export default function ProductDetailsForm({
                                     />
                                 ))
                             ) : (
-                                <p>No images available</p>
+                                <p>{t('imageNoAvailable')}</p>
                             )}
                         </div>
                     </div>
@@ -108,68 +111,68 @@ export default function ProductDetailsForm({
                 <div className="flex flex-col gap-3">
                     {shouldShowTechnical('brand') && (
                         <div className="flex items-center text-base justify-between">
-                            <label className="font-medium">Brand</label>
+                            <label className="font-medium">{t('brand')}</label>
                             <p>{getRelatedDataName(data?.brandId, 'brands')}</p>
                         </div>
                     )}
                     {shouldShowTechnical('color') && (
                         <div className="flex items-center text-base justify-between">
-                            <label className="font-medium">Color</label>
+                            <label className="font-medium">{t('color')}</label>
                             <p>{getRelatedDataName(data?.colorId, 'colors')}</p>
                         </div>
                     )}
                     {shouldShowTechnical('storage') && (
                         <div className="flex items-center text-base justify-between">
-                            <label className="font-medium">Storage</label>
+                            <label className="font-medium">{t('storage')}</label>
                             <p>{getRelatedDataName(data?.storageId, 'storages')}</p>
                         </div>
                     )}
                     {shouldShowTechnical('connectivity') && (
                         <div className="flex items-center text-base justify-between">
-                            <label className="font-medium">Connectivity</label>
+                            <label className="font-medium">{t('connectivity')}</label>
                             <p>{getRelatedDataName(data?.connectivityId, 'connectivities')}</p>
                         </div>
                     )}
                     {shouldShowTechnical('simSlot') && (
                         <div className="flex items-center text-base justify-between">
-                            <label className="font-medium">Sim Slot</label>
+                            <label className="font-medium">{t('simSlot')}</label>
                             <p>{getRelatedDataName(data?.simSlotId, 'simSlots')}</p>
                         </div>
                     )}
                     {shouldShowTechnical('batteryHealth') && (
                         <div className="flex items-center text-base justify-between">
-                            <label className="font-medium">Battery Health</label>
+                            <label className="font-medium">{t('batteryHealth')}</label>
                             <p>{getRelatedDataName(data?.batteryHealthId, 'batteryHealths')}</p>
                         </div>
                     )}
                     {shouldShowTechnical('ram') && (
                         <div className="flex items-center text-base justify-between">
-                            <label className="font-medium">RAM</label>
+                            <label className="font-medium">{t('ram')}</label>
                             <p>{getRelatedDataName(data?.ramId, 'rams')}</p>
                         </div>
                     )}
                     {shouldShowTechnical('cpu') && (
                         <div className="flex items-center text-base justify-between">
-                            <label className="font-medium">CPU</label>
+                            <label className="font-medium">{t('cpu')}</label>
                             <p>{getRelatedDataName(data?.cpuId, 'cpus')}</p>
                         </div>
                     )}
                     {shouldShowTechnical('screenSize') && (
                         <div className="flex items-center text-base justify-between">
-                            <label className="font-medium">Screen Size</label>
+                            <label className="font-medium">{t('screenSize')}</label>
                             <p>{getRelatedDataName(data?.screenSizeId, 'screenSizes')}</p>
                         </div>
                     )}
                     {shouldShowTechnical('type') && (
                         <div className="flex items-center text-base justify-between">
-                            <label className="font-medium">Type</label>
+                            <label className="font-medium">{t('type')}</label>
                             <p>{getRelatedDataName(data?.typeId, 'types')}</p>
                         </div>
                     )}
                 </div>
             )}
             <button type="button" onClick={() => setOpen(false)} className="bg-gray-200 p-2 rounded-md">
-                Close
+                {t('close')}
             </button>
         </div>
     );

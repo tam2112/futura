@@ -3,6 +3,7 @@
 
 import prisma from '@/lib/prisma';
 import { PromotionSchema } from '../validation/promotion.form';
+import { messages } from '../messages';
 
 type CurrentState = { success: boolean; error: boolean; message?: string };
 
@@ -64,7 +65,10 @@ export const getPromotions = async () => {
     }
 };
 
-export const createPromotion = async (currentState: CurrentState, data: PromotionSchema) => {
+export const createPromotion = async (currentState: CurrentState, data: PromotionSchema & { locale?: 'en' | 'vi' }) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].PromotionForm;
+
     try {
         const percentageSave = Number(100 - data.percentageNumber);
         const discountMultiplier = data.percentageNumber / 100;
@@ -88,7 +92,7 @@ export const createPromotion = async (currentState: CurrentState, data: Promotio
             return {
                 success: false,
                 error: true,
-                message: 'No products or categories selected for the promotion',
+                message: t.noProductOrCategorySelected,
             };
         }
 
@@ -148,14 +152,17 @@ export const createPromotion = async (currentState: CurrentState, data: Promotio
             return {
                 success: false,
                 error: true,
-                message: 'Promotion name already exists',
+                message: t.promotionNameExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to create promotion' };
+        return { success: false, error: true, message: t.createFailed };
     }
 };
 
-export const updatePromotion = async (currentState: CurrentState, data: PromotionSchema) => {
+export const updatePromotion = async (currentState: CurrentState, data: PromotionSchema & { locale?: 'en' | 'vi' }) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].PromotionForm;
+
     try {
         if (!data.id) {
             throw new Error('Promotion ID is required for update');
@@ -276,10 +283,10 @@ export const updatePromotion = async (currentState: CurrentState, data: Promotio
             return {
                 success: false,
                 error: true,
-                message: 'Promotion name already exists',
+                message: t.promotionNameExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to update promotion' };
+        return { success: false, error: true, message: t.updateFailed };
     }
 };
 

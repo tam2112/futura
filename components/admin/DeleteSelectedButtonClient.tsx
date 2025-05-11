@@ -6,6 +6,7 @@ import { FiTrash2 } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import Loader from '../Loader';
 import { Tooltip } from 'react-tooltip';
+import { useTranslations } from 'next-intl';
 
 type DeleteActionResult = { success: boolean; count?: number; error?: string };
 
@@ -15,6 +16,8 @@ interface DeleteSelectedButtonClientProps {
 }
 
 export default function DeleteSelectedButtonClient({ deleteAction, entityName }: DeleteSelectedButtonClientProps) {
+    const t = useTranslations('DeleteSelectedInAdmin');
+
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,12 +43,12 @@ export default function DeleteSelectedButtonClient({ deleteAction, entityName }:
         if (result.success && result.count !== undefined) {
             toast(
                 result.count === 1
-                    ? `${entityName} has been deleted`
-                    : `${result.count} ${entityName.toLowerCase()}s have been deleted`,
+                    ? `${entityName} ${t('singleDeleteSelect')}`
+                    : `${result.count} ${entityName} ${t('multiDeleteSelect')}`,
             );
             router.refresh();
         } else {
-            toast.error(result.error || `Failed to delete ${entityName.toLowerCase()}s`);
+            toast.error(result.error || `${t('deleteSelectFailed', { entityName: entityName })}`);
         }
     };
 
@@ -53,7 +56,7 @@ export default function DeleteSelectedButtonClient({ deleteAction, entityName }:
     const openConfirmModal = () => {
         const selectedIds = getSelectedIds();
         if (selectedIds.length === 0) {
-            toast.error(`Please select at least one ${entityName.toLowerCase()} to delete.`);
+            toast.error(`${t('noSelect', { entityName: `${entityName}` })}`);
             return;
         }
         setIsModalOpen(true);
@@ -85,7 +88,7 @@ export default function DeleteSelectedButtonClient({ deleteAction, entityName }:
                 onClick={openConfirmModal}
                 disabled={isLoading}
                 data-tooltip-id="delete-tooltip"
-                data-tooltip-content={`Delete selected ${entityName.toLowerCase()}s`}
+                data-tooltip-content={`${t('deleteSelectTooltip')} ${entityName}`}
             >
                 <FiTrash2 width={14} height={14} />
             </button>
@@ -95,23 +98,21 @@ export default function DeleteSelectedButtonClient({ deleteAction, entityName }:
             {isModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                     <div className="bg-white p-6 rounded-md shadow-lg max-w-2xl w-full">
-                        <p className="font-heading text-lg text-center font-medium">
-                            All data will be lost. Are you sure you want to delete selected {entityName.toLowerCase()}s?
-                        </p>
+                        <p className="font-heading text-lg text-center font-medium">{t('deleteSelectConfirm')}</p>
                         <div className="flex justify-center mt-8 gap-4">
                             <button
                                 type="button"
                                 className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
                                 onClick={closeModal}
                             >
-                                Cancel
+                                {t('cancel')}
                             </button>
                             <button
                                 type="button"
                                 className="px-4 py-2 bg-rose-500 text-white rounded-md hover:bg-rose-600"
                                 onClick={confirmDelete}
                             >
-                                Confirm
+                                {t('confirm')}
                             </button>
                         </div>
                     </div>

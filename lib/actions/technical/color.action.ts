@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
+import { messages } from '@/lib/messages';
 import prisma from '@/lib/prisma';
 import { ColorSchema } from '@/lib/validation/technical/color.form';
 import { revalidatePath } from 'next/cache';
@@ -31,7 +32,10 @@ export const getColorById = async (colorId: string) => {
     }
 };
 
-export const createColor = async (currentState: CurrentState, data: ColorSchema) => {
+export const createColor = async (currentState: CurrentState, data: ColorSchema & { locale?: 'en' | 'vi' }) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].ColorForm;
+
     try {
         // Tạo color mới
         await prisma.color.create({
@@ -49,14 +53,17 @@ export const createColor = async (currentState: CurrentState, data: ColorSchema)
             return {
                 success: false,
                 error: true,
-                message: 'Color name/hex already exists',
+                message: t.colorOrHexExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to create color' };
+        return { success: false, error: true, message: t.createFailed };
     }
 };
 
-export const updateColor = async (currentState: CurrentState, data: ColorSchema) => {
+export const updateColor = async (currentState: CurrentState, data: ColorSchema & { locale?: 'en' | 'vi' }) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].ColorForm;
+
     try {
         // Cập nhật color
         await prisma.color.update({
@@ -75,10 +82,10 @@ export const updateColor = async (currentState: CurrentState, data: ColorSchema)
             return {
                 success: false,
                 error: true,
-                message: 'Color name/hex already exists',
+                message: t.colorOrHexExists,
             };
         }
-        return { success: false, error: true, message: 'Failed to update color' };
+        return { success: false, error: true, message: t.updateFailed };
     }
 };
 
