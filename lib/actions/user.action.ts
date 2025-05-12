@@ -5,11 +5,20 @@
 
 import bcrypt from 'bcrypt';
 
-import { loginSchema, LoginSchema, UserSchema, signUpSchema, SignUpSchema } from '../validation/user.form';
+import {
+    loginSchema,
+    LoginSchema,
+    UserSchema,
+    signUpSchema,
+    SignUpSchema,
+    ChangePasswordSchema,
+    changePasswordSchema,
+} from '../validation/user.form';
 import prisma from '../prisma';
 import { generateToken } from '../auth';
 import { revalidatePath } from 'next/cache';
 import { messages } from '../messages';
+import { z } from 'zod';
 
 type CurrentState = { success: boolean; error: boolean };
 
@@ -223,6 +232,99 @@ export const updateUser = async (currentState: CurrentState, data: UserSchema & 
             };
         }
         return { success: false, error: true, message: t.updateFailed };
+    }
+};
+
+export const updateUserFullName = async (
+    currentState: CurrentState,
+    data: { id: string; fullName: string; locale?: 'en' | 'vi' },
+) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].UserForm;
+    try {
+        // Validate fullName
+        const schema = z.object({
+            fullName: z.string().nonempty({ message: t.fullNameRequired }).min(2, { message: t.minFullName }),
+        });
+        schema.parse({ fullName: data.fullName });
+
+        // Check if fullName already exists
+        const existingName = await prisma.user.findUnique({
+            where: { fullName: data.fullName },
+        });
+        if (existingName && existingName.id !== data.id) {
+            return {
+                success: false,
+                error: true,
+                message: t.fullNameExists,
+            };
+        }
+
+        await prisma.user.update({
+            where: { id: data.id },
+            data: { fullName: data.fullName },
+        });
+
+        revalidatePath('/my-profile');
+        return { success: true, error: false, message: t.updateFullNameSuccess };
+    } catch (error: any) {
+        console.error('Error in updateUserFullName:', error);
+        if (error.code === 'P2002') {
+            return {
+                success: false,
+                error: true,
+                message: t.fullNameExists,
+            };
+        }
+        return { success: false, error: true, message: t.updateFailed };
+    }
+};
+
+export const changeUserPassword = async (
+    currentState: CurrentState,
+    data: ChangePasswordSchema & { userId: string; locale?: 'en' | 'vi' },
+) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].UserForm;
+    try {
+        changePasswordSchema(locale).parse(data);
+
+        // Find user
+        const user = await prisma.user.findUnique({
+            where: { id: data.userId },
+        });
+
+        if (!user) {
+            return {
+                success: false,
+                error: true,
+                message: t.userNotFound,
+            };
+        }
+
+        // Verify old password
+        const isPasswordValid = await bcrypt.compare(data.oldPassword, user.password);
+        if (!isPasswordValid) {
+            return {
+                success: false,
+                error: true,
+                message: t.oldPasswordNotMatch,
+            };
+        }
+
+        // Hash new password
+        const hashedNewPassword = await bcrypt.hash(data.newPassword, 10);
+
+        // Update password
+        await prisma.user.update({
+            where: { id: data.userId },
+            data: { password: hashedNewPassword },
+        });
+
+        return { success: true, error: false, message: t.passwordChangeSuccess };
+    } catch (error: any) {
+        console.error('Error in changeUserPassword:', error);
+        return { success: false, error: true, message: t.passwordChangeFailed };
     }
 };
 

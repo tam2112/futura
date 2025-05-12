@@ -5,7 +5,8 @@
         "signUp": "Sign up",
         "signOut": "Sign out",
         "profile": "Profile",
-        "myOrders": "My orders"
+        "myOrders": "My orders",
+        "favourite": "Favourite"
     },
     "Common": {
         "placeholder": "Enter your",
@@ -271,6 +272,7 @@
         "cancelOrderSuccess": "Cancel the order successfully",
         "cancelOrderFailed": "Failed to cancel order",
         "myOrders": "My orders",
+        "description": "Information the orders you have set/buy",
         "quantity": "Quantity",
         "Pending": "Pending",
         "Out for delivery": "Out for delivery",
@@ -392,7 +394,19 @@
         "updated": "updated",
         "nameOrEmailExists": "User full name/email already exists",
         "createFailed": "Failed to create user",
-        "updateFailed": "Failed to update user"
+        "updateFailed": "Failed to update user",
+        "passwordsNotMatch": "Password not match",
+        "fullNameExists": "Full name is already exists",
+        "updateFullNameSuccess": "Update full name successfully",
+        "updateFullNameFailed": "Failed to update full name",
+        "userNotFound": "User not found",
+        "passwordNotMatch": "Password not match",
+        "oldPasswordIsRequired": "Old password is required",
+        "newPasswordIsRequired": "New password is required",
+        "confirmNewPasswordIsRequired": "Confirm new password is required",
+        "oldPasswordNotMatch": "Old password not match",
+        "passwordChangeSuccess": "Change password success",
+        "passwordChangeFailed": "Failed to change password"
     },
     "CategoryList": {
         "latestRelease": "Latest Release",
@@ -845,5 +859,31 @@
         "typeName": "Type name",
         "create": "Create",
         "update": "Update"
+    },
+    "SettingModal": {
+        "title": "Settings",
+        "languages": "Languages",
+        "theme": "Theme",
+        "close": "Close"
+    },
+    "AccountManagement": {
+        "title": "Account management",
+        "favourite": "Favourite",
+        "myOrders": "My orders",
+        "myProfile": "My profile",
+        "signOut": "Sign out"
+    },
+    "MyProfile": {
+        "title": "My profile",
+        "description": "Update personal information",
+        "email": "Email",
+        "fullName": "Full name",
+        "update": "Update",
+        "changePassText": "Change password, click",
+        "here": "here"
+    },
+    "Favourite": {
+        "title": "Favourite",
+        "description": "See the products you love"
     }
 }

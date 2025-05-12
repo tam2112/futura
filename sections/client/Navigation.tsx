@@ -8,7 +8,7 @@ import Box from '../../components/Box';
 import Image from 'next/image';
 import { GoChevronDown } from 'react-icons/go';
 import Button from '../../components/Button';
-import { PiShoppingBagOpenLight, PiUser } from 'react-icons/pi';
+import { PiHeart, PiShoppingBagOpenLight, PiUser } from 'react-icons/pi';
 import avatarImage from '@/public/default-avatar.png';
 import { Link, useRouter } from '@/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -188,13 +188,26 @@ export default function Navigation() {
                                                     <div className="w-full bg-white border border-gray-300 rounded-lg">
                                                         <ul className="flex flex-col items-start font-normal px-3 py-2">
                                                             <li>
-                                                                <Button
-                                                                    variant="text"
-                                                                    className="inline-flex items-center gap-2 font-normal relative"
-                                                                >
-                                                                    <PiUser size={20} />
-                                                                    <span>{t('profile')}</span>
-                                                                </Button>
+                                                                <Link href="/favourite">
+                                                                    <Button
+                                                                        variant="text"
+                                                                        className="inline-flex items-center gap-2 font-normal relative"
+                                                                    >
+                                                                        <PiHeart size={20} />
+                                                                        <span>{t('favourite')}</span>
+                                                                    </Button>
+                                                                </Link>
+                                                            </li>
+                                                            <li>
+                                                                <Link href="/my-profile">
+                                                                    <Button
+                                                                        variant="text"
+                                                                        className="inline-flex items-center gap-2 font-normal relative"
+                                                                    >
+                                                                        <PiUser size={20} />
+                                                                        <span>{t('profile')}</span>
+                                                                    </Button>
+                                                                </Link>
                                                             </li>
                                                             <li>
                                                                 <Link href="/my-orders">

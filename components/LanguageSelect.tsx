@@ -5,7 +5,7 @@ import Connect from './Connect';
 import Image from 'next/image';
 import vietnamFlag from '@/public/vietnam.png';
 import englishFlag from '@/public/united-kingdom.png';
-import { useRouter } from '@/navigation';
+import { usePathname, useRouter } from '@/navigation';
 import Button from './Button';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -14,9 +14,10 @@ export default function LanguageSelect() {
 
     const router = useRouter();
     const currentLocale = useLocale();
+    const currentPath = usePathname();
 
     const handleChangeLocale = (locale: string) => {
-        router.push('/', { locale });
+        router.replace(currentPath, { locale });
     };
 
     return (
@@ -32,7 +33,7 @@ export default function LanguageSelect() {
                     />
                 </span>
             </div>
-            <div className="absolute opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 left-0 top-[40px] w-full shadow-sm">
+            <div className="absolute opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 left-0 top-[40px] w-full shadow-sm z-10">
                 <div className="w-full bg-white border border-black/10 rounded-lg">
                     <div className="flex flex-col items-start font-normal px-4 py-2">
                         <div>

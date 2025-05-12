@@ -62,6 +62,9 @@ export default function SignInForm() {
             if (response.fullName) {
                 Cookies.set('fullName', response.fullName);
             }
+            if (response.email) {
+                Cookies.set('email', response.email);
+            }
             if (response.role) {
                 Cookies.set('role', response.role);
             }

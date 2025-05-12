@@ -87,3 +87,33 @@ export const userSchema = (locale: 'en' | 'vi') => {
 };
 
 export type UserSchema = z.infer<ReturnType<typeof userSchema>>;
+
+export const changePasswordSchema = (locale: 'en' | 'vi') => {
+    const t = getTranslationsUserForm(locale);
+
+    return z
+        .object({
+            oldPassword: z.string().nonempty({ message: t.oldPasswordIsRequired }),
+            newPassword: z
+                .string()
+                .nonempty({ message: t.newPasswordIsRequired })
+                .min(8, { message: t.minPassword })
+                .max(40, { message: t.maxPassword })
+                .refine(
+                    (value) =>
+                        /[A-Z]/.test(value) && // Kiểm tra chữ hoa
+                        /[0-9]/.test(value) && // Kiểm tra số
+                        /[^a-zA-Z0-9]/.test(value), // Kiểm tra ký tự đặc biệt
+                    {
+                        message: t.passwordContainRequired,
+                    },
+                ),
+            confirmNewPassword: z.string().nonempty({ message: t.confirmNewPasswordIsRequired }),
+        })
+        .refine((data) => data.newPassword === data.confirmNewPassword, {
+            message: t.passwordsNotMatch,
+            path: ['confirmNewPassword'],
+        });
+};
+
+export type ChangePasswordSchema = z.infer<ReturnType<typeof changePasswordSchema>>;
