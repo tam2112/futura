@@ -13,12 +13,16 @@ import {
     SignUpSchema,
     ChangePasswordSchema,
     changePasswordSchema,
+    recoverSchema,
+    RecoverSchema,
+    verifyCodeSchema,
 } from '../validation/user.form';
 import prisma from '../prisma';
 import { generateToken } from '../auth';
 import { revalidatePath } from 'next/cache';
 import { messages } from '../messages';
 import { z } from 'zod';
+import { sendMail } from '../gmail';
 
 type CurrentState = { success: boolean; error: boolean };
 
@@ -384,3 +388,152 @@ export async function exportUsers() {
         return { success: false, error: 'Failed to export users' };
     }
 }
+
+// Password Recovery Actions
+export const initiatePasswordRecovery = async (
+    currentState: CurrentState,
+    data: { email: string; locale?: 'en' | 'vi' },
+) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].RecoverPage;
+    try {
+        // Validate email
+        const schema = recoverSchema(locale);
+        schema.parse({ email: data.email });
+
+        // Check if email exists
+        const user = await prisma.user.findUnique({
+            where: { email: data.email },
+        });
+
+        if (!user) {
+            return {
+                success: false,
+                error: true,
+                message: t.emailNotExist,
+            };
+        }
+
+        // Generate 6-digit verification code
+        const code = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
+
+        // Store verification code
+        await prisma.verificationCode.create({
+            data: {
+                code,
+                userId: user.id,
+                expiresAt,
+            },
+        });
+
+        // Send verification code via email
+        const mailOptions = {
+            from: process.env.SENDER_EMAIL,
+            to: data.email,
+            subject: t.emailSubject,
+            text: `${t.emailBody} ${code}`,
+            html: `<p>${t.emailBody} <strong>${code}</strong></p>`,
+        };
+
+        await sendMail(mailOptions);
+        console.log(`Verification code for ${data.email}: ${code}`);
+
+        return {
+            success: true,
+            error: false,
+            userId: user.id,
+            message: t.codeSent,
+        };
+    } catch (error: any) {
+        console.error('Error in initiatePasswordRecovery:', error);
+        return { success: false, error: true, message: t.recoveryFailed };
+    }
+};
+
+export const verifyRecoveryCode = async (
+    currentState: CurrentState,
+    data: { userId: string; verificationCode: string; locale?: 'en' | 'vi' },
+) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].RecoverPage;
+    try {
+        // Validate code
+        const schema = verifyCodeSchema(locale);
+        schema.parse({ verificationCode: data.verificationCode });
+
+        // Find verification code
+        const verificationCode = await prisma.verificationCode.findFirst({
+            where: {
+                userId: data.userId,
+                code: data?.verificationCode,
+                expiresAt: { gte: new Date() },
+            },
+        });
+
+        if (!verificationCode) {
+            return {
+                success: false,
+                error: true,
+                message: t.invalidOrExpiredCode,
+            };
+        }
+
+        // Code is valid, delete it to prevent reuse
+        await prisma.verificationCode.delete({
+            where: { id: verificationCode.id },
+        });
+
+        return {
+            success: true,
+            error: false,
+            message: t.codeVerified,
+        };
+    } catch (error: any) {
+        console.error('Error in verifyRecoveryCode:', error);
+        return { success: false, error: true, message: t.recoveryFailed };
+    }
+};
+
+export const completePasswordRecovery = async (
+    currentState: CurrentState,
+    data: RecoverSchema & { userId: string; locale?: 'en' | 'vi' },
+) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].RecoverPage;
+    try {
+        // Validate input
+        recoverSchema(locale).parse(data);
+
+        // Find user
+        const user = await prisma.user.findUnique({
+            where: { id: data.userId },
+        });
+
+        if (!user) {
+            return {
+                success: false,
+                error: true,
+                message: t.userNotFound,
+            };
+        }
+
+        // Hash new password
+        const hashedNewPassword = await bcrypt.hash(data.newPassword!, 10);
+
+        // Update password
+        await prisma.user.update({
+            where: { id: data.userId },
+            data: { password: hashedNewPassword },
+        });
+
+        return {
+            success: true,
+            error: false,
+            message: t.passwordResetSuccess,
+        };
+    } catch (error: any) {
+        console.error('Error in completePasswordRecovery:', error);
+        return { success: false, error: true, message: t.recoveryFailed };
+    }
+};

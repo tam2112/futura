@@ -252,7 +252,11 @@
         "addToCart": "Add to Cart",
         "addToList": "Add to List",
         "description": "About this item",
-        "relatedTitle": "You May Also Like"
+        "relatedTitle": "You May Also Like",
+        "notLoggedIn": "Please log in to add to favorites",
+        "addedToFavourites": "Added to favorites",
+        "removedFromFavourites": "Removed from favorites",
+        "favouriteToggleFailed": "Failed to update favorites"
     },
     "StoreContext": {
         "updateCartFailed": "Failed to update cart",
@@ -884,6 +888,37 @@
     },
     "Favourite": {
         "title": "Favourite",
-        "description": "See the products you love"
+        "description": "See the products you love",
+        "noFavourites": "You have no favorite products yet"
+    },
+    "RecoverPage": {
+        "recoverPassword": "Recover Password",
+        "email": "Email",
+        "emailPlaceholder": "Enter your email",
+        "emailIsRequired": "Email is required",
+        "invalidEmail": "Invalid email format",
+        "emailNotExist": "Email does not exist",
+        "verificationCode": "Verification Code",
+        "codePlaceholder": "Enter 6-digit code",
+        "codeIsRequired": "Verification code is required",
+        "invalidCode": "Code must be 6 digits",
+        "invalidOrExpiredCode": "Invalid or expired code",
+        "codeSent": "Verification code sent to your email",
+        "codeVerified": "Code verified successfully",
+        "newPassword": "New Password",
+        "passwordPlaceholder": "Enter new password",
+        "confirmNewPassword": "Confirm New Password",
+        "confirmPasswordPlaceholder": "Confirm new password",
+        "passwordContainRequired": "Password must contain at least one uppercase letter, one number, and one special character",
+        "passwordsNotMatch": "Passwords do not match",
+        "confirm": "Confirm",
+        "recover": "Recover",
+        "recoveryFailed": "Password recovery failed",
+        "passwordResetSuccess": "Password reset successfully",
+        "backTo": "Back to",
+        "signIn": "Sign In",
+        "userNotFound": "User not found",
+        "emailSubject": "Password Recovery Verification Code",
+        "emailBody": "Your verification code is:"
     }
 }

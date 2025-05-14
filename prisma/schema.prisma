@@ -14,16 +14,27 @@ datasource db {
 }
 
 model User {
-  id          String     @id @default(uuid())
-  fullName    String     @unique
-  email       String     @unique
-  password    String
-  createdDate DateTime   @default(now())
-  roleId      String
-  role        Role       @relation(fields: [roleId], references: [id])
-  carts       Cart[]
-  orders      Order[]
-  delivery    Delivery[]
+  id                String             @id @default(uuid())
+  fullName          String             @unique
+  email             String             @unique
+  password          String
+  createdDate       DateTime           @default(now())
+  roleId            String
+  role              Role               @relation(fields: [roleId], references: [id])
+  carts             Cart[]
+  favourites        Favourite[]
+  orders            Order[]
+  delivery          Delivery[]
+  verificationCodes VerificationCode[]
+}
+
+model VerificationCode {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  expiresAt DateTime
 }
 
 model Product {
@@ -35,6 +46,7 @@ model Product {
   priceWithDiscount Float?
   slug              String         @unique
   isActive          Boolean        @default(true)
+  isFavourite       Boolean        @default(false)
   createdDate       DateTime       @default(now())
   categoryId        String
   category          Category       @relation(fields: [categoryId], references: [id])
@@ -61,6 +73,7 @@ model Product {
   statusId          String
   status            Status         @relation(fields: [statusId], references: [id])
   carts             Cart[]
+  favourites        Favourite[]
   orders            Order[]
   promotions        Promotion[]    @relation("ProductPromotions")
   images            Image[]
@@ -191,6 +204,14 @@ model Cart {
   productId String
   product   Product @relation(fields: [productId], references: [id])
   quantity  Int
+}
+
+model Favourite {
+  id        String  @id @default(uuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
 }
 
 model Order {

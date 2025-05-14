@@ -252,7 +252,11 @@
         "addToCart": "Thêm vào giỏ hàng",
         "addToList": "Yêu thích",
         "description": "Về sản phẩm này",
-        "relatedTitle": "Bạn cũng có thể thích"
+        "relatedTitle": "Bạn cũng có thể thích",
+        "notLoggedIn": "Vui lòng đăng nhập để thêm vào danh sách yêu thích",
+        "addedToFavourites": "Đã thêm vào danh sách yêu thích",
+        "removedFromFavourites": "Đã xóa khỏi danh sách yêu thích",
+        "favouriteToggleFailed": "Không thể cập nhật danh sách yêu thích"
     },
     "StoreContext": {
         "updateCartFailed": "Cập nhật giỏ hàng thất bại",
@@ -884,6 +888,37 @@
     },
     "Favourite": {
         "title": "Yêu thích",
-        "description": "Xem các sản phẩm mà bạn yêu thích"
+        "description": "Xem các sản phẩm mà bạn yêu thích",
+        "noFavourites": "Bạn chưa có sản phẩm yêu thích nào"
+    },
+    "RecoverPage": {
+        "recoverPassword": "Khôi phục mật khẩu",
+        "email": "Địa chỉ email",
+        "emailPlaceholder": "Nhập vào địa chỉ email",
+        "emailIsRequired": "Vui lòng nhập email",
+        "invalidEmail": "Email không hợp lệ",
+        "emailNotExist": "Email không tồn tại!",
+        "verificationCode": "Mã xác nhận",
+        "codePlaceholder": "Nhập mã 6 chữ số",
+        "codeIsRequired": "Mã xác nhận là bắt buộc",
+        "invalidCode": "Mã phải có 6 chứ số",
+        "invalidOrExpiredCode": "Mã không hợp lệ hoặc đã hết hạn",
+        "codeSent": "Mã xác nhận đã được gửi đến email của bạn",
+        "codeVerified": "Mã đã được xác nhận thành công",
+        "newPassword": "Mật khẩu mới",
+        "passwordPlaceholder": "Nhập vào mật khẩu mới",
+        "confirmNewPassword": "Xác nhận mật khẩu mới",
+        "confirmPasswordPlaceholder": "Xác nhận mật khẩu mới",
+        "passwordContainRequired": "Mật khẩu phải chứa ít nhất một chữ hoa, một số và một ký tự đặc biệt!",
+        "passwordsNotMatch": "Mật khẩu không trùng khớp",
+        "confirm": "Xác nhận",
+        "recover": "Khôi phục",
+        "recoveryFailed": "Khôi phục mật khẩu thất bại",
+        "passwordResetSuccess": "Đặt lại mật khâu thành công",
+        "backTo": "Quay lại",
+        "signIn": "Đăng nhập",
+        "userNotFound": "Không tìm thấy người dùng",
+        "emailSubject": "Mã Xác Minh Khôi Phục Mật Khẩu",
+        "emailBody": "Mã xác minh của bạn là:"
     }
 }

@@ -11,7 +11,7 @@ import Loader from '@/components/Loader';
 import { debounce } from 'lodash';
 import { Link } from '@/navigation';
 import GoToTop from '@/components/GoToTop';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 type Product = {
     id: string;
@@ -69,6 +69,7 @@ interface ProductListProps {
 
 export default function ProductList({ initialProducts, showCategoriesFilter = false }: ProductListProps) {
     const t = useTranslations('ProductList');
+    const locale = useLocale() as 'en' | 'vi';
 
     const [products, setProducts] = useState<Product[]>(initialProducts);
     const [priceRange, setPriceRange] = useState([0, Math.max(...initialProducts.map((p) => p.price), 0)]);
@@ -79,6 +80,28 @@ export default function ProductList({ initialProducts, showCategoriesFilter = fa
     const [openFilters, setOpenFilters] = useState<Record<string, boolean>>({});
     const filterRefs = useRef<Record<string, HTMLDivElement | null>>({});
     const debouncedSetFilters = debounce(setFilters, 300);
+
+    // Fixed exchange rate (1 USD = 25,000 VND)
+    const EXCHANGE_RATE = 25000;
+
+    // Function to convert and format price based on locale
+    const formatPrice = (priceInUSD: number) => {
+        if (locale === 'vi') {
+            const priceInVND = priceInUSD * EXCHANGE_RATE;
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND',
+            }).format(priceInVND);
+        }
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+        }).format(priceInUSD);
+    };
+
+    // Adjust price range for VND if locale is 'vi'
+    const maxPriceInUSD = Math.max(...initialProducts.map((p) => p.priceWithDiscount || p.price), 0);
+    const displayMaxPrice = locale === 'vi' ? maxPriceInUSD * EXCHANGE_RATE : maxPriceInUSD;
 
     // Calculate filter options dynamically
     const filterDataMap: FilterDataMap = {
@@ -262,22 +285,23 @@ export default function ProductList({ initialProducts, showCategoriesFilter = fa
                                         <div className="price-span grid grid-cols-2 gap-2">
                                             <input
                                                 className="rounded bg-gray-200 py-2 px-3 text-base text-gray-700 xs:py-3.5 xl:text-sm outline-none"
-                                                value={priceRange[0]}
+                                                value={formatPrice(
+                                                    priceRange[0] / (locale === 'vi' ? EXCHANGE_RATE : 1),
+                                                )}
                                                 readOnly
                                             />
                                             <input
                                                 className="rounded bg-gray-200 py-2 px-3 text-base text-gray-700 xs:py-3.5 xl:text-sm outline-none"
-                                                value={priceRange[1]}
+                                                value={formatPrice(
+                                                    priceRange[1] / (locale === 'vi' ? EXCHANGE_RATE : 1),
+                                                )}
                                                 readOnly
                                             />
                                         </div>
                                         <div className="py-[30px]">
                                             <PriceRange
                                                 onPriceRangeChange={handlePriceRangeChange}
-                                                maxPrice={Math.max(
-                                                    ...initialProducts.map((p) => p.priceWithDiscount || p.price),
-                                                    0,
-                                                )}
+                                                maxPrice={displayMaxPrice}
                                             />
                                         </div>
                                     </div>
@@ -442,16 +466,16 @@ export default function ProductList({ initialProducts, showCategoriesFilter = fa
                                                                     <div className="flex flex-col justify-center">
                                                                         {priceWithDiscount && (
                                                                             <h3 className="text-sm font-semibold">
-                                                                                ${priceWithDiscount.toFixed(2)}
+                                                                                {formatPrice(priceWithDiscount)}
                                                                             </h3>
                                                                         )}
                                                                         {priceWithDiscount ? (
                                                                             <h4 className="text-xs text-slate-gray-300 line-through">
-                                                                                ${price.toFixed(2)}
+                                                                                {formatPrice(price)}
                                                                             </h4>
                                                                         ) : (
                                                                             <h4 className="text-sm font-semibold">
-                                                                                ${price.toFixed(2)}
+                                                                                {formatPrice(price)}
                                                                             </h4>
                                                                         )}
                                                                     </div>

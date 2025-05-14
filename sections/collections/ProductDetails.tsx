@@ -15,7 +15,11 @@ import { useRef, useState } from 'react';
 import DeviceSliderBtn from '@/components/slider/DeviceSliderBtn';
 import { useStore } from '@/context/StoreContext';
 import { twMerge } from 'tailwind-merge';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { toast } from 'react-toastify';
+import { useAuth } from '@/context/AuthContext';
+import { toggleFavourite } from '@/lib/actions/product.action';
+import Cookies from 'js-cookie';
 
 type Product = {
     id: string;
@@ -39,6 +43,7 @@ type Product = {
     category: { name: string; slug: string };
     status?: { id: string; name: string };
     promotions?: { percentageNumber: number }[];
+    isFavourite: boolean;
 };
 
 type ProductDetailsProps = {
@@ -48,10 +53,38 @@ type ProductDetailsProps = {
 
 export default function ProductDetails({ product, relatedProducts }: ProductDetailsProps) {
     const t = useTranslations('ProductDetails');
+    const locale = useLocale() as 'en' | 'vi';
+    const { isLoggedIn } = useAuth();
 
     const [selectedImage, setSelectedImage] = useState(product.images[0]?.url || '/placeholder.png');
+    const [isFavourite, setIsFavourite] = useState(product.isFavourite);
     const swiperRef = useRef<SwiperType | null>(null);
     const { handleAddToCart } = useStore();
+    const userId = Cookies.get('userId');
+
+    const handleToggleFavourite = async () => {
+        if (!isLoggedIn) {
+            toast.error(t('notLoggedIn'));
+            return;
+        }
+
+        if (!userId) {
+            toast.error(t('notLoggedIn'));
+            return;
+        }
+
+        const response = await toggleFavourite(
+            { success: false, error: false },
+            { productId: product.id, locale, userId },
+        );
+
+        if (response.success) {
+            setIsFavourite(response.isFavourite ?? false);
+            toast.success(response.message);
+        } else {
+            toast.error(response.message);
+        }
+    };
 
     // Tạo breadcrumb động từ category
     const breadcrumbs = [
@@ -271,7 +304,10 @@ export default function ProductDetails({ product, relatedProducts }: ProductDeta
                                             </button>
                                         </div>
                                         <div className="w-[118px]">
-                                            <button className="group flex h-[48px] w-full shrink-0 cursor-pointer items-center gap-1.5 rounded-md border border-gray-200 px-3 leading-3 flex-col justify-center lg:flex-row lg:justify-start">
+                                            <button
+                                                onClick={handleToggleFavourite}
+                                                className="group flex h-[48px] w-full shrink-0 cursor-pointer items-center gap-1.5 rounded-md border border-gray-200 px-3 leading-3 flex-col justify-center lg:flex-row lg:justify-start"
+                                            >
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     viewBox="0 0 24 24"
@@ -280,7 +316,10 @@ export default function ProductDetails({ product, relatedProducts }: ProductDeta
                                                     strokeWidth="1.5"
                                                     strokeLinecap="round"
                                                     strokeLinejoin="round"
-                                                    className="h-[18px] w-[18px] transition-all duration-300 ease-in-out group-hover:fill-gray-700"
+                                                    className={twMerge(
+                                                        'h-[18px] w-[18px] transition-all duration-300 ease-in-out group-hover:fill-gray-700',
+                                                        isFavourite && 'fill-gray-700',
+                                                    )}
                                                 >
                                                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                                                 </svg>

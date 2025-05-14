@@ -292,6 +292,104 @@ export const getRandomProductsByBrand = async (brandName: string, limit: number 
     }
 };
 
+// New action to toggle favorite status
+export const toggleFavourite = async (
+    currentState: CurrentState,
+    data: { productId: string; locale?: 'en' | 'vi'; userId: string },
+) => {
+    const locale = data.locale || 'en';
+    const t = messages[locale].ProductDetails;
+    try {
+        if (!data.userId) {
+            return {
+                success: false,
+                error: true,
+                message: t.notLoggedIn,
+            };
+        }
+
+        // Check if product is already in favorites
+        const existingFavourite = await prisma.favourite.findFirst({
+            where: {
+                userId: data.userId,
+                productId: data.productId,
+            },
+        });
+
+        if (existingFavourite) {
+            // Remove from favorites
+            await prisma.favourite.delete({
+                where: {
+                    id: existingFavourite.id,
+                },
+            });
+            // Update product isFavourite to false
+            await prisma.product.update({
+                where: { id: data.productId },
+                data: { isFavourite: false },
+            });
+            revalidatePath('/favourite');
+            return {
+                success: true,
+                error: false,
+                message: t.removedFromFavourites,
+                isFavourite: false,
+            };
+        } else {
+            // Add to favorites
+            await prisma.favourite.create({
+                data: {
+                    userId: data.userId,
+                    productId: data.productId,
+                },
+            });
+            // Update product isFavourite to true
+            await prisma.product.update({
+                where: { id: data.productId },
+                data: { isFavourite: true },
+            });
+            revalidatePath('/favourite');
+            return {
+                success: true,
+                error: false,
+                message: t.addedToFavourites,
+                isFavourite: true,
+            };
+        }
+    } catch (error: any) {
+        console.error('Error toggling favourite:', error);
+        return {
+            success: false,
+            error: true,
+            message: t.favouriteToggleFailed,
+        };
+    }
+};
+
+// New action to get user's favorite products
+export const getUserFavourites = async (userId: string) => {
+    try {
+        const favourites = await prisma.favourite.findMany({
+            where: {
+                userId,
+            },
+            include: {
+                product: {
+                    include: {
+                        images: { select: { url: true } },
+                        category: { select: { name: true, slug: true } },
+                        brand: { select: { name: true, id: true } },
+                    },
+                },
+            },
+        });
+        return favourites.map((fav) => fav.product);
+    } catch (error) {
+        console.error('Error fetching user favourites:', error);
+        return [];
+    }
+};
+
 export const createProduct = async (
     currentState: CurrentState,
     data: ProductSchema & { imageUrls?: string[] } & { locale?: 'en' | 'vi' },
