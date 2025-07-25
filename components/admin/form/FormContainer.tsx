@@ -2,7 +2,6 @@
 import prisma from '@/lib/prisma';
 import FormModal from './FormModal';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export type FormContainerProps = {
     table:
         | 'user'

@@ -4,7 +4,6 @@ import { useTranslations } from 'next-intl';
 import { ReactNode, useState } from 'react';
 import { FieldError } from 'react-hook-form';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 type InputFieldProps = {
     label: string;
     type?: string;

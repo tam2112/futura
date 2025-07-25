@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import { messages } from '@/lib/messages';
@@ -128,7 +127,7 @@ export async function exportRams() {
         const rams = await prisma.ram.findMany({});
 
         // Format data for Excel
-        const formattedData = rams.map((ram) => ({
+        const formattedData = rams.map((ram: any) => ({
             Title: ram.title,
             CreatedAt: ram.createdDate.toISOString(),
         }));

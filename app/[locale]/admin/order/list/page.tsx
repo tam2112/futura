@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import Table from '@/components/admin/table/Table';
 import TableSearch from '@/components/admin/table/TableSearch';
 import Pagination from '@/sections/collections/Pagination';

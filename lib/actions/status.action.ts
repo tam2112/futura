@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import prisma from '@/lib/prisma';
@@ -126,7 +125,7 @@ export async function exportStatuses() {
         const statuses = await prisma.status.findMany({});
 
         // Format data for Excel
-        const formattedData = statuses.map((status) => ({
+        const formattedData = statuses.map((status: any) => ({
             Name: status.name,
             CreatedAt: status.createdDate.toISOString(),
         }));

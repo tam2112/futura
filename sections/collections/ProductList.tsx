@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import PriceRange from '@/components/client/PriceRange';
@@ -221,6 +220,7 @@ export default function ProductList({ initialProducts, showCategoriesFilter = fa
         }, 500); // Delay 0.5 seconds
 
         return () => clearTimeout(timeout); // Cleanup timeout
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [priceRange, filters, sortOption, initialProducts]);
 
     const handleFilterClick = (filterName: string) => {
@@ -308,7 +308,6 @@ export default function ProductList({ initialProducts, showCategoriesFilter = fa
                                 </div>
                                 <div className="divide-y">
                                     {Object.entries(filterDataMap)
-                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
                                         .filter(([_, options]) => options.length > 0)
                                         .map(([filterName]) => (
                                             <div key={filterName} className="bg-white">

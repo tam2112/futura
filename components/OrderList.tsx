@@ -19,6 +19,11 @@ export default function OrderList({ userId }: { userId: string | null }) {
         //     return;
         // }
 
+        if (!userId) {
+            toast.error('Please login to view orders');
+            setLoading(false);
+            return;
+        }
         try {
             await fetchOrders(userId);
         } catch (error) {
@@ -36,11 +41,11 @@ export default function OrderList({ userId }: { userId: string | null }) {
     useEffect(() => {
         console.log('userId', userId);
         console.log('orders', orders);
-    }, []);
+    }, [userId, orders]);
 
     const handleCancelOrder = async (orderId: string) => {
         try {
-            const result = await updateOrderStatus(orderId, 'Cancelled');
+            const result = await updateOrderStatus({ orderId, statusId: 'Cancelled' });
             if (result.success) {
                 toast.success(result.message);
                 fetchData();

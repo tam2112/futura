@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import { messages } from '@/lib/messages';
@@ -134,7 +133,7 @@ export async function exportBatteryHealths() {
         const batteryHealths = await prisma.batteryHealth.findMany({});
 
         // Format data for Excel
-        const formattedData = batteryHealths.map((batteryHealth) => ({
+        const formattedData = batteryHealths.map((batteryHealth: any) => ({
             Title: batteryHealth.title,
             CreatedAt: batteryHealth.createdDate.toISOString(),
         }));

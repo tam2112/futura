@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import Table from '@/components/admin/table/Table';
 import TableSearch from '@/components/admin/table/TableSearch';
 import Pagination from '@/sections/collections/Pagination';
@@ -75,7 +74,7 @@ export default async function RoleListPage({ searchParams }: { searchParams: { [
 
     // Define columns after data is initialized
     const columns = [
-        { header: <CheckboxHeader itemIds={data.map((item) => item.id)} />, accessor: 'check' },
+        { header: <CheckboxHeader itemIds={data.map((item: any) => item.id)} />, accessor: 'check' },
         { header: t('name'), accessor: 'name', className: 'hidden md:table-cell' },
     ];
 

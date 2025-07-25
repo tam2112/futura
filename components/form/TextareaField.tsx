@@ -3,7 +3,6 @@
 import { FieldError } from 'react-hook-form';
 import { twMerge } from 'tailwind-merge';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 type TextareaFieldProps = {
     label: string;
     name: string;

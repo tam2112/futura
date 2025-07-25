@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -275,7 +273,14 @@ export default function FormModal({ table, type, data, id, relatedData }: FormCo
     const [open, setOpen] = useState(false);
 
     const Form = () => {
-        const [state, formAction] = useFormState(deleteActionMap[table], { success: false, error: false });
+        // const [state, formAction] = useFormState(deleteActionMap[table], { success: false, error: false });
+
+        const deleteAction =
+            table in deleteActionMap ? deleteActionMap[table as keyof typeof deleteActionMap] : undefined;
+        const [state, formAction] = useFormState(
+            deleteAction ?? (() => Promise.resolve({ success: false, error: false })),
+            { success: false, error: false },
+        );
 
         const router = useRouter();
 

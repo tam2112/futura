@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import { messages } from '@/lib/messages';
@@ -171,9 +170,9 @@ export async function exportBrands() {
         });
 
         // Format data for Excel
-        const formattedData = brands.map((brand) => ({
+        const formattedData = brands.map((brand: any) => ({
             Name: brand.name,
-            ImageURLs: brand.images.map((img) => img.url).join(', ') || '',
+            ImageURLs: brand.images.map((img: any) => img.url).join(', ') || '',
             CreatedAt: brand.createdDate.toISOString(),
         }));
 

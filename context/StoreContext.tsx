@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
@@ -65,7 +64,7 @@ export function StoreContextProvider({ children }: { children: React.ReactNode }
             const { itemAmount, cartTotal } = await getCartTotals(userId);
 
             setCart(
-                cartItems.map((item) => ({
+                cartItems.map((item: any) => ({
                     id: item.id,
                     product: {
                         id: item.product.id,
@@ -90,6 +89,7 @@ export function StoreContextProvider({ children }: { children: React.ReactNode }
 
     useEffect(() => {
         updateCart();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleAddToCart = async (productId: string) => {

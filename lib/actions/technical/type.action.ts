@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import { messages } from '@/lib/messages';
@@ -128,7 +127,7 @@ export async function exportTypes() {
         const types = await prisma.type.findMany({});
 
         // Format data for Excel
-        const formattedData = types.map((type) => ({
+        const formattedData = types.map((type: any) => ({
             Name: type.name,
             CreatedAt: type.createdDate.toISOString(),
         }));

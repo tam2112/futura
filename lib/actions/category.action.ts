@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import { revalidatePath } from 'next/cache';
@@ -189,10 +188,10 @@ export async function exportCategories() {
         });
 
         // Format data for Excel
-        const formattedData = categories.map((category) => ({
+        const formattedData = categories.map((category: any) => ({
             Name: category.name,
             Description: category.description || '',
-            ImageURLs: category.images.map((img) => img.url).join(', ') || '',
+            ImageURLs: category.images.map((img: any) => img.url).join(', ') || '',
             CreatedAt: category.createdDate.toISOString(),
         }));
 

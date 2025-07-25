@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import prisma from '@/lib/prisma';
@@ -81,7 +80,7 @@ export const createPromotion = async (currentState: CurrentState, data: Promotio
                 where: { categoryId: { in: data.categoryIds } },
                 select: { id: true },
             });
-            categoryProductIds = productsInCategories.map((p) => p.id);
+            categoryProductIds = productsInCategories.map((p: any) => p.id);
         }
 
         const allProductIds = Array.from(new Set([...productIds, ...categoryProductIds])).filter(
@@ -102,7 +101,7 @@ export const createPromotion = async (currentState: CurrentState, data: Promotio
         });
 
         await Promise.all(
-            products.map((product) =>
+            products.map((product: any) =>
                 prisma.product.update({
                     where: { id: product.id },
                     data: { priceWithDiscount: product.price * (1 - discountMultiplier) },
@@ -179,7 +178,7 @@ export const updatePromotion = async (currentState: CurrentState, data: Promotio
                 where: { categoryId: { in: data.categoryIds } },
                 select: { id: true },
             });
-            categoryProductIds = productsInCategories.map((p) => p.id);
+            categoryProductIds = productsInCategories.map((p: any) => p.id);
         }
 
         const allProductIds = new Set([...productIds, ...categoryProductIds]);
@@ -191,11 +190,11 @@ export const updatePromotion = async (currentState: CurrentState, data: Promotio
             where: { id: data.id },
             include: { products: true, categories: true },
         });
-        const existingProductIds = existingPromotion?.products.map((p) => p.id) || [];
-        const productsToReset = existingProductIds.filter((id) => !allProductIds.has(id));
+        const existingProductIds = existingPromotion?.products.map((p: any) => p.id) || [];
+        const productsToReset = existingProductIds.filter((id: any) => !allProductIds.has(id));
 
         await Promise.all(
-            productsToReset.map((productId) =>
+            productsToReset.map((productId: any) =>
                 prisma.product.update({
                     where: { id: productId },
                     data: { priceWithDiscount: null },
@@ -209,7 +208,7 @@ export const updatePromotion = async (currentState: CurrentState, data: Promotio
         });
 
         await Promise.all(
-            products.map((product) =>
+            products.map((product: any) =>
                 prisma.product.update({
                     where: { id: product.id },
                     data: { priceWithDiscount: product.price * (1 - discountMultiplier) },
@@ -303,10 +302,10 @@ export const deletePromotion = async (currentState: CurrentState, data: FormData
             include: { products: true },
         });
 
-        const productIds = promotion?.products.map((p) => p.id) || [];
+        const productIds = promotion?.products.map((p: any) => p.id) || [];
 
         await Promise.all(
-            productIds.map(async (productId) => {
+            productIds.map(async (productId: any) => {
                 try {
                     const otherPromotions = await prisma.promotion.findMany({
                         where: {
@@ -345,7 +344,7 @@ export const deletePromotions = async (currentState: CurrentState, ids: string[]
             include: { products: true },
         });
 
-        const productIds = Array.from(new Set(promotions.flatMap((p) => p.products.map((prod) => prod.id))));
+        const productIds = Array.from(new Set(promotions.flatMap((p: any) => p.products.map((prod: any) => prod.id))));
 
         await Promise.all(
             productIds.map(async (productId) => {
@@ -388,14 +387,14 @@ export async function exportPromotions() {
             },
         });
 
-        const formattedData = promotions.map((promotion) => ({
+        const formattedData = promotions.map((promotion: any) => ({
             Name: promotion.name,
             CreatedAt: promotion.createdDate.toISOString(),
             PercentageNumber: promotion.percentageNumber,
             DurationType: promotion.durationType,
             RemainingTime: promotion.remainingTime,
-            Products: promotion.products.map((p) => p.name).join(', '),
-            Categories: promotion.categories.map((c) => c.name).join(', '),
+            Products: promotion.products.map((p: any) => p.name).join(', '),
+            Categories: promotion.categories.map((c: any) => c.name).join(', '),
         }));
 
         return { success: true, data: formattedData };
@@ -416,7 +415,7 @@ export const updatePromotionCountdown = async () => {
         const outOfDealsStatusId = await getStatusId('Out of deals');
 
         await prisma.$transaction(
-            promotions.map((promotion) =>
+            promotions.map((promotion: any) =>
                 prisma.promotion.update({
                     where: { id: promotion.id },
                     data: {
@@ -439,11 +438,11 @@ export const updatePromotionCountdown = async () => {
 
         // Reset priceWithDiscount for expired promotions
         const expiredPromotions = promotions.filter(
-            (promotion) => promotion.remainingTime && promotion.remainingTime <= 1,
+            (promotion: any) => promotion.remainingTime && promotion.remainingTime <= 1,
         );
 
         await Promise.all(
-            expiredPromotions.map(async (promotion) => {
+            expiredPromotions.map(async (promotion: any) => {
                 await prisma.product.updateMany({
                     where: { promotions: { some: { id: promotion.id } } },
                     data: { priceWithDiscount: null },

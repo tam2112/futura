@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import { messages } from '@/lib/messages';
@@ -134,7 +133,7 @@ export async function exportConnectivities() {
         const connectivities = await prisma.connectivity.findMany({});
 
         // Format data for Excel
-        const formattedData = connectivities.map((connectivity) => ({
+        const formattedData = connectivities.map((connectivity: any) => ({
             Name: connectivity.name,
             CreatedAt: connectivity.createdDate.toISOString(),
         }));

@@ -1,6 +1,5 @@
 // user.action.ts
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import bcrypt from 'bcrypt';
@@ -375,7 +374,7 @@ export async function exportUsers() {
         });
 
         // Format data for Excel
-        const formattedData = users.map((user) => ({
+        const formattedData = users.map((user: any) => ({
             'Full name': user.fullName,
             Email: user.email,
             Role: user.role.name,

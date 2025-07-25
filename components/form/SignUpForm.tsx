@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import Image from 'next/image';
@@ -80,6 +78,7 @@ export default function SignUpForm() {
         if (state.error) {
             toast.error(state.message);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [state, router, currentLocale]);
 
     return (

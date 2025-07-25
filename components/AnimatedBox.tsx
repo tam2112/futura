@@ -84,7 +84,7 @@ export default function AnimatedBox(props: AnimatedBoxProps) {
     };
 
     // Tạo phần tử động dựa trên prop `as`
-    const MotionComponent = motion[as];
+    const MotionComponent = (motion as any)[as] || motion.div;
 
     return (
         <MotionComponent

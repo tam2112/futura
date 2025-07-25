@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import prisma from '../prisma';
@@ -77,7 +76,7 @@ export const getUserOrders = async (userId: string) => {
 export const createOrder = async (userId: string, deliveryInfo: DeliveryInfoSchema): Promise<OrderResponse> => {
     try {
         // Start transaction
-        await prisma.$transaction(async (prisma) => {
+        await prisma.$transaction(async (prisma: any) => {
             // 1. Get pending status
             const pendingStatus = await prisma.status.findUnique({
                 where: { name: 'Pending' },
@@ -105,7 +104,7 @@ export const createOrder = async (userId: string, deliveryInfo: DeliveryInfoSche
             }
 
             // 4. Create orders for each cart item
-            const orderPromises = cartItems.map(async (cartItem) => {
+            const orderPromises = cartItems.map(async (cartItem: any) => {
                 // Create order
                 const order = await prisma.order.create({
                     data: {
@@ -351,7 +350,7 @@ export async function exportOrders() {
         });
 
         // Format data for Excel
-        const formattedData = orders.map((order) => ({
+        const formattedData = orders.map((order: any) => ({
             'Product name': order.product.name || '',
             Status: order.status.name || '',
             'User name': order.user.fullName || '',

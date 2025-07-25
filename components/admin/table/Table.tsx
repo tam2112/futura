@@ -3,7 +3,6 @@ import { twMerge } from 'tailwind-merge';
 import emptyImg from '@/public/empty-data.png';
 import { ReactNode } from 'react';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export default function Table({
     columns,
     renderRow,

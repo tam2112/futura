@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import { revalidatePath } from 'next/cache';
@@ -113,7 +112,7 @@ export async function exportRoles() {
         const roles = await prisma.role.findMany({});
 
         // Format data for Excel
-        const formattedData = roles.map((role) => ({
+        const formattedData = roles.map((role: any) => ({
             Name: role.name,
             CreatedAt: role.createdDate.toISOString(),
         }));

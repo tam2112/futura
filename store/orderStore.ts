@@ -34,7 +34,7 @@ export const useOrderStore = create<OrderStore>((set) => ({
         try {
             const data = await getUserOrders(userId);
             // Ensure images is always an array
-            const sanitizedOrders = data.map((order) => ({
+            const sanitizedOrders = data.map((order: any) => ({
                 ...order,
                 product: {
                     ...order.product,

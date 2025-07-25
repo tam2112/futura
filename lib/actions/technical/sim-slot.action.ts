@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import { messages } from '@/lib/messages';
@@ -128,7 +127,7 @@ export async function exportSimSlots() {
         const simSlots = await prisma.simSlot.findMany({});
 
         // Format data for Excel
-        const formattedData = simSlots.map((simSlot) => ({
+        const formattedData = simSlots.map((simSlot: any) => ({
             Title: simSlot.title,
             CreatedAt: simSlot.createdDate.toISOString(),
         }));

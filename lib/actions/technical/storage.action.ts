@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import { messages } from '@/lib/messages';
@@ -129,7 +128,7 @@ export async function exportStorages() {
         const storages = await prisma.storage.findMany({});
 
         // Format data for Excel
-        const formattedData = storages.map((storage) => ({
+        const formattedData = storages.map((storage: any) => ({
             Name: storage.name,
             CreatedAt: storage.createdDate.toISOString(),
         }));

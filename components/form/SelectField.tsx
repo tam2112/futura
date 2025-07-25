@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useTranslations } from 'next-intl';
 import { useController } from 'react-hook-form';
 import Select from 'react-select';

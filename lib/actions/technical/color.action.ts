@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import { messages } from '@/lib/messages';
@@ -132,7 +131,7 @@ export async function exportColors() {
         const colors = await prisma.color.findMany({});
 
         // Format data for Excel
-        const formattedData = colors.map((color) => ({
+        const formattedData = colors.map((color: any) => ({
             Name: color.name,
             Hex: color.hex,
             CreatedAt: color.createdDate.toISOString(),

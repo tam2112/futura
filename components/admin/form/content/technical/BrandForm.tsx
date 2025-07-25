@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -118,7 +116,7 @@ export default function BrandForm({
                 <h2>{t('image')}</h2>
                 <FileUploadDropzone
                     files={files}
-                    setFiles={setFiles}
+                    setFiles={(files) => setFiles(files ?? [])}
                     existingImageUrls={existingImageUrls}
                     onRemoveExistingImage={handleRemoveExistingImage}
                 />

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import { messages } from '@/lib/messages';
@@ -134,7 +133,7 @@ export async function exportScreenSizes() {
         const screenSizes = await prisma.screenSize.findMany({});
 
         // Format data for Excel
-        const formattedData = screenSizes.map((screenSize) => ({
+        const formattedData = screenSizes.map((screenSize: any) => ({
             Name: screenSize.name,
             CreatedAt: screenSize.createdDate.toISOString(),
         }));

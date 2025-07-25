@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import { messages } from '@/lib/messages';
@@ -124,7 +123,7 @@ export async function exportCpus() {
         const cpus = await prisma.cpu.findMany({});
 
         // Format data for Excel
-        const formattedData = cpus.map((cpu) => ({
+        const formattedData = cpus.map((cpu: any) => ({
             Name: cpu.name,
             CreatedAt: cpu.createdDate.toISOString(),
         }));

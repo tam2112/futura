@@ -193,8 +193,8 @@ export const getCartTotals = async (userId: string) => {
             },
         });
 
-        const itemAmount = cartItems.reduce((total, item) => total + item.quantity, 0);
-        const cartTotal = cartItems.reduce((total, item) => {
+        const itemAmount = cartItems.reduce((total: any, item: any) => total + item.quantity, 0);
+        const cartTotal = cartItems.reduce((total: any, item: any) => {
             const price = item.product.priceWithDiscount ?? item.product.price;
             return total + item.quantity * price;
         }, 0);

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import { revalidatePath } from 'next/cache';
@@ -383,7 +382,7 @@ export const getUserFavourites = async (userId: string) => {
                 },
             },
         });
-        return favourites.map((fav) => fav.product);
+        return favourites.map((fav: any) => fav.product);
     } catch (error) {
         console.error('Error fetching user favourites:', error);
         return [];
@@ -635,7 +634,7 @@ export async function exportProducts() {
         });
 
         // Format data for Excel
-        const formattedData = products.map((product) => ({
+        const formattedData = products.map((product: any) => ({
             Name: product.name,
             Description: product.description || '',
             Price: product.price,
@@ -652,7 +651,7 @@ export async function exportProducts() {
             ScreenSize: product.screenSize?.name || '',
             Type: product.type?.name || '',
             Status: product.status?.name || '',
-            ImageURLs: product.images.map((img) => img.url).join(', ') || '',
+            ImageURLs: product.images.map((img: any) => img.url).join(', ') || '',
             CreatedAt: product.createdDate.toISOString(),
         }));
 
