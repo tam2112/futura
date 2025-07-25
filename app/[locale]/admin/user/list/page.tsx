@@ -78,7 +78,7 @@ export default async function UserListPage({ searchParams }: { searchParams: { [
 
     // Define columns after data is initialized
     const columns = [
-        { header: <CheckboxHeader itemIds={data.map((item: any) => item.id)} />, accessor: 'check' },
+        { header: <CheckboxHeader itemIds={data.map((item: UserList) => item.id)} />, accessor: 'check' },
         { header: t('fullName'), accessor: 'fullName', className: 'hidden md:table-cell' },
         { header: t('email'), accessor: 'email', className: 'hidden md:table-cell' },
         { header: t('role'), accessor: 'role', className: 'hidden md:table-cell' },

@@ -2,14 +2,14 @@
 
 import { useTranslations } from 'next-intl';
 import { ReactNode, useState } from 'react';
-import { FieldError } from 'react-hook-form';
+import { FieldError, FieldValues, Path, UseFormRegister } from 'react-hook-form';
 
-type InputFieldProps = {
+type InputFieldProps<T extends FieldValues> = {
     label: string;
     type?: string;
-    register: any;
-    name: string;
-    defaultValue?: string | Date;
+    register: UseFormRegister<T>;
+    name: Path<T>;
+    defaultValue?: T[Path<T>];
     icon?: ReactNode;
     iconEyeOn?: ReactNode;
     iconEyeOff?: ReactNode;
@@ -22,7 +22,7 @@ type InputFieldProps = {
     formType?: 'create' | 'update';
 };
 
-export default function InputField({
+export default function InputField<T extends FieldValues>({
     label,
     type = 'text',
     register,
@@ -38,7 +38,7 @@ export default function InputField({
     className,
     inputProps,
     formType,
-}: InputFieldProps) {
+}: InputFieldProps<T>) {
     const t = useTranslations('Common');
 
     // show and hide input type password
@@ -60,7 +60,7 @@ export default function InputField({
         <div className={hidden ? 'hidden' : 'block space-y-1'}>
             {name === 'password' || name === 'confirmPassword' ? (
                 <div className="flex flex-col gap-1">
-                    <label htmlFor={name}>{label}</label>
+                    <label htmlFor={String(name)}>{label}</label>
                     <div className="relative bg-white border border-black rounded-lg">
                         <input
                             type={showPassword ? 'text' : 'password'}
@@ -90,7 +90,7 @@ export default function InputField({
                 </div>
             ) : (
                 <div className="flex flex-col gap-1">
-                    <label htmlFor={name}>{label}</label>
+                    <label htmlFor={String(name)}>{label}</label>
                     <div className="relative bg-white border border-black rounded-lg">
                         <input
                             type={type}

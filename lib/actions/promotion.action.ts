@@ -3,8 +3,35 @@
 import prisma from '@/lib/prisma';
 import { PromotionSchema } from '../validation/promotion.form';
 import { messages } from '../messages';
+import { Category, Product, Promotion, Status } from '@/types/prisma';
+import { PrismaClient } from '@prisma/client'; // For typing only
 
 type CurrentState = { success: boolean; error: boolean; message?: string };
+
+// Type for Promotion with relations
+type PromotionWithProducts = Promotion & { products: Product[]; status: Status };
+type PromotionWithRelations = Promotion & { products: Product[]; categories: Category[] };
+
+// Type for promotion data in create/update
+type PromotionData = {
+    name: string;
+    percentageNumber: number;
+    percentageSave: number;
+    durationType: string;
+    isActive: boolean;
+    statusId: string;
+    products: { connect?: { id: string }[]; set?: { id: string }[] };
+    categories: { connect?: { id: string }[]; set?: { id: string }[] };
+    startDate?: Date | null;
+    endDate?: Date | null;
+    startHours?: number | null;
+    endHours?: number | null;
+    startMinutes?: number | null;
+    endMinutes?: number | null;
+    startSeconds?: number | null;
+    endSeconds?: number | null;
+    remainingTime?: number | null;
+};
 
 const getStatusId = async (statusName: string) => {
     let status = await prisma.status.findUnique({ where: { name: statusName } });
@@ -16,39 +43,55 @@ const getStatusId = async (statusName: string) => {
     return status.id;
 };
 
-const isPromotionExpired = (promotion: any): boolean => {
-    const now = new Date();
-    if (promotion.durationType === 'date' && promotion.endDate) {
-        return now > new Date(promotion.endDate);
-    } else if (promotion.durationType === 'hours' && promotion.endHours !== null) {
-        const currentHours = now.getHours();
-        return currentHours >= promotion.endHours;
-    } else if (promotion.durationType === 'minutes' && promotion.endMinutes !== null) {
-        const currentMinutes = now.getMinutes();
-        return currentMinutes >= promotion.endMinutes;
-    } else if (promotion.durationType === 'seconds' && promotion.endSeconds !== null) {
-        const currentSeconds = now.getSeconds();
-        return currentSeconds >= promotion.endSeconds;
-    }
-    return false;
-};
+// const isPromotionExpired = (promotion: any): boolean => {
+//     const now = new Date();
+//     if (promotion.durationType === 'date' && promotion.endDate) {
+//         return now > new Date(promotion.endDate);
+//     } else if (promotion.durationType === 'hours' && promotion.endHours !== null) {
+//         const currentHours = now.getHours();
+//         return currentHours >= promotion.endHours;
+//     } else if (promotion.durationType === 'minutes' && promotion.endMinutes !== null) {
+//         const currentMinutes = now.getMinutes();
+//         return currentMinutes >= promotion.endMinutes;
+//     } else if (promotion.durationType === 'seconds' && promotion.endSeconds !== null) {
+//         const currentSeconds = now.getSeconds();
+//         return currentSeconds >= promotion.endSeconds;
+//     }
+//     return false;
+// };
 
-const calculateRemainingTime = (promotion: any): number => {
-    if (promotion.durationType === 'date' && promotion.startDate && promotion.endDate) {
+const calculateRemainingTime = (promotion: PromotionData): number => {
+    if (
+        promotion.durationType === 'date' &&
+        promotion.startDate !== null &&
+        promotion.startDate !== undefined &&
+        promotion.endDate !== null &&
+        promotion.endDate !== undefined
+    ) {
         const diff = new Date(promotion.endDate).getTime() - new Date(promotion.startDate).getTime();
         return Math.floor(diff / 1000); // Convert to seconds
-    } else if (promotion.durationType === 'hours' && promotion.startHours !== null && promotion.endHours !== null) {
+    } else if (
+        promotion.durationType === 'hours' &&
+        promotion.startHours !== null &&
+        promotion.startHours !== undefined &&
+        promotion.endHours !== null &&
+        promotion.endHours !== undefined
+    ) {
         return (promotion.endHours - promotion.startHours) * 3600; // Convert hours to seconds
     } else if (
         promotion.durationType === 'minutes' &&
         promotion.startMinutes !== null &&
-        promotion.endMinutes !== null
+        promotion.startMinutes !== undefined &&
+        promotion.endMinutes !== null &&
+        promotion.endMinutes !== undefined
     ) {
         return (promotion.endMinutes - promotion.startMinutes) * 60; // Convert minutes to seconds
     } else if (
         promotion.durationType === 'seconds' &&
         promotion.startSeconds !== null &&
-        promotion.endSeconds !== null
+        promotion.startSeconds !== undefined &&
+        promotion.endSeconds !== null &&
+        promotion.endSeconds !== undefined
     ) {
         return promotion.endSeconds - promotion.startSeconds; // Already in seconds
     }
@@ -80,7 +123,7 @@ export const createPromotion = async (currentState: CurrentState, data: Promotio
                 where: { categoryId: { in: data.categoryIds } },
                 select: { id: true },
             });
-            categoryProductIds = productsInCategories.map((p: any) => p.id);
+            categoryProductIds = productsInCategories.map((p: Product) => p.id);
         }
 
         const allProductIds = Array.from(new Set([...productIds, ...categoryProductIds])).filter(
@@ -101,7 +144,7 @@ export const createPromotion = async (currentState: CurrentState, data: Promotio
         });
 
         await Promise.all(
-            products.map((product: any) =>
+            products.map((product: Product) =>
                 prisma.product.update({
                     where: { id: product.id },
                     data: { priceWithDiscount: product.price * (1 - discountMultiplier) },
@@ -110,7 +153,7 @@ export const createPromotion = async (currentState: CurrentState, data: Promotio
         );
 
         const statusId = await getStatusId('In deals');
-        const promotionData: any = {
+        const promotionData: PromotionData = {
             name: data.name,
             percentageNumber: Number(data.percentageNumber),
             percentageSave,
@@ -145,9 +188,9 @@ export const createPromotion = async (currentState: CurrentState, data: Promotio
         });
 
         return { success: true, error: false };
-    } catch (error: any) {
+    } catch (error) {
         console.error('Create promotion error:', error);
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
@@ -178,7 +221,7 @@ export const updatePromotion = async (currentState: CurrentState, data: Promotio
                 where: { categoryId: { in: data.categoryIds } },
                 select: { id: true },
             });
-            categoryProductIds = productsInCategories.map((p: any) => p.id);
+            categoryProductIds = productsInCategories.map((p: Product) => p.id);
         }
 
         const allProductIds = new Set([...productIds, ...categoryProductIds]);
@@ -190,11 +233,11 @@ export const updatePromotion = async (currentState: CurrentState, data: Promotio
             where: { id: data.id },
             include: { products: true, categories: true },
         });
-        const existingProductIds = existingPromotion?.products.map((p: any) => p.id) || [];
-        const productsToReset = existingProductIds.filter((id: any) => !allProductIds.has(id));
+        const existingProductIds = existingPromotion?.products.map((p: Product) => p.id) || [];
+        const productsToReset = existingProductIds.filter((id: string) => !allProductIds.has(id));
 
         await Promise.all(
-            productsToReset.map((productId: any) =>
+            productsToReset.map((productId: string) =>
                 prisma.product.update({
                     where: { id: productId },
                     data: { priceWithDiscount: null },
@@ -208,7 +251,7 @@ export const updatePromotion = async (currentState: CurrentState, data: Promotio
         });
 
         await Promise.all(
-            products.map((product: any) =>
+            products.map((product: Product) =>
                 prisma.product.update({
                     where: { id: product.id },
                     data: { priceWithDiscount: product.price * (1 - discountMultiplier) },
@@ -217,7 +260,7 @@ export const updatePromotion = async (currentState: CurrentState, data: Promotio
         );
 
         const statusId = await getStatusId('In deals');
-        const promotionData: any = {
+        const promotionData: PromotionData = {
             name: data.name,
             percentageNumber: Number(data.percentageNumber),
             percentageSave,
@@ -276,9 +319,9 @@ export const updatePromotion = async (currentState: CurrentState, data: Promotio
         });
 
         return { success: true, error: false };
-    } catch (error: any) {
+    } catch (error) {
         console.error('Update promotion error:', error);
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
@@ -302,10 +345,10 @@ export const deletePromotion = async (currentState: CurrentState, data: FormData
             include: { products: true },
         });
 
-        const productIds = promotion?.products.map((p: any) => p.id) || [];
+        const productIds = promotion?.products.map((p: Product) => p.id) || [];
 
         await Promise.all(
-            productIds.map(async (productId: any) => {
+            productIds.map(async (productId: string) => {
                 try {
                     const otherPromotions = await prisma.promotion.findMany({
                         where: {
@@ -344,7 +387,9 @@ export const deletePromotions = async (currentState: CurrentState, ids: string[]
             include: { products: true },
         });
 
-        const productIds = Array.from(new Set(promotions.flatMap((p: any) => p.products.map((prod: any) => prod.id))));
+        const productIds = Array.from(
+            new Set(promotions.flatMap((p: Promotion) => p?.products?.map((prod: Product) => prod.id))),
+        );
 
         await Promise.all(
             productIds.map(async (productId) => {
@@ -387,14 +432,14 @@ export async function exportPromotions() {
             },
         });
 
-        const formattedData = promotions.map((promotion: any) => ({
+        const formattedData = promotions.map((promotion: PromotionWithRelations) => ({
             Name: promotion.name,
             CreatedAt: promotion.createdDate.toISOString(),
             PercentageNumber: promotion.percentageNumber,
             DurationType: promotion.durationType,
             RemainingTime: promotion.remainingTime,
-            Products: promotion.products.map((p: any) => p.name).join(', '),
-            Categories: promotion.categories.map((c: any) => c.name).join(', '),
+            Products: promotion.products.map((p: Product) => p.name).join(', '),
+            Categories: promotion.categories.map((c: Category) => c.name).join(', '),
         }));
 
         return { success: true, data: formattedData };
@@ -415,7 +460,7 @@ export const updatePromotionCountdown = async () => {
         const outOfDealsStatusId = await getStatusId('Out of deals');
 
         await prisma.$transaction(
-            promotions.map((promotion: any) =>
+            promotions.map((promotion: PromotionWithProducts) =>
                 prisma.promotion.update({
                     where: { id: promotion.id },
                     data: {
@@ -438,11 +483,11 @@ export const updatePromotionCountdown = async () => {
 
         // Reset priceWithDiscount for expired promotions
         const expiredPromotions = promotions.filter(
-            (promotion: any) => promotion.remainingTime && promotion.remainingTime <= 1,
+            (promotion: PromotionWithProducts) => promotion.remainingTime && promotion.remainingTime <= 1,
         );
 
         await Promise.all(
-            expiredPromotions.map(async (promotion: any) => {
+            expiredPromotions.map(async (promotion: PromotionWithProducts) => {
                 await prisma.product.updateMany({
                     where: { promotions: { some: { id: promotion.id } } },
                     data: { priceWithDiscount: null },

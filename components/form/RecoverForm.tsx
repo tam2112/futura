@@ -40,7 +40,7 @@ export default function RecoverForm() {
     const [step, setStep] = useState<'email' | 'code' | 'password'>('email');
     const [userId, setUserId] = useState<string | null>(null);
     const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
-    const [state, setState] = useState({
+    const [state] = useState({
         success: false,
         error: false,
         message: '',

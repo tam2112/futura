@@ -3,6 +3,7 @@
 import { messages } from '@/lib/messages';
 import prisma from '@/lib/prisma';
 import { ScreenSizeSchema } from '@/lib/validation/technical/screen-size.form';
+import { ScreenSize } from '@/types/prisma';
 import { revalidatePath } from 'next/cache';
 
 type CurrentState = { success: boolean; error: boolean };
@@ -46,10 +47,10 @@ export const createScreenSize = async (
         });
 
         return { success: true, error: false };
-    } catch (error: any) {
+    } catch (error) {
         console.log(error);
         // Kiểm tra lỗi unique constraint từ Prisma
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
@@ -76,10 +77,10 @@ export const updateScreenSize = async (
         });
 
         return { success: true, error: false };
-    } catch (error: any) {
+    } catch (error) {
         console.log(error);
         // Kiểm tra lỗi unique constraint từ Prisma
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
@@ -133,7 +134,7 @@ export async function exportScreenSizes() {
         const screenSizes = await prisma.screenSize.findMany({});
 
         // Format data for Excel
-        const formattedData = screenSizes.map((screenSize: any) => ({
+        const formattedData = screenSizes.map((screenSize: ScreenSize) => ({
             Name: screenSize.name,
             CreatedAt: screenSize.createdDate.toISOString(),
         }));

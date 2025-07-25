@@ -2,6 +2,7 @@
 
 import { v2 as cloudinary } from 'cloudinary';
 import prisma from '../prisma';
+import { CloudinaryUploadResult } from '@/types/common';
 
 // Cấu hình Cloudinary
 cloudinary.config({
@@ -20,13 +21,13 @@ export const uploadImageToCloudinary = async (file: File): Promise<ImageUploadRe
         const buffer = Buffer.from(arrayBuffer);
 
         // Upload ảnh lên Cloudinary
-        const result = await new Promise<any>((resolve, reject) => {
+        const result = await new Promise<CloudinaryUploadResult>((resolve, reject) => {
             cloudinary.uploader
                 .upload_stream(
                     { resource_type: 'image' }, // Chỉ định loại tài nguyên là ảnh
                     (error, result) => {
                         if (error) reject(error);
-                        else resolve(result);
+                        else resolve(result as CloudinaryUploadResult);
                     },
                 )
                 .end(buffer);

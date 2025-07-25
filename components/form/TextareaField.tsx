@@ -1,19 +1,19 @@
 'use client';
 
-import { FieldError } from 'react-hook-form';
+import { FieldError, FieldValues, Path, UseFormRegister } from 'react-hook-form';
 import { twMerge } from 'tailwind-merge';
 
-type TextareaFieldProps = {
+type TextareaFieldProps<T extends FieldValues> = {
     label: string;
-    name: string;
-    register: any;
-    defaultValue?: string;
+    name: Path<T>;
+    register: UseFormRegister<T>;
+    defaultValue?: T[Path<T>];
     error?: FieldError;
     className?: string;
     textareaProps?: React.TextareaHTMLAttributes<HTMLTextAreaElement>;
 };
 
-export default function TextareaField({
+export default function TextareaField<T extends FieldValues>({
     label,
     name,
     register,
@@ -21,7 +21,7 @@ export default function TextareaField({
     error,
     className,
     textareaProps,
-}: TextareaFieldProps) {
+}: TextareaFieldProps<T>) {
     return (
         <div className="flex flex-col gap-1">
             <label htmlFor={name}>{label}</label>

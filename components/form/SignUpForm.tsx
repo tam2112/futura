@@ -5,7 +5,6 @@ import { Link, useRouter } from '@/navigation';
 import { signUpSchema, SignUpSchema } from '@/lib/validation/user.form';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-// @ts-ignore
 import { useFormState } from 'react-dom';
 import { useEffect, useState } from 'react';
 import { signUpUser } from '@/lib/actions/user.action';

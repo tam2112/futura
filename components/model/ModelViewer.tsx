@@ -4,6 +4,7 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
 import { useRef, useState } from 'react';
+import * as THREE from 'three';
 
 interface ModelProps {
     url: string;
@@ -11,7 +12,7 @@ interface ModelProps {
 
 function Model({ url }: ModelProps) {
     const { scene } = useGLTF(url);
-    const modelRef = useRef<any>();
+    const modelRef = useRef<THREE.Object3D | null>(null);
     const [direction, setDirection] = useState(1); // 1: tăng góc, -1: giảm góc
     const [rotationAngle, setRotationAngle] = useState(0); // Góc quay hiện tại (radian)
 

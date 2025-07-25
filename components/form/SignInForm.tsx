@@ -5,7 +5,6 @@ import { Link, useRouter } from '@/navigation';
 import { loginSchema, LoginSchema } from '@/lib/validation/user.form';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-// @ts-ignore
 import { useEffect, useState } from 'react';
 import { signInUser } from '@/lib/actions/user.action';
 import { toast } from 'react-toastify';
@@ -36,7 +35,7 @@ export default function SignInForm() {
     const currentLocale = useLocale();
 
     const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
-    const [state, formAction] = useState({
+    const [state] = useState({
         success: false,
         error: false,
         message: '',

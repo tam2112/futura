@@ -3,6 +3,7 @@
 import { messages } from '@/lib/messages';
 import prisma from '@/lib/prisma';
 import { SimSlotSchema } from '@/lib/validation/technical/sim-slot.form';
+import { SimSlot } from '@/types/prisma';
 import { revalidatePath } from 'next/cache';
 
 type CurrentState = { success: boolean; error: boolean };
@@ -43,10 +44,10 @@ export const createSimSlot = async (currentState: CurrentState, data: SimSlotSch
         });
 
         return { success: true, error: false };
-    } catch (error: any) {
+    } catch (error) {
         console.log(error);
         // Kiểm tra lỗi unique constraint từ Prisma
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
@@ -70,10 +71,10 @@ export const updateSimSlot = async (currentState: CurrentState, data: SimSlotSch
         });
 
         return { success: true, error: false };
-    } catch (error: any) {
+    } catch (error) {
         console.log(error);
         // Kiểm tra lỗi unique constraint từ Prisma
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
@@ -127,7 +128,7 @@ export async function exportSimSlots() {
         const simSlots = await prisma.simSlot.findMany({});
 
         // Format data for Excel
-        const formattedData = simSlots.map((simSlot: any) => ({
+        const formattedData = simSlots.map((simSlot: SimSlot) => ({
             Title: simSlot.title,
             CreatedAt: simSlot.createdDate.toISOString(),
         }));

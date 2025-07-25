@@ -3,6 +3,7 @@
 import { messages } from '@/lib/messages';
 import prisma from '@/lib/prisma';
 import { BatteryHealthSchema } from '@/lib/validation/technical/battery-health.form';
+import { BatteryHealth } from '@/types/prisma';
 import { revalidatePath } from 'next/cache';
 
 type CurrentState = { success: boolean; error: boolean };
@@ -46,10 +47,10 @@ export const createBatteryHealth = async (
         });
 
         return { success: true, error: false };
-    } catch (error: any) {
+    } catch (error) {
         console.log(error);
         // Kiểm tra lỗi unique constraint từ Prisma
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
@@ -76,10 +77,10 @@ export const updateBatteryHealth = async (
         });
 
         return { success: true, error: false };
-    } catch (error: any) {
+    } catch (error) {
         console.log(error);
         // Kiểm tra lỗi unique constraint từ Prisma
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
@@ -133,7 +134,7 @@ export async function exportBatteryHealths() {
         const batteryHealths = await prisma.batteryHealth.findMany({});
 
         // Format data for Excel
-        const formattedData = batteryHealths.map((batteryHealth: any) => ({
+        const formattedData = batteryHealths.map((batteryHealth: BatteryHealth) => ({
             Title: batteryHealth.title,
             CreatedAt: batteryHealth.createdDate.toISOString(),
         }));

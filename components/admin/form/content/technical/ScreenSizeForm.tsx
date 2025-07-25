@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
-// @ts-ignore
 import { useFormState } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
@@ -13,15 +12,20 @@ import { screenSizeSchema, ScreenSizeSchema } from '@/lib/validation/technical/s
 import { createScreenSize, updateScreenSize } from '@/lib/actions/technical/screen-size.action';
 import { useLocale, useTranslations } from 'next-intl';
 
+type ScreenSizeData = {
+    id: string;
+    name: string;
+};
+
 export default function ScreenSizeForm({
     type,
     data,
     setOpen,
 }: {
     type: 'create' | 'update' | 'details';
-    data?: any;
+    data?: ScreenSizeData;
     setOpen: Dispatch<SetStateAction<boolean>>;
-    relatedData?: any;
+    relatedData?: ScreenSizeData[];
 }) {
     const t = useTranslations('ScreenSizeForm');
     const locale = useLocale() as 'en' | 'vi';

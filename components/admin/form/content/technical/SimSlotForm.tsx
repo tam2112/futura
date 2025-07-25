@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
-// @ts-ignore
 import { useFormState } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
@@ -13,15 +12,20 @@ import { simSlotSchema, SimSlotSchema } from '@/lib/validation/technical/sim-slo
 import { createSimSlot, updateSimSlot } from '@/lib/actions/technical/sim-slot.action';
 import { useLocale, useTranslations } from 'next-intl';
 
+type SimSlotData = {
+    id: string;
+    title: string;
+};
+
 export default function SimSlotForm({
     type,
     data,
     setOpen,
 }: {
     type: 'create' | 'update' | 'details';
-    data?: any;
+    data?: SimSlotData;
     setOpen: Dispatch<SetStateAction<boolean>>;
-    relatedData?: any;
+    relatedData?: SimSlotData[];
 }) {
     const t = useTranslations('SimSlotForm');
     const locale = useLocale() as 'en' | 'vi';

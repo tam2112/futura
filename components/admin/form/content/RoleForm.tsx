@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
-// @ts-ignore
 import { useFormState } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
@@ -13,15 +12,21 @@ import { roleSchema, RoleSchema } from '@/lib/validation/role.form';
 import { createRole, updateRole } from '@/lib/actions/role.action';
 import { useLocale, useTranslations } from 'next-intl';
 
+// Define type for the role data (used for update)
+type RoleData = {
+    id: string;
+    name: string;
+};
+
 export default function RoleForm({
     type,
     data,
     setOpen,
 }: {
     type: 'create' | 'update' | 'details';
-    data?: any;
+    data?: RoleData;
     setOpen: Dispatch<SetStateAction<boolean>>;
-    relatedData?: any;
+    relatedData?: RoleData[];
 }) {
     const t = useTranslations('RoleForm');
     const locale = useLocale() as 'en' | 'vi';

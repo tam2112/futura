@@ -74,7 +74,7 @@ export default async function RoleListPage({ searchParams }: { searchParams: { [
 
     // Define columns after data is initialized
     const columns = [
-        { header: <CheckboxHeader itemIds={data.map((item: any) => item.id)} />, accessor: 'check' },
+        { header: <CheckboxHeader itemIds={data.map((item: RoleList) => item.id)} />, accessor: 'check' },
         { header: t('name'), accessor: 'name', className: 'hidden md:table-cell' },
     ];
 

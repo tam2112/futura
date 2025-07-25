@@ -6,15 +6,54 @@ import { twMerge } from 'tailwind-merge';
 import { categoryTechnicalMap } from '@/constants/categoryTechnicalMap';
 import { useTranslations } from 'next-intl';
 
+// Define types for data and relatedData
+type ProductData = {
+    name?: string;
+    price?: number;
+    quantity?: number;
+    description?: string;
+    categoryId?: string;
+    brandId?: string;
+    colorId?: string;
+    storageId?: string;
+    connectivityId?: string;
+    simSlotId?: string;
+    batteryHealthId?: string;
+    ramId?: string;
+    cpuId?: string;
+    screenSizeId?: string;
+    typeId?: string;
+    images?: { url: string }[];
+};
+
+type RelatedData = {
+    categories?: { id: string; name: string }[];
+    brands?: { id: string; name: string }[];
+    colors?: { id: string; name: string; hex?: string }[];
+    storages?: { id: string; name: string }[];
+    connectivities?: { id: string; name: string }[];
+    simSlots?: { id: string; title: string }[];
+    batteryHealths?: { id: string; title: string }[];
+    rams?: { id: string; title: string }[];
+    cpus?: { id: string; name: string }[];
+    screenSizes?: { id: string; name: string }[];
+    types?: { id: string; name: string }[];
+};
+
+// Define type for categoryTechnicalMap
+type CategoryTechnicalMap = {
+    [key: string]: string[];
+};
+
 export default function ProductDetailsForm({
     data,
     setOpen,
     relatedData,
 }: {
     type?: 'details';
-    data?: any;
+    data?: ProductData;
     setOpen: Dispatch<SetStateAction<boolean>>;
-    relatedData?: any;
+    relatedData?: RelatedData;
 }) {
     const t = useTranslations('ProductDetailsForm');
 
@@ -29,9 +68,24 @@ export default function ProductDetailsForm({
         return categoryTechnicalMap[selectedCategory]?.includes(technical);
     };
 
-    const getRelatedDataName = (id: string, key: string) => {
+    const getRelatedDataName = (id: string | undefined, key: keyof RelatedData) => {
+        if (!id || !relatedData?.[key]) return '-';
+
         const item = relatedData[key]?.find((item: { id: string }) => item.id === id);
-        return item ? item.name || item.title || `${item.name} - ${item.hex}` : '-';
+        if (!item) return '-';
+
+        if (key === 'colors') {
+            const colorItem = item as { id: string; name: string; hex?: string };
+            return colorItem.hex ? `${colorItem.name} - ${colorItem.hex}` : colorItem.name;
+        }
+
+        if (['simSlots', 'batteryHealths', 'rams'].includes(key)) {
+            const titleItem = item as { id: string; title: string };
+            return titleItem.title;
+        }
+
+        const nameItem = item as { id: string; name: string };
+        return nameItem.name || '-';
     };
 
     return (
@@ -88,8 +142,8 @@ export default function ProductDetailsForm({
                     <div>
                         <h2 className="font-medium text-lg">{t('images')}</h2>
                         <div className="flex justify-center flex-wrap gap-2 pt-4">
-                            {data?.images?.length > 0 ? (
-                                data.images.map((img: { url: string }, index: number) => (
+                            {(data?.images?.length ?? 0) > 0 ? (
+                                data?.images?.map((img: { url: string }, index: number) => (
                                     <Image
                                         key={index}
                                         src={img.url}

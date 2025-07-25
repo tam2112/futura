@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-// @ts-ignore
 import { useFormState } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
@@ -17,15 +16,21 @@ import { useLocale, useTranslations } from 'next-intl';
 // import { uploadFileToServer } from '@/lib/upload';
 // import { uploadImages } from '@/lib/actions/image.action';
 
+type BrandData = {
+    id: string;
+    name: string;
+    images: { url: string }[];
+};
+
 export default function BrandForm({
     type,
     data,
     setOpen,
 }: {
     type: 'create' | 'update' | 'details';
-    data?: any;
+    data?: BrandData;
     setOpen: Dispatch<SetStateAction<boolean>>;
-    relatedData?: any;
+    relatedData?: BrandData[];
 }) {
     const t = useTranslations('BrandForm');
     const locale = useLocale() as 'en' | 'vi';

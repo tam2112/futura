@@ -19,15 +19,28 @@ export const orderUpdateSchema = z.object({
 
 export type OrderUpdateSchema = z.infer<typeof orderUpdateSchema>;
 
+// Define types for data and relatedData
+type OrderData = {
+    id: string;
+    statusId: string;
+    status?: {
+        name: string;
+    };
+};
+
+type RelatedData = {
+    statuses: { id: string; name: string }[];
+};
+
 export default function OrderUpdateForm({
     data,
     setOpen,
     relatedData,
 }: {
     type?: 'update';
-    data?: any;
+    data?: OrderData;
     setOpen: Dispatch<SetStateAction<boolean>>;
-    relatedData?: { statuses: { id: string; name: string }[] };
+    relatedData?: RelatedData;
 }) {
     const t = useTranslations('OrderForm');
     const locale = useLocale() as 'en' | 'vi';

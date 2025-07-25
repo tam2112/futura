@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
-// @ts-ignore
 import { useFormState } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
@@ -14,6 +13,21 @@ import { createUser, updateUser } from '@/lib/actions/user.action';
 import SelectField from '@/components/form/SelectField';
 import { useLocale, useTranslations } from 'next-intl';
 
+// Define type for the user data (used for update)
+type UserData = {
+    id: string;
+    fullName: string;
+    email: string;
+    password?: string; // Optional since password may not be required for updates
+    roleId: string;
+};
+
+// Define type for relatedData
+type Role = { id: string; name: string };
+type RelatedData = {
+    roles: Role[];
+};
+
 export default function UserForm({
     type,
     data,
@@ -21,9 +35,9 @@ export default function UserForm({
     relatedData,
 }: {
     type: 'create' | 'update' | 'details';
-    data?: any;
+    data?: UserData;
     setOpen: Dispatch<SetStateAction<boolean>>;
-    relatedData?: any;
+    relatedData?: RelatedData;
 }) {
     const t = useTranslations('UserForm');
     const locale = useLocale() as 'en' | 'vi';
@@ -61,7 +75,7 @@ export default function UserForm({
         }
     }, [state, type, router, setOpen, t]);
 
-    const { roles } = relatedData;
+    const { roles = [] } = relatedData ?? {};
 
     const roleOptions = roles.map((role: { id: string; name: string }) => ({
         value: role.id,

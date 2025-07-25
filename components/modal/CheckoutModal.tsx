@@ -139,7 +139,6 @@ export default function CheckoutModal({ isOpen, setIsOpen, cartTotal }: Checkout
     };
 
     const handlePay = paymentForm.handleSubmit(async () => {
-        const paymentData = paymentForm.getValues();
         const isValid = await paymentForm.trigger();
         if (!isValid) {
             toast.error(t('fillAllPayRequired'));

@@ -12,7 +12,6 @@ import Cookies from 'js-cookie';
 import { PiEyeClosedLight, PiEyeLight } from 'react-icons/pi';
 
 export default function ChangePasswordModal({
-    openModal,
     setOpenModal,
 }: {
     openModal: boolean;

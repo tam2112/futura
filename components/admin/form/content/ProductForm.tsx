@@ -17,6 +17,54 @@ import SelectField from '@/components/form/SelectField';
 import TextareaField from '@/components/form/TextareaField';
 import { useLocale, useTranslations } from 'next-intl';
 
+// Define type for the product data (used for update)
+type ProductData = {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    quantity: number;
+    categoryId: string;
+    brandId: string;
+    colorId: string;
+    storageId: string;
+    connectivityId: string;
+    simSlotId: string;
+    batteryHealthId: string;
+    ramId: string;
+    cpuId: string;
+    screenSizeId: string;
+    typeId: string;
+    images: { url: string }[];
+};
+
+// Define types for relatedData arrays
+type Category = { id: string; name: string };
+type Brand = { id: string; name: string };
+type Color = { id: string; name: string; hex: string };
+type Storage = { id: string; name: string };
+type Connectivity = { id: string; name: string };
+type SimSlot = { id: string; title: string };
+type BatteryHealth = { id: string; title: string };
+type Ram = { id: string; title: string };
+type Cpu = { id: string; name: string };
+type ScreenSize = { id: string; name: string };
+type Type = { id: string; name: string };
+
+type RelatedData = {
+    categories: Category[];
+    brands: Brand[];
+    colors: Color[];
+    storages: Storage[];
+    connectivities: Connectivity[];
+    simSlots: SimSlot[];
+    batteryHealths: BatteryHealth[];
+    rams: Ram[];
+    cpus: Cpu[];
+    screenSizes: ScreenSize[];
+    types: Type[];
+};
+
 export default function ProductForm({
     type,
     data,
@@ -24,9 +72,9 @@ export default function ProductForm({
     relatedData,
 }: {
     type: 'create' | 'update';
-    data?: any;
+    data?: ProductData;
     setOpen: Dispatch<SetStateAction<boolean>>;
-    relatedData?: any;
+    relatedData?: RelatedData;
 }) {
     const t = useTranslations('ProductForm');
     const locale = useLocale() as 'en' | 'vi';
@@ -114,18 +162,18 @@ export default function ProductForm({
     }, [state, type, router, setOpen, t]);
 
     const {
-        categories,
-        brands,
-        colors,
-        storages,
-        connectivities,
-        simSlots,
-        batteryHealths,
-        rams,
-        cpus,
-        screenSizes,
-        types,
-    } = relatedData;
+        categories = [],
+        brands = [],
+        colors = [],
+        storages = [],
+        connectivities = [],
+        simSlots = [],
+        batteryHealths = [],
+        rams = [],
+        cpus = [],
+        screenSizes = [],
+        types = [],
+    } = relatedData ?? {};
 
     // Hàm kiểm tra xem technical có nên hiển thị không
     const shouldShowTechnical = (technical: string) => {

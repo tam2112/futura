@@ -111,7 +111,7 @@ export default async function PromotionListPage({
 
     // Define columns after data is initialized
     const columns = [
-        { header: <CheckboxHeader itemIds={data.map((item: any) => item.id)} />, accessor: 'check' },
+        { header: <CheckboxHeader itemIds={data.map((item: PromotionList) => item.id)} />, accessor: 'check' },
         { header: t('name'), accessor: 'name', className: 'hidden md:table-cell' },
         { header: t('status'), accessor: 'status', className: 'hidden md:table-cell' },
         { header: t('remainingTime'), accessor: 'remainingTime', className: 'hidden md:table-cell' },

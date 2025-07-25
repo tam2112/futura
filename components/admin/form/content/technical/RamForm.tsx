@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
-// @ts-ignore
 import { useFormState } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
@@ -13,15 +12,20 @@ import { ramSchema, RamSchema } from '@/lib/validation/technical/ram.form';
 import { createRam, updateRam } from '@/lib/actions/technical/ram.action';
 import { useLocale, useTranslations } from 'next-intl';
 
+type RamData = {
+    id: string;
+    title: string;
+};
+
 export default function RamForm({
     type,
     data,
     setOpen,
 }: {
     type: 'create' | 'update' | 'details';
-    data?: any;
+    data?: RamData;
     setOpen: Dispatch<SetStateAction<boolean>>;
-    relatedData?: any;
+    relatedData?: RamData[];
 }) {
     const t = useTranslations('RamForm');
     const locale = useLocale() as 'en' | 'vi';

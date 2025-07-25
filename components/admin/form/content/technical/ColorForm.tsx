@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
-// @ts-ignore
 import { useFormState } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
@@ -15,15 +14,21 @@ import { useLocale, useTranslations } from 'next-intl';
 // import { uploadFileToServer } from '@/lib/upload';
 // import { uploadImages } from '@/lib/actions/image.action';
 
+type ColorData = {
+    id: string;
+    name: string;
+    hex: string;
+};
+
 export default function ColorForm({
     type,
     data,
     setOpen,
 }: {
     type: 'create' | 'update' | 'details';
-    data?: any;
+    data?: ColorData;
     setOpen: Dispatch<SetStateAction<boolean>>;
-    relatedData?: any;
+    relatedData?: ColorData[];
 }) {
     const t = useTranslations('ColorForm');
     const locale = useLocale() as 'en' | 'vi';

@@ -13,6 +13,33 @@ import { promotionSchema, PromotionSchema } from '@/lib/validation/promotion.for
 import { createPromotion, updatePromotion } from '@/lib/actions/promotion.action';
 import { useLocale, useTranslations } from 'next-intl';
 
+// Define type for the promotion data (used for update)
+type PromotionData = {
+    id: string;
+    name: string;
+    percentageNumber: number;
+    durationType: 'date' | 'hours' | 'minutes' | 'seconds';
+    startDate?: string;
+    endDate?: string;
+    startHours?: number;
+    endHours?: number;
+    startMinutes?: number;
+    endMinutes?: number;
+    startSeconds?: number;
+    endSeconds?: number;
+    products?: { id: string; name: string }[];
+    categories?: { id: string; name: string }[];
+};
+
+// Define types for relatedData arrays
+type Category = { id: string; name: string };
+type Product = { id: string; name: string };
+
+type RelatedData = {
+    categories: Category[];
+    products: Product[];
+};
+
 export default function PromotionForm({
     type,
     data,
@@ -20,9 +47,9 @@ export default function PromotionForm({
     relatedData,
 }: {
     type: 'create' | 'update' | 'details';
-    data?: any;
+    data?: PromotionData;
     setOpen: Dispatch<SetStateAction<boolean>>;
-    relatedData?: any;
+    relatedData?: RelatedData;
 }) {
     const t = useTranslations('PromotionForm');
     const locale = useLocale() as 'en' | 'vi';
@@ -65,7 +92,7 @@ export default function PromotionForm({
     });
     const [tab, setTab] = useState('main');
     const [selectedOption, setSelectedOption] = useState<'product' | 'category'>(
-        data?.products?.length > 0 ? 'product' : 'category',
+        (data?.products?.length ?? 0) > 0 ? 'product' : 'category',
     );
 
     const durationType = watch('durationType');

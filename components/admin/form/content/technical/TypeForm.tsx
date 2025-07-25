@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
-// @ts-ignore
 import { useFormState } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
@@ -13,15 +12,20 @@ import { typeSchema, TypeSchema } from '@/lib/validation/technical/type.form';
 import { createType, updateType } from '@/lib/actions/technical/type.action';
 import { useLocale, useTranslations } from 'next-intl';
 
+type TypeData = {
+    id: string;
+    name: string;
+};
+
 export default function TypeForm({
     type,
     data,
     setOpen,
 }: {
     type: 'create' | 'update' | 'details';
-    data?: any;
+    data?: TypeData;
     setOpen: Dispatch<SetStateAction<boolean>>;
-    relatedData?: any;
+    relatedData?: TypeData[];
 }) {
     const t = useTranslations('TypeForm');
     const locale = useLocale() as 'en' | 'vi';

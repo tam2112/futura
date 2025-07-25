@@ -4,15 +4,28 @@ import prisma from '../prisma';
 import { revalidatePath } from 'next/cache';
 import { DeliveryInfoSchema } from '../validation/deliveryInfo.form';
 import { messages } from '../messages';
+import { Cart, Delivery, Order, Product, Status } from '@/types/prisma';
+import { PrismaClient } from '@prisma/client';
 
 type OrderResponse = {
     success: boolean;
     error: boolean;
     message?: string;
-    data?: any;
+    data?: Order | null;
 };
 
 export type OrderStatus = 'Pending' | 'Out for delivery' | 'Delivered' | 'Cancelled';
+
+// Type for Order with relations
+type OrderWithRelations = Order & {
+    product: Product & { images: { url: string }[] };
+    status: Status;
+    deliveryInfo: Delivery[];
+    user: { fullName: string; email: string };
+};
+
+// Type for Cart with Product relation
+type CartWithProduct = Cart & { product: Product };
 
 export const getAllOrders = async () => {
     try {
@@ -76,7 +89,7 @@ export const getUserOrders = async (userId: string) => {
 export const createOrder = async (userId: string, deliveryInfo: DeliveryInfoSchema): Promise<OrderResponse> => {
     try {
         // Start transaction
-        await prisma.$transaction(async (prisma: any) => {
+        await prisma.$transaction(async (prisma: PrismaClient) => {
             // 1. Get pending status
             const pendingStatus = await prisma.status.findUnique({
                 where: { name: 'Pending' },
@@ -104,7 +117,7 @@ export const createOrder = async (userId: string, deliveryInfo: DeliveryInfoSche
             }
 
             // 4. Create orders for each cart item
-            const orderPromises = cartItems.map(async (cartItem: any) => {
+            const orderPromises = cartItems.map(async (cartItem: CartWithProduct) => {
                 // Create order
                 const order = await prisma.order.create({
                     data: {
@@ -350,7 +363,7 @@ export async function exportOrders() {
         });
 
         // Format data for Excel
-        const formattedData = orders.map((order: any) => ({
+        const formattedData = orders.map((order: OrderWithRelations) => ({
             'Product name': order.product.name || '',
             Status: order.status.name || '',
             'User name': order.user.fullName || '',

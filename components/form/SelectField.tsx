@@ -1,20 +1,20 @@
 import { useTranslations } from 'next-intl';
-import { useController } from 'react-hook-form';
+import { Control, FieldValues, Path, useController } from 'react-hook-form';
 import Select from 'react-select';
 import { twMerge } from 'tailwind-merge';
 
-type SelectFieldProps = {
+type SelectFieldProps<T extends FieldValues> = {
     label: string;
-    name: string;
+    name: Path<T>;
     options: { value: string; label: string }[];
-    defaultValue?: string | string[];
-    control: any;
+    defaultValue?: T[Path<T>];
+    control: Control<T>;
     error?: { message?: string };
     className?: string;
     isMulti?: boolean;
 };
 
-export default function SelectField({
+export default function SelectField<T extends FieldValues>({
     label,
     name,
     options,
@@ -22,7 +22,7 @@ export default function SelectField({
     error,
     className,
     isMulti = false,
-}: SelectFieldProps) {
+}: SelectFieldProps<T>) {
     const t = useTranslations('Common');
 
     const { field } = useController({

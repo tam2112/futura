@@ -3,6 +3,7 @@
 import { messages } from '@/lib/messages';
 import prisma from '@/lib/prisma';
 import { TypeSchema } from '@/lib/validation/technical/type.form';
+import { Type } from '@/types/prisma';
 import { revalidatePath } from 'next/cache';
 
 type CurrentState = { success: boolean; error: boolean };
@@ -43,10 +44,10 @@ export const createType = async (currentState: CurrentState, data: TypeSchema & 
         });
 
         return { success: true, error: false };
-    } catch (error: any) {
+    } catch (error) {
         console.log(error);
         // Kiểm tra lỗi unique constraint từ Prisma
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
@@ -70,10 +71,10 @@ export const updateType = async (currentState: CurrentState, data: TypeSchema & 
         });
 
         return { success: true, error: false };
-    } catch (error: any) {
+    } catch (error) {
         console.log(error);
         // Kiểm tra lỗi unique constraint từ Prisma
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
@@ -127,7 +128,7 @@ export async function exportTypes() {
         const types = await prisma.type.findMany({});
 
         // Format data for Excel
-        const formattedData = types.map((type: any) => ({
+        const formattedData = types.map((type: Type) => ({
             Name: type.name,
             CreatedAt: type.createdDate.toISOString(),
         }));

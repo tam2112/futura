@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
-// @ts-ignore
 import { useFormState } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
@@ -13,15 +12,20 @@ import { cpuSchema, CpuSchema } from '@/lib/validation/technical/cpu.form';
 import { createCpu, updateCpu } from '@/lib/actions/technical/cpu.action';
 import { useLocale, useTranslations } from 'next-intl';
 
+type CpuData = {
+    id: string;
+    name: string;
+};
+
 export default function CpuForm({
     type,
     data,
     setOpen,
 }: {
     type: 'create' | 'update' | 'details';
-    data?: any;
+    data?: CpuData;
     setOpen: Dispatch<SetStateAction<boolean>>;
-    relatedData?: any;
+    relatedData?: CpuData[];
 }) {
     const t = useTranslations('CpuForm');
     const locale = useLocale() as 'en' | 'vi';

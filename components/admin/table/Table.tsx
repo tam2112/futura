@@ -3,21 +3,21 @@ import { twMerge } from 'tailwind-merge';
 import emptyImg from '@/public/empty-data.png';
 import { ReactNode } from 'react';
 
-export default function Table({
+export default function Table<T>({
     columns,
     renderRow,
     data,
 }: {
-    columns: { header: ReactNode | string; accessor: string; className?: string }[];
-    renderRow: (item: any) => React.ReactNode;
-    data: any[];
+    columns: { header: ReactNode | string; accessor: keyof T; className?: string }[];
+    renderRow: (item: T) => React.ReactNode;
+    data: T[];
 }) {
     return (
         <table className={twMerge('w-full mt-4', data.length > 0 ? 'h-auto' : 'h-[300px]')}>
             <thead>
                 <tr className="text-left font-heading font-semibold text-sm">
                     {columns.map((col) => (
-                        <th key={col.accessor} className={col.className}>
+                        <th key={String(col.accessor)} className={col.className}>
                             {col.header}
                         </th>
                     ))}

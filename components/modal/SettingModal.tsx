@@ -7,7 +7,6 @@ import DarkModeSwitch from '../DarkModeSwitch';
 import { useTranslations } from 'next-intl';
 
 export default function SettingModal({
-    openModal,
     setOpenModal,
 }: {
     openModal: boolean;

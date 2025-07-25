@@ -3,6 +3,7 @@
 import { messages } from '@/lib/messages';
 import prisma from '@/lib/prisma';
 import { ConnectivitySchema } from '@/lib/validation/technical/connectivity.form';
+import { Connectivity } from '@/types/prisma';
 import { revalidatePath } from 'next/cache';
 
 type CurrentState = { success: boolean; error: boolean };
@@ -46,10 +47,10 @@ export const createConnectivity = async (
         });
 
         return { success: true, error: false };
-    } catch (error: any) {
+    } catch (error) {
         console.log(error);
         // Kiểm tra lỗi unique constraint từ Prisma
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
@@ -76,10 +77,10 @@ export const updateConnectivity = async (
         });
 
         return { success: true, error: false };
-    } catch (error: any) {
+    } catch (error) {
         console.log(error);
         // Kiểm tra lỗi unique constraint từ Prisma
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
@@ -133,7 +134,7 @@ export async function exportConnectivities() {
         const connectivities = await prisma.connectivity.findMany({});
 
         // Format data for Excel
-        const formattedData = connectivities.map((connectivity: any) => ({
+        const formattedData = connectivities.map((connectivity: Connectivity) => ({
             Name: connectivity.name,
             CreatedAt: connectivity.createdDate.toISOString(),
         }));

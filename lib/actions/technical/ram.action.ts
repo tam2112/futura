@@ -3,6 +3,7 @@
 import { messages } from '@/lib/messages';
 import prisma from '@/lib/prisma';
 import { RamSchema } from '@/lib/validation/technical/ram.form';
+import { Ram } from '@/types/prisma';
 import { revalidatePath } from 'next/cache';
 
 type CurrentState = { success: boolean; error: boolean };
@@ -43,10 +44,10 @@ export const createRam = async (currentState: CurrentState, data: RamSchema & { 
         });
 
         return { success: true, error: false };
-    } catch (error: any) {
+    } catch (error) {
         console.log(error);
         // Kiểm tra lỗi unique constraint từ Prisma
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
@@ -70,10 +71,10 @@ export const updateRam = async (currentState: CurrentState, data: RamSchema & { 
         });
 
         return { success: true, error: false };
-    } catch (error: any) {
+    } catch (error) {
         console.log(error);
         // Kiểm tra lỗi unique constraint từ Prisma
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
@@ -127,7 +128,7 @@ export async function exportRams() {
         const rams = await prisma.ram.findMany({});
 
         // Format data for Excel
-        const formattedData = rams.map((ram: any) => ({
+        const formattedData = rams.map((ram: Ram) => ({
             Title: ram.title,
             CreatedAt: ram.createdDate.toISOString(),
         }));

@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
-// @ts-ignore
 import { useFormState } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
@@ -13,15 +12,20 @@ import { connectivitySchema, ConnectivitySchema } from '@/lib/validation/technic
 import { createConnectivity, updateConnectivity } from '@/lib/actions/technical/connectivity.action';
 import { useLocale, useTranslations } from 'next-intl';
 
+type ConnectivityData = {
+    id: string;
+    name: string;
+};
+
 export default function ConnectivityForm({
     type,
     data,
     setOpen,
 }: {
     type: 'create' | 'update' | 'details';
-    data?: any;
+    data?: ConnectivityData;
     setOpen: Dispatch<SetStateAction<boolean>>;
-    relatedData?: any;
+    relatedData?: ConnectivityData[];
 }) {
     const t = useTranslations('ConnectivityForm');
     const locale = useLocale() as 'en' | 'vi';

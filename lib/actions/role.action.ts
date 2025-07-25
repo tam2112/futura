@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import prisma from '../prisma';
 import { RoleSchema } from '../validation/role.form';
 import { messages } from '../messages';
+import { Role } from '@/types/prisma';
 
 type CurrentState = { success: boolean; error: boolean };
 
@@ -29,10 +30,10 @@ export const createRole = async (currentState: CurrentState, data: RoleSchema & 
 
         // revalidatePath('/list/roles');
         return { success: true, error: false };
-    } catch (error: any) {
+    } catch (error) {
         console.log(error);
         // Kiểm tra lỗi unique constraint từ Prisma
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
@@ -59,10 +60,10 @@ export const updateRole = async (currentState: CurrentState, data: RoleSchema & 
 
         // revalidatePath('/list/categories');
         return { success: true, error: false };
-    } catch (error: any) {
+    } catch (error) {
         console.log(error);
         // Kiểm tra lỗi unique constraint từ Prisma
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
@@ -112,7 +113,7 @@ export async function exportRoles() {
         const roles = await prisma.role.findMany({});
 
         // Format data for Excel
-        const formattedData = roles.map((role: any) => ({
+        const formattedData = roles.map((role: Role) => ({
             Name: role.name,
             CreatedAt: role.createdDate.toISOString(),
         }));

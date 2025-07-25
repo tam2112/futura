@@ -5,8 +5,27 @@ import prisma from '../prisma';
 import { generateSlug } from '../utils';
 import { ProductSchema } from '../validation/product.form';
 import { messages } from '../messages';
+import { Favourite, Image, Product } from '@/types/prisma';
 
-type CurrentState = { success: boolean; error: boolean };
+type CurrentState = { success: boolean; error: boolean; message?: string; isFavourite?: boolean };
+
+// Type for Product with relations
+type ProductWithRelations = Product & {
+    images: { url: string }[];
+    category?: { name: string; slug: string; id?: string };
+    brand?: { name: string; id: string };
+    color?: { name: string; hex: string; id: string };
+    storage?: { name: string; id: string };
+    connectivity?: { name: string; id: string };
+    simSlot?: { title: string; id: string };
+    batteryHealth?: { title: string; id: string };
+    ram?: { title: string; id: string };
+    cpu?: { name: string; id: string };
+    screenSize?: { name: string; id: string };
+    type?: { name: string; id: string };
+    status?: { name: string };
+    promotions?: { percentageNumber: number }[];
+};
 
 export const getProducts = async () => {
     try {
@@ -355,7 +374,7 @@ export const toggleFavourite = async (
                 isFavourite: true,
             };
         }
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error toggling favourite:', error);
         return {
             success: false,
@@ -382,7 +401,7 @@ export const getUserFavourites = async (userId: string) => {
                 },
             },
         });
-        return favourites.map((fav: any) => fav.product);
+        return favourites.map((fav: Favourite) => fav.product);
     } catch (error) {
         console.error('Error fetching user favourites:', error);
         return [];
@@ -451,10 +470,10 @@ export const createProduct = async (
         }
 
         return { success: true, error: false };
-    } catch (error: any) {
+    } catch (error) {
         console.log(error);
         // Kiểm tra lỗi unique constraint từ Prisma
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
@@ -536,10 +555,10 @@ export const updateProduct = async (
         }
 
         return { success: true, error: false };
-    } catch (error: any) {
+    } catch (error) {
         console.log(error);
         // Kiểm tra lỗi unique constraint từ Prisma
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
@@ -634,7 +653,7 @@ export async function exportProducts() {
         });
 
         // Format data for Excel
-        const formattedData = products.map((product: any) => ({
+        const formattedData = products.map((product: ProductWithRelations) => ({
             Name: product.name,
             Description: product.description || '',
             Price: product.price,
@@ -651,7 +670,7 @@ export async function exportProducts() {
             ScreenSize: product.screenSize?.name || '',
             Type: product.type?.name || '',
             Status: product.status?.name || '',
-            ImageURLs: product.images.map((img: any) => img.url).join(', ') || '',
+            ImageURLs: product.images.map((img: Image) => img.url).join(', ') || '',
             CreatedAt: product.createdDate.toISOString(),
         }));
 

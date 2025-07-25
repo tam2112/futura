@@ -3,6 +3,7 @@
 import { messages } from '@/lib/messages';
 import prisma from '@/lib/prisma';
 import { ColorSchema } from '@/lib/validation/technical/color.form';
+import { Color } from '@/types/prisma';
 import { revalidatePath } from 'next/cache';
 
 type CurrentState = { success: boolean; error: boolean };
@@ -45,10 +46,10 @@ export const createColor = async (currentState: CurrentState, data: ColorSchema 
         });
 
         return { success: true, error: false };
-    } catch (error: any) {
+    } catch (error) {
         console.log(error);
         // Kiểm tra lỗi unique constraint từ Prisma
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
@@ -74,10 +75,10 @@ export const updateColor = async (currentState: CurrentState, data: ColorSchema 
         });
 
         return { success: true, error: false };
-    } catch (error: any) {
+    } catch (error) {
         console.log(error);
         // Kiểm tra lỗi unique constraint từ Prisma
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
@@ -131,7 +132,7 @@ export async function exportColors() {
         const colors = await prisma.color.findMany({});
 
         // Format data for Excel
-        const formattedData = colors.map((color: any) => ({
+        const formattedData = colors.map((color: Color) => ({
             Name: color.name,
             Hex: color.hex,
             CreatedAt: color.createdDate.toISOString(),

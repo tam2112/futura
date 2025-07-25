@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
-// @ts-ignore
 import { useFormState } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
@@ -13,15 +12,20 @@ import { batteryHealthSchema, BatteryHealthSchema } from '@/lib/validation/techn
 import { createBatteryHealth, updateBatteryHealth } from '@/lib/actions/technical/battery-health.action';
 import { useLocale, useTranslations } from 'next-intl';
 
+type BatteryHealthData = {
+    id: string;
+    title: string;
+};
+
 export default function BatteryHealthForm({
     type,
     data,
     setOpen,
 }: {
     type: 'create' | 'update' | 'details';
-    data?: any;
+    data?: BatteryHealthData;
     setOpen: Dispatch<SetStateAction<boolean>>;
-    relatedData?: any;
+    relatedData?: BatteryHealthData[];
 }) {
     const t = useTranslations('BatteryHealthForm');
     const locale = useLocale() as 'en' | 'vi';

@@ -5,15 +5,35 @@ import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 import { useTranslations } from 'next-intl';
 
+// Define type for the order data
+type OrderData = {
+    product?: {
+        name: string;
+        price: number;
+        images: { url: string }[];
+    };
+    quantity?: number;
+    status?: {
+        name: string;
+    };
+    deliveryInfo?: {
+        firstName: string;
+        lastName: string;
+        street: string;
+        city: string;
+        country: string;
+        phone: string;
+    }[];
+};
+
 export default function OrderDetailsForm({
     data,
     setOpen,
-    relatedData,
 }: {
     type?: 'details';
-    data?: any;
+    data?: OrderData;
     setOpen: Dispatch<SetStateAction<boolean>>;
-    relatedData?: any;
+    relatedData?: OrderData[];
 }) {
     const t = useTranslations('OrderDetailsForm');
 
@@ -67,8 +87,8 @@ export default function OrderDetailsForm({
                     <div>
                         <h2 className="font-medium text-lg">{t('images')}</h2>
                         <div className="flex justify-center flex-wrap gap-2 pt-4">
-                            {data?.product?.images?.length > 0 ? (
-                                data.product.images.map((img: { url: string }, index: number) => (
+                            {(data?.product?.images?.length ?? 0) > 0 ? (
+                                data?.product?.images.map((img: { url: string }, index: number) => (
                                     <Image
                                         key={index}
                                         src={img.url}
@@ -89,27 +109,27 @@ export default function OrderDetailsForm({
                 <div className="flex flex-col gap-3">
                     <div className="flex items-center text-base justify-between">
                         <label className="font-medium">{t('firstName')}</label>
-                        <p>{data?.deliveryInfo[0]?.firstName || '-'}</p>
+                        <p>{data?.deliveryInfo?.[0]?.firstName || '-'}</p>
                     </div>
                     <div className="flex items-center text-base justify-between">
                         <label className="font-medium">{t('lastName')}</label>
-                        <p>{data?.deliveryInfo[0]?.lastName || '-'}</p>
+                        <p>{data?.deliveryInfo?.[0]?.lastName || '-'}</p>
                     </div>
                     <div className="flex items-center text-base justify-between">
                         <label className="font-medium">{t('street')}</label>
-                        <p>{data?.deliveryInfo[0]?.street || '-'}</p>
+                        <p>{data?.deliveryInfo?.[0]?.street || '-'}</p>
                     </div>
                     <div className="flex items-center text-base justify-between">
                         <label className="font-medium">{t('city')}</label>
-                        <p>{data?.deliveryInfo[0]?.city || '-'}</p>
+                        <p>{data?.deliveryInfo?.[0]?.city || '-'}</p>
                     </div>
                     <div className="flex items-center text-base justify-between">
                         <label className="font-medium">{t('country')}</label>
-                        <p>{data?.deliveryInfo[0]?.country || '-'}</p>
+                        <p>{data?.deliveryInfo?.[0]?.country || '-'}</p>
                     </div>
                     <div className="flex items-center text-base justify-between">
                         <label className="font-medium">{t('phone')}</label>
-                        <p>{data?.deliveryInfo[0]?.phone || '-'}</p>
+                        <p>{data?.deliveryInfo?.[0]?.phone || '-'}</p>
                     </div>
                 </div>
             )}

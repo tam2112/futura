@@ -1,30 +1,6 @@
 // import prisma from "@/lib/prisma";
 import prisma from '@/lib/prisma';
-import FormModal from './FormModal';
-
-export type FormContainerProps = {
-    table:
-        | 'user'
-        | 'category'
-        | 'product'
-        | 'brand'
-        | 'color'
-        | 'storage'
-        | 'connectivity'
-        | 'simSlot'
-        | 'batteryHealth'
-        | 'ram'
-        | 'cpu'
-        | 'screenSize'
-        | 'type'
-        | 'order'
-        | 'role'
-        | 'status'
-        | 'promotion';
-    type: 'create' | 'update' | 'delete' | 'details';
-    data?: any;
-    id?: number | string;
-};
+import FormModal, { FormContainerProps } from './FormModal';
 
 export default async function FormContainer({ table, type, data, id }: FormContainerProps) {
     let relatedData = {};

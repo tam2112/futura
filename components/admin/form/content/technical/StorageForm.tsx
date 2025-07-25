@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
-// @ts-ignore
 import { useFormState } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
@@ -13,15 +12,20 @@ import { storageSchema, StorageSchema } from '@/lib/validation/technical/storage
 import { createStorage, updateStorage } from '@/lib/actions/technical/storage.action';
 import { useLocale, useTranslations } from 'next-intl';
 
+type StorageData = {
+    id: string;
+    name: string;
+};
+
 export default function StorageForm({
     type,
     data,
     setOpen,
 }: {
     type: 'create' | 'update' | 'details';
-    data?: any;
+    data?: StorageData;
     setOpen: Dispatch<SetStateAction<boolean>>;
-    relatedData?: any;
+    relatedData?: StorageData[];
 }) {
     const t = useTranslations('StorageForm');
     const locale = useLocale() as 'en' | 'vi';

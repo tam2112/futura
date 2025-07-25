@@ -5,7 +5,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-// @ts-ignore
 import { useFormState } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
@@ -17,15 +16,23 @@ import { useLocale, useTranslations } from 'next-intl';
 // import { uploadFileToServer } from '@/lib/upload';
 // import { uploadImages } from '@/lib/actions/image.action';
 
+// Define type for the category data (used for update)
+type CategoryData = {
+    id: string;
+    name: string;
+    description: string;
+    images: { url: string }[];
+};
+
 export default function CategoryForm({
     type,
     data,
     setOpen,
 }: {
     type: 'create' | 'update' | 'details';
-    data?: any;
+    data?: CategoryData;
     setOpen: Dispatch<SetStateAction<boolean>>;
-    relatedData?: any;
+    relatedData?: CategoryData[];
 }) {
     const t = useTranslations('CategoryForm');
     const locale = useLocale() as 'en' | 'vi';

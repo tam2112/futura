@@ -22,6 +22,7 @@ import { revalidatePath } from 'next/cache';
 import { messages } from '../messages';
 import { z } from 'zod';
 import { sendMail } from '../gmail';
+import { Role, User } from '@/types/prisma';
 
 type CurrentState = { success: boolean; error: boolean };
 
@@ -35,7 +36,7 @@ export const signUpUser = async (
     message?: string;
     token?: string;
     userId?: string;
-    user?: any;
+    user?: User & { role: Role };
 }> => {
     try {
         const t = messages[locale].SignUpPage;
@@ -192,10 +193,10 @@ export const createUser = async (currentState: CurrentState, data: UserSchema & 
 
         // revalidatePath('/list/categories');
         return { success: true, error: false };
-    } catch (error: any) {
+    } catch (error) {
         console.log(error);
         // Kiểm tra lỗi unique constraint từ Prisma
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
@@ -224,10 +225,10 @@ export const updateUser = async (currentState: CurrentState, data: UserSchema & 
 
         // revalidatePath('/list/categories');
         return { success: true, error: false };
-    } catch (error: any) {
+    } catch (error) {
         console.log(error);
         // Kiểm tra lỗi unique constraint từ Prisma
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
@@ -270,14 +271,17 @@ export const updateUserFullName = async (
 
         revalidatePath('/my-profile');
         return { success: true, error: false, message: t.updateFullNameSuccess };
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error in updateUserFullName:', error);
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
                 message: t.fullNameExists,
             };
+        }
+        if (error instanceof z.ZodError) {
+            return { success: false, error: true, message: error.errors[0].message };
         }
         return { success: false, error: true, message: t.updateFailed };
     }
@@ -325,8 +329,11 @@ export const changeUserPassword = async (
         });
 
         return { success: true, error: false, message: t.passwordChangeSuccess };
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error in changeUserPassword:', error);
+        if (error instanceof z.ZodError) {
+            return { success: false, error: true, message: error.errors[0].message };
+        }
         return { success: false, error: true, message: t.passwordChangeFailed };
     }
 };
@@ -374,7 +381,7 @@ export async function exportUsers() {
         });
 
         // Format data for Excel
-        const formattedData = users.map((user: any) => ({
+        const formattedData = users.map((user: User & { role: Role }) => ({
             'Full name': user.fullName,
             Email: user.email,
             Role: user.role.name,
@@ -444,8 +451,11 @@ export const initiatePasswordRecovery = async (
             userId: user.id,
             message: t.codeSent,
         };
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error in initiatePasswordRecovery:', error);
+        if (error instanceof z.ZodError) {
+            return { success: false, error: true, message: error.errors[0].message };
+        }
         return { success: false, error: true, message: t.recoveryFailed };
     }
 };
@@ -488,8 +498,11 @@ export const verifyRecoveryCode = async (
             error: false,
             message: t.codeVerified,
         };
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error in verifyRecoveryCode:', error);
+        if (error instanceof z.ZodError) {
+            return { success: false, error: true, message: error.errors[0].message };
+        }
         return { success: false, error: true, message: t.recoveryFailed };
     }
 };
@@ -531,8 +544,11 @@ export const completePasswordRecovery = async (
             error: false,
             message: t.passwordResetSuccess,
         };
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error in completePasswordRecovery:', error);
+        if (error instanceof z.ZodError) {
+            return { success: false, error: true, message: error.errors[0].message };
+        }
         return { success: false, error: true, message: t.recoveryFailed };
     }
 };

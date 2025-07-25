@@ -3,6 +3,7 @@
 import { messages } from '@/lib/messages';
 import prisma from '@/lib/prisma';
 import { StorageSchema } from '@/lib/validation/technical/storage.form';
+import { Storage } from '@/types/prisma';
 import { revalidatePath } from 'next/cache';
 
 type CurrentState = { success: boolean; error: boolean };
@@ -44,10 +45,10 @@ export const createStorage = async (currentState: CurrentState, data: StorageSch
         });
 
         return { success: true, error: false };
-    } catch (error: any) {
+    } catch (error) {
         console.log(error);
         // Kiểm tra lỗi unique constraint từ Prisma
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
@@ -71,10 +72,10 @@ export const updateStorage = async (currentState: CurrentState, data: StorageSch
         });
 
         return { success: true, error: false };
-    } catch (error: any) {
+    } catch (error) {
         console.log(error);
         // Kiểm tra lỗi unique constraint từ Prisma
-        if (error.code === 'P2002') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
             return {
                 success: false,
                 error: true,
@@ -128,7 +129,7 @@ export async function exportStorages() {
         const storages = await prisma.storage.findMany({});
 
         // Format data for Excel
-        const formattedData = storages.map((storage: any) => ({
+        const formattedData = storages.map((storage: Storage) => ({
             Name: storage.name,
             CreatedAt: storage.createdDate.toISOString(),
         }));
