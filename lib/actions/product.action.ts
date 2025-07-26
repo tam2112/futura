@@ -23,7 +23,7 @@ type ProductWithRelations = Product & {
     cpu?: { name: string; id: string };
     screenSize?: { name: string; id: string };
     type?: { name: string; id: string };
-    status?: { name: string };
+    status?: { name: string; id: string };
     promotions?: { percentageNumber: number }[];
 };
 
@@ -88,7 +88,7 @@ export const getProductsByCategorySlug = async (slug: string) => {
                     select: { name: true, id: true },
                 },
                 status: {
-                    select: { name: true },
+                    select: { name: true, id: true },
                 },
                 promotions: { select: { percentageNumber: true } },
             },
@@ -117,7 +117,7 @@ export const getProductBySlug = async (slug: string) => {
                 cpu: { select: { name: true, id: true } },
                 screenSize: { select: { name: true, id: true } },
                 type: { select: { name: true, id: true } },
-                status: { select: { name: true } },
+                status: { select: { name: true, id: true } },
                 promotions: { select: { percentageNumber: true } },
             },
         });
@@ -151,7 +151,7 @@ export const getRelatedProducts = async (categorySlug: string, excludeProductId:
                 cpu: { select: { name: true, id: true } },
                 screenSize: { select: { name: true, id: true } },
                 type: { select: { name: true, id: true } },
-                status: { select: { name: true } },
+                status: { select: { name: true, id: true } },
             },
             take: limit,
         });
