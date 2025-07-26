@@ -57,7 +57,7 @@ const DualRangeSlider = React.forwardRef<React.ElementRef<typeof SliderPrimitive
                                         )}
                                         <NumberFlow
                                             willChange
-                                            value={value}
+                                            value={value ?? 0}
                                             isolate
                                             opacityTiming={{
                                                 duration: 250,
@@ -104,7 +104,7 @@ const DualRangeSlider = React.forwardRef<React.ElementRef<typeof SliderPrimitive
                                 )}
                                 <NumberFlow
                                     willChange
-                                    value={value}
+                                    value={value ?? 0}
                                     isolate
                                     opacityTiming={{
                                         duration: 250,
