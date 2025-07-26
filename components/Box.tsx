@@ -1,12 +1,6 @@
-'use client';
+import AnimatedBox, { AnimatedBoxProps } from './AnimatedBox';
 
-import AnimatedBox from './AnimatedBox';
-import { HTMLAttributes } from 'react';
-
-export type BoxProps = {
-    variant?: 'primary' | 'secondary' | 'tertiary';
-    block?: boolean;
-} & HTMLAttributes<HTMLDivElement>;
+export type BoxProps = Omit<AnimatedBoxProps<'div'>, 'animateOn' | 'as'>;
 
 export default function Box(props: BoxProps) {
     return <AnimatedBox {...props} animateOn="hover" as="div" />;

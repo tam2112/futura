@@ -1,12 +1,8 @@
 'use client';
 
-import AnimatedBox from './AnimatedBox';
-import { HTMLAttributes } from 'react';
+import AnimatedBox, { AnimatedBoxProps } from './AnimatedBox';
 
-export type TextareaProps = {
-    variant?: 'primary' | 'secondary' | 'tertiary';
-    block?: boolean;
-} & HTMLAttributes<HTMLTextAreaElement>;
+export type TextareaProps = Omit<AnimatedBoxProps<'div'>, 'animateOn' | 'as'>;
 
 export default function Textarea(props: TextareaProps) {
     return <AnimatedBox {...props} animateOn="focus" as="textarea" />;

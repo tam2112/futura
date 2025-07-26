@@ -7,7 +7,22 @@ import { animate, motion, MotionProps, useMotionTemplate, useMotionValue } from 
 // Restrict `as` prop to HTML elements supported by Framer Motion
 type MotionHTMLTags = keyof Pick<
     JSX.IntrinsicElements,
-    'div' | 'button' | 'span' | 'a' | 'p' | 'li' | 'ul' | 'ol' | 'section' | 'article' | 'header' | 'footer' | 'nav'
+    | 'div'
+    | 'button'
+    | 'span'
+    | 'a'
+    | 'p'
+    | 'li'
+    | 'ul'
+    | 'ol'
+    | 'section'
+    | 'article'
+    | 'header'
+    | 'footer'
+    | 'nav'
+    | 'input'
+    | 'select'
+    | 'textarea'
 >;
 
 export type AnimatedBoxProps<T extends MotionHTMLTags = 'div'> = {
@@ -89,7 +104,7 @@ export default function AnimatedBox<T extends MotionHTMLTags = 'div'>({
     };
 
     // Dynamically select the motion component based on the `as` prop
-    const MotionComponent = motion[as] || motion.div;
+    const MotionComponent = (motion[as] ?? motion.div) as React.ElementType;
 
     return (
         <MotionComponent
