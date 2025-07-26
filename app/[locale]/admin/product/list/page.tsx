@@ -92,7 +92,7 @@ export default async function ProductListPage({
 
     // Define columns after data is initialized
     const columns = [
-        { header: <CheckboxHeader itemIds={data.map((item: ProductList) => item.id)} />, accessor: 'check' },
+        { header: <CheckboxHeader itemIds={data.map((item: any) => item.id)} />, accessor: 'check' },
         { header: t('image'), accessor: 'img' },
         { header: t('name'), accessor: 'name', className: 'hidden md:table-cell' },
         { header: t('description'), accessor: 'description', className: 'hidden md:table-cell' },

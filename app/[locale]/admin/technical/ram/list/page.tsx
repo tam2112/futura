@@ -73,7 +73,7 @@ export default async function RamListPage({ searchParams }: { searchParams: { [k
 
     // Define columns after data is initialized
     const columns = [
-        { header: <CheckboxHeader itemIds={data.map((item: RamList) => item.id)} />, accessor: 'check' },
+        { header: <CheckboxHeader itemIds={data.map((item: any) => item.id)} />, accessor: 'check' },
         { header: t('title'), accessor: 'title', className: 'hidden md:table-cell' },
     ];
 
