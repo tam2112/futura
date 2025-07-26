@@ -8,7 +8,7 @@ export default function Table<T>({
     renderRow,
     data,
 }: {
-    columns: { header: ReactNode | string; accessor: keyof T; className?: string }[];
+    columns: { header: ReactNode | string; accessor: string; className?: string }[];
     renderRow: (item: T) => React.ReactNode;
     data: T[];
 }) {
@@ -17,7 +17,7 @@ export default function Table<T>({
             <thead>
                 <tr className="text-left font-heading font-semibold text-sm">
                     {columns.map((col) => (
-                        <th key={String(col.accessor)} className={col.className}>
+                        <th key={col.accessor} className={col.className}>
                             {col.header}
                         </th>
                     ))}
