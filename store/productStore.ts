@@ -16,7 +16,7 @@ type Product = {
     priceWithDiscount?: number | null;
     images: { url: string }[];
     category: { name: string; slug: string; id: string };
-    brand?: { name: string; id: string };
+    brand?: { name: string; id: string } | null;
     promotions?: { percentageNumber: number }[];
 };
 
