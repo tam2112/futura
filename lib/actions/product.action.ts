@@ -106,7 +106,7 @@ export const getProductBySlug = async (slug: string) => {
         if (!product) {
             throw new Error('Product not found');
         }
-        return product;
+        return product || null;
     } catch (error) {
         console.error('Error fetching product by slug:', error);
         return null;
@@ -137,7 +137,7 @@ export const getRelatedProducts = async (categorySlug: string, excludeProductId:
             },
             take: limit,
         });
-        return products;
+        return products || [];
     } catch (error) {
         console.error('Error fetching related products:', error);
         return [];
