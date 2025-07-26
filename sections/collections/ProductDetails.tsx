@@ -26,7 +26,7 @@ type Product = {
     slug: string;
     description: string;
     price: number;
-    priceWithDiscount?: number;
+    priceWithDiscount?: number | null;
     quantity: number;
     images: { url: string }[];
     brand?: { id: string; name: string };
