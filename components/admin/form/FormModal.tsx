@@ -4,7 +4,6 @@ import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
-// @ts-ignore
 import { useFormState } from 'react-dom';
 import { FormContainerProps } from './FormContainer';
 import { BsPlusLg } from 'react-icons/bs';

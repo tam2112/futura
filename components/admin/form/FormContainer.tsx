@@ -1,7 +1,6 @@
 // import prisma from "@/lib/prisma";
 import prisma from '@/lib/prisma';
 import FormModal from './FormModal';
-import { getLocale } from 'next-intl/server';
 
 export type FormContainerProps = {
     table:
@@ -28,7 +27,6 @@ export type FormContainerProps = {
 };
 
 export default async function FormContainer({ table, type, data, id }: FormContainerProps) {
-    const locale = await getLocale();
     let relatedData = {};
 
     if (type !== 'delete') {
