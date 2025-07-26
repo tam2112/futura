@@ -46,7 +46,8 @@ export default function SelectField<T extends FieldValues>({
                         if (isMulti) {
                             field.onChange(Array.isArray(selected) ? selected.map((option) => option.value) : []);
                         } else {
-                            field.onChange(selected ? selected.value : '');
+                            const singleOption = selected as { value: string } | null;
+                            field.onChange(singleOption?.value ?? '');
                         }
                     }}
                     onBlur={field.onBlur}
