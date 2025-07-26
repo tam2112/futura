@@ -4,7 +4,9 @@ import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
+// @ts-ignore
 import { useFormState } from 'react-dom';
+import { FormContainerProps } from './FormContainer';
 import { BsPlusLg } from 'react-icons/bs';
 import { CiEdit } from 'react-icons/ci';
 import { PiEyeBold, PiTrash } from 'react-icons/pi';
@@ -29,183 +31,9 @@ import { deleteType } from '@/lib/actions/technical/type.action';
 import { deleteProduct } from '@/lib/actions/product.action';
 import { deletePromotion } from '@/lib/actions/promotion.action';
 import { deleteStatus } from '@/lib/actions/status.action';
+import { deleteRole } from '@/lib/actions/role.action';
 import { Tooltip } from 'react-tooltip';
 import { useTranslations } from 'next-intl';
-import { deleteRole } from '@/lib/actions/role.action';
-
-// Define types for data and relatedData
-type CategoryData = { id: string; name: string; description: string; images: { url: string }[] };
-type ProductData = {
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    quantity: number;
-    categoryId: string;
-    brandId: string;
-    colorId: string;
-    storageId: string;
-    connectivityId: string;
-    simSlotId: string;
-    batteryHealthId: string;
-    ramId: string;
-    cpuId: string;
-    screenSizeId: string;
-    typeId: string;
-    images: { url: string }[];
-};
-type UserData = { id: string; fullName: string; email: string; password?: string; roleId: string };
-type RoleData = { id: string; name: string };
-type PromotionData = {
-    id: string;
-    name: string;
-    percentageNumber: number;
-    durationType: 'date' | 'hours' | 'minutes' | 'seconds';
-    startDate?: string;
-    endDate?: string;
-    startHours?: number;
-    endHours?: number;
-    startMinutes?: number;
-    endMinutes?: number;
-    startSeconds?: number;
-    endSeconds?: number;
-    products?: { id: string; name: string }[];
-    categories?: { id: string; name: string }[];
-};
-type StatusData = { id: string; name: string };
-type OrderData = {
-    product?: {
-        name: string;
-        price: number;
-        images: { url: string }[];
-    };
-    quantity?: number;
-    status?: {
-        name: string;
-    };
-    deliveryInfo?: {
-        firstName: string;
-        lastName: string;
-        street: string;
-        city: string;
-        country: string;
-        phone: string;
-    }[];
-};
-type OrderUpdateData = {
-    id: string;
-    statusId: string;
-    status?: {
-        name: string;
-    };
-};
-type BatteryHealthData = {
-    id: string;
-    title: string;
-};
-type BrandData = {
-    id: string;
-    name: string;
-    images: { url: string }[];
-};
-type ColorData = {
-    id: string;
-    name: string;
-    hex: string;
-};
-type ConnectivityData = {
-    id: string;
-    name: string;
-};
-type CpuData = {
-    id: string;
-    name: string;
-};
-type RamData = {
-    id: string;
-    title: string;
-};
-type ScreenSizeData = {
-    id: string;
-    name: string;
-};
-type SimSlotData = {
-    id: string;
-    title: string;
-};
-type StorageData = {
-    id: string;
-    name: string;
-};
-type TypeData = {
-    id: string;
-    name: string;
-};
-
-type FormData =
-    | CategoryData
-    | ProductData
-    | UserData
-    | RoleData
-    | PromotionData
-    | StatusData
-    | OrderData
-    | OrderUpdateData
-    | BatteryHealthData
-    | BrandData
-    | ColorData
-    | ConnectivityData
-    | CpuData
-    | RamData
-    | ScreenSizeData
-    | SimSlotData
-    | StorageData
-    | TypeData;
-
-type ProductRelatedData = {
-    categories: { id: string; name: string }[];
-    brands: { id: string; name: string }[];
-    colors: { id: string; name: string; hex: string }[];
-    storages: { id: string; name: string }[];
-    connectivities: { id: string; name: string }[];
-    simSlots: { id: string; title: string }[];
-    batteryHealths: { id: string; title: string }[];
-    rams: { id: string; title: string }[];
-    cpus: { id: string; name: string }[];
-    screenSizes: { id: string; name: string }[];
-    types: { id: string; name: string }[];
-};
-type UserRelatedData = { roles: { id: string; name: string }[] };
-type PromotionRelatedData = {
-    categories: { id: string; name: string }[];
-    products: { id: string; name: string }[];
-};
-type FormRelatedData = ProductRelatedData | UserRelatedData | PromotionRelatedData | undefined;
-
-// Update FormContainerProps
-export interface FormContainerProps {
-    table:
-        | 'category'
-        | 'product'
-        | 'user'
-        | 'role'
-        | 'promotion'
-        | 'status'
-        | 'order'
-        | 'brand'
-        | 'color'
-        | 'storage'
-        | 'connectivity'
-        | 'simSlot'
-        | 'batteryHealth'
-        | 'ram'
-        | 'cpu'
-        | 'screenSize'
-        | 'type';
-    type: 'create' | 'update' | 'delete' | 'details';
-    data?: FormData;
-    id?: string | number;
-}
 
 const deleteActionMap = {
     // main actions
@@ -370,136 +198,84 @@ const forms: {
     [key: string]: (
         setOpen: Dispatch<SetStateAction<boolean>>,
         type: 'create' | 'update' | 'details',
-        data?: FormData,
-        relatedData?: FormRelatedData,
+        data?: any,
+        relatedData?: any,
     ) => JSX.Element;
 } = {
     // main
     category: (setOpen, type, data, relatedData) => (
-        <CategoryForm
-            type={type}
-            data={data as CategoryData}
-            setOpen={setOpen}
-            relatedData={relatedData as undefined}
-        />
+        <CategoryForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     ),
     product: (setOpen, type, data, relatedData) => {
         if (type === 'details') {
-            return (
-                <ProductDetailsForm
-                    data={data as ProductData}
-                    setOpen={setOpen}
-                    relatedData={relatedData as ProductRelatedData}
-                />
-            );
+            return <ProductDetailsForm data={data} setOpen={setOpen} relatedData={relatedData} />;
         }
-        return (
-            <ProductForm
-                type={type}
-                data={data as ProductData}
-                setOpen={setOpen}
-                relatedData={relatedData as ProductRelatedData}
-            />
-        );
+        return <ProductForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />;
     },
     user: (setOpen, type, data, relatedData) => (
-        <UserForm type={type} data={data as UserData} setOpen={setOpen} relatedData={relatedData as UserRelatedData} />
+        <UserForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     ),
     role: (setOpen, type, data, relatedData) => (
-        <RoleForm type={type} data={data as RoleData} setOpen={setOpen} relatedData={relatedData as undefined} />
+        <RoleForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     ),
     promotion: (setOpen, type, data, relatedData) => (
-        <PromotionForm
-            type={type}
-            data={data as PromotionData}
-            setOpen={setOpen}
-            relatedData={relatedData as PromotionRelatedData}
-        />
+        <PromotionForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     ),
     status: (setOpen, type, data, relatedData) => (
-        <StatusForm type={type} data={data as StatusData} setOpen={setOpen} relatedData={relatedData as undefined} />
+        <StatusForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     ),
     order: (setOpen, type, data, relatedData) => {
         if (type === 'details') {
-            return (
-                <OrderDetailsForm data={data as OrderData} setOpen={setOpen} relatedData={relatedData as undefined} />
-            );
+            return <OrderDetailsForm data={data} setOpen={setOpen} relatedData={relatedData} />;
         }
         if (type === 'update') {
-            return (
-                <OrderUpdateForm
-                    data={data as OrderUpdateData}
-                    setOpen={setOpen}
-                    relatedData={relatedData as undefined}
-                />
-            );
+            return <OrderUpdateForm data={data} setOpen={setOpen} relatedData={relatedData} />;
         }
         return <div>Form not available</div>;
     },
 
     // technical
     brand: (setOpen, type, data, relatedData) => (
-        <BrandForm type={type} data={data as BrandData} setOpen={setOpen} relatedData={relatedData as undefined} />
+        <BrandForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     ),
     color: (setOpen, type, data, relatedData) => (
-        <ColorForm type={type} data={data as ColorData} setOpen={setOpen} relatedData={relatedData as undefined} />
+        <ColorForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     ),
     storage: (setOpen, type, data, relatedData) => (
-        <StorageForm type={type} data={data as StorageData} setOpen={setOpen} relatedData={relatedData as undefined} />
+        <StorageForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     ),
     connectivity: (setOpen, type, data, relatedData) => (
-        <ConnectivityForm
-            type={type}
-            data={data as ConnectivityData}
-            setOpen={setOpen}
-            relatedData={relatedData as undefined}
-        />
+        <ConnectivityForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     ),
     simSlot: (setOpen, type, data, relatedData) => (
-        <SimSlotForm type={type} data={data as SimSlotData} setOpen={setOpen} relatedData={relatedData as undefined} />
+        <SimSlotForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     ),
     batteryHealth: (setOpen, type, data, relatedData) => (
-        <BatteryHealthForm
-            type={type}
-            data={data as BatteryHealthData}
-            setOpen={setOpen}
-            relatedData={relatedData as undefined}
-        />
+        <BatteryHealthForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     ),
     ram: (setOpen, type, data, relatedData) => (
-        <RamForm type={type} data={data as RamData} setOpen={setOpen} relatedData={relatedData as undefined} />
+        <RamForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     ),
     cpu: (setOpen, type, data, relatedData) => (
-        <CpuForm type={type} data={data as CpuData} setOpen={setOpen} relatedData={relatedData as undefined} />
+        <CpuForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     ),
     screenSize: (setOpen, type, data, relatedData) => (
-        <ScreenSizeForm
-            type={type}
-            data={data as ScreenSizeData}
-            setOpen={setOpen}
-            relatedData={relatedData as undefined}
-        />
+        <ScreenSizeForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     ),
     type: (setOpen, type, data, relatedData) => (
-        <TypeForm type={type} data={data as TypeData} setOpen={setOpen} relatedData={relatedData as undefined} />
+        <TypeForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
     ),
 };
 
-export default function FormModal({
-    table,
-    type,
-    data,
-    id,
-    relatedData,
-}: FormContainerProps & { relatedData?: FormRelatedData }) {
+export type FormModalProps = FormContainerProps & { relatedData?: any; locale?: 'en' | 'vi' };
+
+export default function FormModal({ table, type, data, id, relatedData, locale = 'en' }: FormModalProps) {
     // const size = type === 'create' ? 'w-8 h-8' : 'w-7 h-7';
     const t = useTranslations('FormModal');
 
     const [open, setOpen] = useState(false);
 
     const Form = () => {
-        // const [state, formAction] = useFormState(deleteActionMap[table], { success: false, error: false });
-
         const deleteAction =
             table in deleteActionMap ? deleteActionMap[table as keyof typeof deleteActionMap] : undefined;
         const [state, formAction] = useFormState(
@@ -514,12 +290,17 @@ export default function FormModal({
                 toast(t('deleteSuccess', { table: t(`${table}`) }));
                 setOpen(false);
                 router.refresh();
+            } else if (state.error) {
+                toast.error('Failed to delete');
+                setOpen(false);
+                router.refresh();
             }
         }, [state, router]);
 
         return type === 'delete' && id ? (
             <form action={formAction} className="p-4 flex flex-col gap-4">
                 <input type="text | number" name="id" value={id} hidden />
+                <input type="text" name="locale" value={locale} hidden />
                 <h2 className="font-heading text-lg text-center font-medium">
                     {t('deleteConfirm', { table: t(`${table}`) })}
                 </h2>

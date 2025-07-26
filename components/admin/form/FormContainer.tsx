@@ -1,8 +1,34 @@
 // import prisma from "@/lib/prisma";
 import prisma from '@/lib/prisma';
-import FormModal, { FormContainerProps } from './FormModal';
+import FormModal from './FormModal';
+import { getLocale } from 'next-intl/server';
+
+export type FormContainerProps = {
+    table:
+        | 'user'
+        | 'category'
+        | 'product'
+        | 'brand'
+        | 'color'
+        | 'storage'
+        | 'connectivity'
+        | 'simSlot'
+        | 'batteryHealth'
+        | 'ram'
+        | 'cpu'
+        | 'screenSize'
+        | 'type'
+        | 'order'
+        | 'role'
+        | 'status'
+        | 'promotion';
+    type: 'create' | 'update' | 'delete' | 'details';
+    data?: any;
+    id?: number | string;
+};
 
 export default async function FormContainer({ table, type, data, id }: FormContainerProps) {
+    const locale = await getLocale();
     let relatedData = {};
 
     if (type !== 'delete') {
