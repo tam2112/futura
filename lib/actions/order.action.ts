@@ -4,8 +4,7 @@ import prisma from '../prisma';
 import { revalidatePath } from 'next/cache';
 import { DeliveryInfoSchema } from '../validation/deliveryInfo.form';
 import { messages } from '../messages';
-import { Cart, Delivery, Order, Product, Status } from '@/types/prisma';
-import { PrismaClient } from '@prisma/client';
+import { Cart, Order, Product } from '@prisma/client';
 
 type OrderResponse = {
     success: boolean;
@@ -15,14 +14,6 @@ type OrderResponse = {
 };
 
 export type OrderStatus = 'Pending' | 'Out for delivery' | 'Delivered' | 'Cancelled';
-
-// Type for Order with relations
-type OrderWithRelations = Order & {
-    product: Product & { images: { url: string }[] };
-    status: Status;
-    deliveryInfo: Delivery[];
-    user: { fullName: string; email: string };
-};
 
 // Type for Cart with Product relation
 type CartWithProduct = Cart & { product: Product };
@@ -89,7 +80,7 @@ export const getUserOrders = async (userId: string) => {
 export const createOrder = async (userId: string, deliveryInfo: DeliveryInfoSchema): Promise<OrderResponse> => {
     try {
         // Start transaction
-        await prisma.$transaction(async (prisma: PrismaClient) => {
+        await prisma.$transaction(async (prisma) => {
             // 1. Get pending status
             const pendingStatus = await prisma.status.findUnique({
                 where: { name: 'Pending' },
@@ -363,11 +354,11 @@ export async function exportOrders() {
         });
 
         // Format data for Excel
-        const formattedData = orders.map((order: OrderWithRelations) => ({
-            'Product name': order.product.name || '',
-            Status: order.status.name || '',
-            'User name': order.user.fullName || '',
-            'User email': order.user.email || '',
+        const formattedData = orders.map((order: any) => ({
+            'Product name': order.product.name,
+            Status: order.status.name,
+            'User name': order.user.fullName,
+            'User email': order.user.email,
             'Delivery first name': order.deliveryInfo[0].firstName || '',
             'Delivery last name': order.deliveryInfo[0].lastName || '',
             'Delivery street': order.deliveryInfo[0].street || '',

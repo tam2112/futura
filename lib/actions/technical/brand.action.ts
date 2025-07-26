@@ -3,7 +3,7 @@
 import { messages } from '@/lib/messages';
 import prisma from '@/lib/prisma';
 import { BrandSchema } from '@/lib/validation/technical/brand.form';
-import { Brand, Image } from '@/types/prisma';
+import { Image } from '@/types/prisma';
 import { revalidatePath } from 'next/cache';
 
 type CurrentState = { success: boolean; error: boolean };
@@ -171,7 +171,7 @@ export async function exportBrands() {
         });
 
         // Format data for Excel
-        const formattedData = brands.map((brand: Brand) => ({
+        const formattedData = brands.map((brand: any) => ({
             Name: brand.name,
             ImageURLs: brand.images?.map((img: Image) => img.url).join(', ') || '',
             CreatedAt: brand.createdDate.toISOString(),

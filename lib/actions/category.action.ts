@@ -5,7 +5,7 @@ import prisma from '../prisma';
 import { generateSlug } from '../utils';
 import { CategorySchema } from '../validation/category.form';
 import { messages } from '../messages';
-import { Category, Image } from '@/types/prisma';
+import { Image } from '@/types/prisma';
 
 type CurrentState = { success: boolean; error: boolean };
 
@@ -189,7 +189,7 @@ export async function exportCategories() {
         });
 
         // Format data for Excel
-        const formattedData = categories.map((category: Category) => ({
+        const formattedData = categories.map((category: any) => ({
             Name: category.name,
             Description: category.description || '',
             ImageURLs: category.images?.map((img: Image) => img.url).join(', ') || '',

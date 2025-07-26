@@ -10,7 +10,7 @@ export default function Table<T>({
 }: {
     columns: { header: ReactNode | string; accessor: string; className?: string }[];
     renderRow: (item: T) => React.ReactNode;
-    data: T[];
+    data: any[];
 }) {
     return (
         <table className={twMerge('w-full mt-4', data.length > 0 ? 'h-auto' : 'h-[300px]')}>

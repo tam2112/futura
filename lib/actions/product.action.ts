@@ -5,27 +5,9 @@ import prisma from '../prisma';
 import { generateSlug } from '../utils';
 import { ProductSchema } from '../validation/product.form';
 import { messages } from '../messages';
-import { Favourite, Image, Product } from '@/types/prisma';
+import { Image, Product } from '@/types/prisma';
 
 type CurrentState = { success: boolean; error: boolean; message?: string; isFavourite?: boolean };
-
-// Type for Product with relations
-type ProductWithRelations = Product & {
-    images: { url: string }[];
-    category?: { name: string; slug: string; id?: string };
-    brand?: { name: string; id: string };
-    color?: { name: string; hex: string; id: string };
-    storage?: { name: string; id: string };
-    connectivity?: { name: string; id: string };
-    simSlot?: { title: string; id: string };
-    batteryHealth?: { title: string; id: string };
-    ram?: { title: string; id: string };
-    cpu?: { name: string; id: string };
-    screenSize?: { name: string; id: string };
-    type?: { name: string; id: string };
-    status?: { name: string; id: string };
-    promotions?: { percentageNumber: number }[];
-};
 
 export const getProducts = async () => {
     try {
@@ -401,7 +383,7 @@ export const getUserFavourites = async (userId: string) => {
                 },
             },
         });
-        return favourites.map((fav: Favourite) => fav.product);
+        return favourites.map((fav: any) => fav.product);
     } catch (error) {
         console.error('Error fetching user favourites:', error);
         return [];
@@ -653,7 +635,7 @@ export async function exportProducts() {
         });
 
         // Format data for Excel
-        const formattedData = products.map((product: ProductWithRelations) => ({
+        const formattedData = products.map((product: any) => ({
             Name: product.name,
             Description: product.description || '',
             Price: product.price,

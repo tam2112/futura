@@ -1,9 +1,6 @@
 'use server';
 
-import { Cart, Image, Product } from '@/types/prisma';
 import prisma from '../prisma';
-
-type CartWithProduct = Cart & { product: Product & { images: Image[] } };
 
 // Get cart items for a specific user
 export const getCartItems = async (userId: string) => {
@@ -196,8 +193,8 @@ export const getCartTotals = async (userId: string) => {
             },
         });
 
-        const itemAmount = cartItems.reduce((total: number, item: CartWithProduct) => total + item.quantity, 0);
-        const cartTotal = cartItems.reduce((total: number, item: CartWithProduct) => {
+        const itemAmount = cartItems.reduce((total: number, item: any) => total + item.quantity, 0);
+        const cartTotal = cartItems.reduce((total: number, item: any) => {
             const price = item.product.priceWithDiscount ?? item.product.price;
             return total + item.quantity * price;
         }, 0);

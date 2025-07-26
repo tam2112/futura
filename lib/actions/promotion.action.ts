@@ -122,7 +122,7 @@ export const createPromotion = async (currentState: CurrentState, data: Promotio
                 where: { categoryId: { in: data.categoryIds } },
                 select: { id: true },
             });
-            categoryProductIds = productsInCategories.map((p: Product) => p.id);
+            categoryProductIds = productsInCategories.map((p: any) => p.id);
         }
 
         const allProductIds = Array.from(new Set([...productIds, ...categoryProductIds])).filter(
@@ -143,7 +143,7 @@ export const createPromotion = async (currentState: CurrentState, data: Promotio
         });
 
         await Promise.all(
-            products.map((product: Product) =>
+            products.map((product: any) =>
                 prisma.product.update({
                     where: { id: product.id },
                     data: { priceWithDiscount: product.price * (1 - discountMultiplier) },
@@ -220,7 +220,7 @@ export const updatePromotion = async (currentState: CurrentState, data: Promotio
                 where: { categoryId: { in: data.categoryIds } },
                 select: { id: true },
             });
-            categoryProductIds = productsInCategories.map((p: Product) => p.id);
+            categoryProductIds = productsInCategories.map((p: any) => p.id);
         }
 
         const allProductIds = new Set([...productIds, ...categoryProductIds]);
@@ -250,7 +250,7 @@ export const updatePromotion = async (currentState: CurrentState, data: Promotio
         });
 
         await Promise.all(
-            products.map((product: Product) =>
+            products.map((product: any) =>
                 prisma.product.update({
                     where: { id: product.id },
                     data: { priceWithDiscount: product.price * (1 - discountMultiplier) },
