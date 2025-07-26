@@ -55,7 +55,7 @@ export const getProductsByCategorySlug = async (slug: string) => {
                     select: { url: true },
                 },
                 category: {
-                    select: { name: true, slug: true },
+                    select: { name: true, slug: true, id: true },
                 },
                 brand: {
                     select: { name: true, id: true },
@@ -106,7 +106,7 @@ export const getProductBySlug = async (slug: string) => {
             where: { slug },
             include: {
                 images: { select: { url: true } },
-                category: { select: { name: true, slug: true } },
+                category: { select: { name: true, slug: true, id: true } },
                 brand: { select: { name: true, id: true } },
                 color: { select: { name: true, hex: true, id: true } },
                 storage: { select: { name: true, id: true } },
@@ -140,7 +140,7 @@ export const getRelatedProducts = async (categorySlug: string, excludeProductId:
             },
             include: {
                 images: { select: { url: true } },
-                category: { select: { name: true, slug: true } },
+                category: { select: { name: true, slug: true, id: true } },
                 brand: { select: { name: true, id: true } },
                 color: { select: { name: true, hex: true, id: true } },
                 storage: { select: { name: true, id: true } },
@@ -174,7 +174,7 @@ export const getNewArrivals = async (limit: number = 10) => {
             },
             include: {
                 images: { select: { url: true } },
-                category: { select: { name: true, slug: true } },
+                category: { select: { name: true, slug: true, id: true } },
                 brand: { select: { name: true, id: true } },
             },
             take: limit,
@@ -200,7 +200,7 @@ export const getPopularIPhones = async (limit: number = 8) => {
             },
             include: {
                 images: { select: { url: true } },
-                category: { select: { name: true, slug: true } },
+                category: { select: { name: true, slug: true, id: true } },
                 brand: { select: { name: true, id: true } },
             },
             take: limit,
@@ -226,7 +226,7 @@ export const getPopularLaptops = async (limit: number = 8) => {
             },
             include: {
                 images: { select: { url: true } },
-                category: { select: { name: true, slug: true } },
+                category: { select: { name: true, slug: true, id: true } },
                 brand: { select: { name: true, id: true } },
             },
             take: limit,
@@ -252,7 +252,7 @@ export const getTrendingIPads = async (limit: number = 8) => {
             },
             include: {
                 images: { select: { url: true } },
-                category: { select: { name: true, slug: true } },
+                category: { select: { name: true, slug: true, id: true } },
                 brand: { select: { name: true, id: true } },
             },
             take: limit,
@@ -297,7 +297,7 @@ export const getRandomProductsByBrand = async (brandName: string, limit: number 
             },
             include: {
                 images: { select: { url: true } },
-                category: { select: { name: true, slug: true } },
+                category: { select: { name: true, slug: true, id: true } },
                 brand: { select: { name: true, id: true } },
             },
             take: limit * 2, // Fetch more to ensure enough for randomization
@@ -395,7 +395,7 @@ export const getUserFavourites = async (userId: string) => {
                 product: {
                     include: {
                         images: { select: { url: true } },
-                        category: { select: { name: true, slug: true } },
+                        category: { select: { name: true, slug: true, id: true } },
                         brand: { select: { name: true, id: true } },
                     },
                 },

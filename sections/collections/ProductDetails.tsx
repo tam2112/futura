@@ -39,7 +39,7 @@ type Product = {
     cpu?: { id: string; name: string } | null | undefined;
     screenSize?: { id: string; name: string } | null | undefined;
     type?: { id: string; name: string } | null | undefined;
-    category: { name: string; slug: string };
+    category: { id: string; name: string; slug: string };
     status?: { id: string; name: string } | null | undefined;
     promotions?: { percentageNumber: number }[] | null | undefined;
     isFavourite: boolean;
