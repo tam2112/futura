@@ -8,16 +8,21 @@ import * as XLSX from 'xlsx';
 import Loader from '../Loader';
 import { useTranslations } from 'next-intl';
 
-type ExportButtonProps = {
+type ExportData = Record<string, unknown>;
+
+type ExportButtonProps<T extends ExportData = ExportData> = {
     exportAction: () => Promise<{
         success: boolean;
-        data?: any[];
+        data?: T[];
         error?: string;
     }>;
     entityName?: string; // Optional, for toast messages (e.g., "Categories", "Products")
 };
 
-export default function ExportButton({ exportAction, entityName = 'Items' }: ExportButtonProps) {
+export default function ExportButton<T extends ExportData = ExportData>({
+    exportAction,
+    entityName = 'Items',
+}: ExportButtonProps<T>) {
     const t = useTranslations('ExportInAdmin');
 
     const [isLoading, setIsLoading] = useState(false);

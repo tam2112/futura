@@ -31,6 +31,7 @@ import { deletePromotion } from '@/lib/actions/promotion.action';
 import { deleteStatus } from '@/lib/actions/status.action';
 import { Tooltip } from 'react-tooltip';
 import { useTranslations } from 'next-intl';
+import { deleteRole } from '@/lib/actions/role.action';
 
 // Define types for data and relatedData
 type CategoryData = { id: string; name: string; description: string; images: { url: string }[] };
@@ -211,7 +212,7 @@ const deleteActionMap = {
     category: deleteCategory,
     product: deleteProduct,
     user: deleteUser,
-    role: deleteCategory,
+    role: deleteRole,
     promotion: deletePromotion,
     status: deleteStatus,
 
@@ -484,7 +485,13 @@ const forms: {
     ),
 };
 
-export default function FormModal({ table, type, data, id, relatedData }: FormContainerProps & { relatedData?: any }) {
+export default function FormModal({
+    table,
+    type,
+    data,
+    id,
+    relatedData,
+}: FormContainerProps & { relatedData?: FormRelatedData }) {
     // const size = type === 'create' ? 'w-8 h-8' : 'w-7 h-7';
     const t = useTranslations('FormModal');
 

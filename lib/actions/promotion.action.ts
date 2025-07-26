@@ -4,7 +4,6 @@ import prisma from '@/lib/prisma';
 import { PromotionSchema } from '../validation/promotion.form';
 import { messages } from '../messages';
 import { Category, Product, Promotion, Status } from '@/types/prisma';
-import { PrismaClient } from '@prisma/client'; // For typing only
 
 type CurrentState = { success: boolean; error: boolean; message?: string };
 

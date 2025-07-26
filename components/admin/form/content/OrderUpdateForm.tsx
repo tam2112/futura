@@ -67,8 +67,8 @@ export default function OrderUpdateForm({
         try {
             const response = await updateOrderStatus({ orderId, statusId, locale });
             setState({ success: true, error: false, message: response.message! });
-        } catch (error: any) {
-            setState({ success: false, error: true, message: error.message });
+        } catch (error) {
+            setState({ success: false, error: true, message: 'Failed to update order' });
         }
     };
 

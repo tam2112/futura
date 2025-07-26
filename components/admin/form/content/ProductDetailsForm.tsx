@@ -40,11 +40,6 @@ type RelatedData = {
     types?: { id: string; name: string }[];
 };
 
-// Define type for categoryTechnicalMap
-type CategoryTechnicalMap = {
-    [key: string]: string[];
-};
-
 export default function ProductDetailsForm({
     data,
     setOpen,

@@ -1,17 +1,23 @@
-// AnimatedBox.tsx
 'use client';
 
 import { cva } from 'class-variance-authority';
 import { HTMLAttributes, useEffect, useState } from 'react';
-import { animate, motion, useMotionTemplate, useMotionValue } from 'framer-motion';
+import { animate, motion, MotionProps, useMotionTemplate, useMotionValue } from 'framer-motion';
 
-export type AnimatedBoxProps = {
+// Restrict `as` prop to HTML elements supported by Framer Motion
+type MotionHTMLTags = keyof Pick<
+    JSX.IntrinsicElements,
+    'div' | 'button' | 'span' | 'a' | 'p' | 'li' | 'ul' | 'ol' | 'section' | 'article' | 'header' | 'footer' | 'nav'
+>;
+
+export type AnimatedBoxProps<T extends MotionHTMLTags = 'div'> = {
     variant?: 'primary' | 'secondary' | 'tertiary' | 'text';
     block?: boolean;
     animateOn?: 'hover' | 'focus';
-    as?: keyof JSX.IntrinsicElements; // Thêm prop `as`
+    as?: T;
     bgBlack?: boolean;
-} & HTMLAttributes<HTMLElement>; // Sử dụng HTMLElement thay vì HTMLDivElement
+} & Omit<HTMLAttributes<HTMLElement>, keyof MotionProps> &
+    MotionProps;
 
 const classes = cva('text-black py-2', {
     variants: {
@@ -31,16 +37,15 @@ const classes = cva('text-black py-2', {
     },
 });
 
-export default function AnimatedBox(props: AnimatedBoxProps) {
-    const {
-        className = '',
-        children,
-        variant = 'primary',
-        animateOn = 'hover',
-        as = 'div', // Mặc định là 'div'
-        bgBlack = false,
-        ...otherProps
-    } = props;
+export default function AnimatedBox<T extends MotionHTMLTags = 'div'>({
+    className = '',
+    children,
+    variant = 'primary',
+    animateOn = 'hover',
+    as = 'div' as T,
+    bgBlack = false,
+    ...motionProps
+}: AnimatedBoxProps<T>) {
     const [isAnimated, setIsAnimated] = useState(false);
     const angle = useMotionValue(45);
     const background = useMotionTemplate`linear-gradient(${bgBlack ? 'var(--color-black)' : 'var(--color-white)'},${
@@ -83,8 +88,8 @@ export default function AnimatedBox(props: AnimatedBoxProps) {
         }
     };
 
-    // Tạo phần tử động dựa trên prop `as`
-    const MotionComponent = (motion as any)[as] || motion.div;
+    // Dynamically select the motion component based on the `as` prop
+    const MotionComponent = motion[as] || motion.div;
 
     return (
         <MotionComponent
@@ -92,10 +97,10 @@ export default function AnimatedBox(props: AnimatedBoxProps) {
             onMouseLeave={handleMouseLeave}
             onFocus={handleFocus}
             onBlur={handleBlur}
-            className={classes({ ...otherProps, className, variant })}
+            className={classes({ variant, block: motionProps.block, className })}
             style={variant === 'primary' ? { background } : undefined}
             tabIndex={animateOn === 'focus' ? 0 : -1}
-            {...otherProps}
+            {...motionProps}
         >
             {children}
         </MotionComponent>

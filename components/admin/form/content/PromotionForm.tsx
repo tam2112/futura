@@ -81,8 +81,8 @@ export default function PromotionForm({
             endMinutes: data?.endMinutes || 0,
             startSeconds: data?.startSeconds || 0,
             endSeconds: data?.endSeconds || 0,
-            productIds: data?.products?.map((p: any) => p.id).filter(Boolean) || [],
-            categoryIds: data?.categories?.map((c: any) => c.id).filter(Boolean) || [],
+            productIds: data?.products?.map((p: Product) => p.id).filter(Boolean) || [],
+            categoryIds: data?.categories?.map((c: Category) => c.id).filter(Boolean) || [],
         },
     });
 
@@ -140,7 +140,7 @@ export default function PromotionForm({
     const { categories, products } = relatedData || { categories: [], products: [] };
 
     const categoryOptions = [
-        ...(data?.categories?.map((c: any) => ({
+        ...(data?.categories?.map((c: Category) => ({
             value: c.id,
             label: c.name,
         })) || []),
@@ -151,7 +151,7 @@ export default function PromotionForm({
     ].filter((option, index, self) => self.findIndex((o) => o.value === option.value) === index);
 
     const productOptions = [
-        ...(data?.products?.map((p: any) => ({
+        ...(data?.products?.map((p: Product) => ({
             value: p.id,
             label: p.name,
         })) || []),
