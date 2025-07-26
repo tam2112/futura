@@ -5,7 +5,7 @@ import prisma from '../prisma';
 import { generateSlug } from '../utils';
 import { ProductSchema } from '../validation/product.form';
 import { messages } from '../messages';
-import { Image, Product } from '@/types/prisma';
+import { Image } from '@/types/prisma';
 
 type CurrentState = { success: boolean; error: boolean; message?: string; isFavourite?: boolean };
 
